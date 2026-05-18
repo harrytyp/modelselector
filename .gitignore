@@ -1,0 +1,9 @@
+# Ignore local OS metadata
+.DS_Store
+Thumbs.db
+
+# Ignore local scratch space and log files
+scratch/
+*.log
+.gemini/
+.tempmediaStorage/

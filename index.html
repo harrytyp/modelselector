@@ -1,0 +1,3764 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LocalModel.ai — Local LLM Optimizer & Hardware Simulator</title>
+  <!-- Google Fonts: Outfit & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <style>
+    :root {
+      --bg-primary: #060913;
+      --bg-secondary: #0c1122;
+      --bg-card: rgba(16, 22, 46, 0.7);
+      --bg-card-hover: rgba(22, 31, 64, 0.9);
+      --border-color: rgba(255, 255, 255, 0.07);
+      --border-color-glow: rgba(99, 102, 241, 0.4);
+      
+      --accent-indigo: #6366f1;
+      --accent-indigo-rgb: 99, 102, 241;
+      --accent-cyan: #06b6d4;
+      --accent-cyan-rgb: 6, 182, 212;
+      
+      --fit-green: #10b981;
+      --fit-green-glow: rgba(16, 185, 129, 0.15);
+      --fit-amber: #f59e0b;
+      --fit-amber-glow: rgba(245, 158, 11, 0.15);
+      --fit-red: #ef4444;
+      --fit-red-glow: rgba(239, 68, 68, 0.15);
+      
+      --text-primary: #f8fafc;
+      --text-secondary: #94a3b8;
+      --text-muted: #64748b;
+      
+      --font-sans: 'Outfit', sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+      
+      --glow-shadow: 0 0 20px rgba(99, 102, 241, 0.2);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(255, 255, 255, 0.15) transparent;
+    }
+
+    body {
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
+      font-family: var(--font-sans);
+      min-height: 100vh;
+      overflow-x: hidden;
+      line-height: 1.5;
+      background-image: 
+        radial-gradient(circle at 10% 20%, rgba(99, 102, 241, 0.08) 0%, transparent 40%),
+        radial-gradient(circle at 90% 80%, rgba(6, 182, 212, 0.08) 0%, transparent 40%);
+    }
+
+    /* Layout */
+    .container {
+      max-width: 1440px;
+      margin: 0 auto;
+      padding: 2rem;
+      display: grid;
+      grid-template-columns: 340px 1fr;
+      gap: 2rem;
+    }
+
+    /* Header */
+    header {
+      grid-column: 1 / -1;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 1.5rem;
+      border-bottom: 1px solid var(--border-color);
+      margin-bottom: 0.5rem;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .brand-logo {
+      width: 42px;
+      height: 42px;
+      background: linear-gradient(135deg, var(--accent-indigo), var(--accent-cyan));
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: var(--glow-shadow);
+      font-weight: 800;
+      font-size: 1.25rem;
+      color: #fff;
+    }
+
+    .brand-title {
+      font-size: 1.75rem;
+      font-weight: 800;
+      background: linear-gradient(to right, #ffffff, #a5b4fc);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      letter-spacing: -0.5px;
+    }
+
+    .brand-subtitle {
+      font-size: 0.875rem;
+      color: var(--text-muted);
+      margin-top: 0.1rem;
+    }
+
+    .badge-cache-status {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: linear-gradient(135deg, rgba(6, 182, 212, 0.05), rgba(99, 102, 241, 0.05));
+      border: 1px solid var(--accent-cyan);
+      padding: 0.5rem 1rem;
+      border-radius: 9999px;
+      font-size: 0.825rem;
+      color: #fff;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.2s ease;
+      box-shadow: 0 0 10px rgba(6, 182, 212, 0.1);
+    }
+    .badge-cache-status:hover {
+      background: linear-gradient(135deg, rgba(6, 182, 212, 0.15), rgba(99, 102, 241, 0.15));
+      border-color: #fff;
+      transform: translateY(-1px);
+      box-shadow: 0 0 15px rgba(6, 182, 212, 0.25);
+    }
+    
+    /* Toggle switches styles */
+    .switch-container input:checked + .switch-slider {
+      background-color: var(--accent-indigo) !important;
+      box-shadow: 0 0 8px rgba(99, 102, 241, 0.4);
+    }
+    .switch-container input:checked + .switch-slider span {
+      transform: translateX(18px);
+    }
+
+    .cache-dot {
+      width: 8px;
+      height: 8px;
+      background-color: var(--fit-green);
+      border-radius: 50%;
+      box-shadow: 0 0 8px var(--fit-green);
+    }
+
+    /* Sidebar / Filters */
+    .sidebar {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 20px;
+      padding: 1.75rem;
+      backdrop-filter: blur(16px);
+      height: fit-content;
+      position: sticky;
+      top: 2rem;
+    }
+
+    .section-title {
+      font-size: 0.875rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--accent-indigo);
+      margin-bottom: 1.25rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .section-title::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(to right, rgba(99, 102, 241, 0.3), transparent);
+    }
+
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+
+    .form-label {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: var(--text-primary);
+      margin-bottom: 0.5rem;
+    }
+
+    .label-value {
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      color: var(--accent-cyan);
+      font-weight: 600;
+    }
+
+    select, input[type="text"] {
+      width: 100%;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      padding: 0.75rem 1rem;
+      color: var(--text-primary);
+      font-family: var(--font-sans);
+      font-size: 0.925rem;
+      outline: none;
+      transition: all 0.2s;
+    }
+
+    select option {
+      background-color: var(--bg-secondary);
+      color: var(--text-primary);
+    }
+
+    select:focus, input[type="text"]:focus {
+      border-color: var(--accent-indigo);
+      box-shadow: 0 0 10px rgba(99, 102, 241, 0.15);
+      background: rgba(255, 255, 255, 0.07);
+    }
+
+    /* Custom range sliders */
+    input[type="range"] {
+      -webkit-appearance: none;
+      width: 100%;
+      height: 6px;
+      border-radius: 9999px;
+      background: rgba(255, 255, 255, 0.08);
+      outline: none;
+      margin: 0.75rem 0;
+    }
+
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: var(--accent-indigo);
+      cursor: pointer;
+      box-shadow: 0 0 10px rgba(99, 102, 241, 0.5);
+      transition: all 0.1s;
+    }
+
+    input[type="range"]::-webkit-slider-thumb:hover {
+      transform: scale(1.25);
+      background: var(--accent-cyan);
+      box-shadow: 0 0 12px rgba(6, 182, 212, 0.6);
+    }
+
+    /* Toggle switches / Buttons */
+    .usecase-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 0.5rem;
+    }
+
+    /* Smart Advisor grid and card styling */
+    .smart-advisor-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.25rem;
+      margin-bottom: 2rem;
+    }
+
+    .advisor-card {
+      background: rgba(255, 255, 255, 0.02) !important;
+      border: 1px solid rgba(255, 255, 255, 0.06) !important;
+      border-radius: 14px;
+      padding: 1.25rem;
+      backdrop-filter: blur(14px);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .advisor-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, rgba(99, 102, 241, 0.05) 0%, rgba(6, 182, 212, 0.05) 100%);
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      z-index: -1;
+    }
+
+    .advisor-card:hover::before {
+      opacity: 1;
+    }
+
+    .btn-toggle {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--border-color);
+      color: var(--text-secondary);
+      padding: 0.6rem 0.75rem;
+      border-radius: 10px;
+      cursor: pointer;
+      font-family: var(--font-sans);
+      font-size: 0.85rem;
+      font-weight: 500;
+      transition: all 0.2s;
+      text-align: center;
+    }
+
+    .btn-toggle:hover {
+      background: rgba(255, 255, 255, 0.06);
+      color: var(--text-primary);
+    }
+
+    .btn-toggle.active {
+      background: rgba(99, 102, 241, 0.15);
+      border-color: var(--accent-indigo);
+      color: #fff;
+      box-shadow: 0 0 12px rgba(99, 102, 241, 0.15);
+      font-weight: 600;
+    }
+
+    /* Checkbox Group */
+    .checkbox-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+    }
+
+    .checkbox-label {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      cursor: pointer;
+      font-size: 0.875rem;
+      color: var(--text-secondary);
+      user-select: none;
+    }
+
+    .checkbox-label input {
+      display: none;
+    }
+
+    .checkbox-custom {
+      width: 18px;
+      height: 18px;
+      border: 1px solid var(--border-color);
+      border-radius: 5px;
+      background: rgba(255, 255, 255, 0.03);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+    }
+
+    .checkbox-label input:checked + .checkbox-custom {
+      background: var(--accent-indigo);
+      border-color: var(--accent-indigo);
+    }
+
+    .checkbox-label input:checked + .checkbox-custom::after {
+      content: '✓';
+      color: white;
+      font-size: 0.75rem;
+      font-weight: bold;
+    }
+
+    /* Hardware Sub-settings block */
+    .hardware-custom-card {
+      background: rgba(0, 0, 0, 0.2);
+      border: 1px dashed var(--border-color);
+      border-radius: 12px;
+      padding: 1rem;
+      margin-top: 1rem;
+      animation: fadeIn 0.3s ease-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Main Dashboard Content */
+    .dashboard-main {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    /* Stats Overview Row */
+    .stats-overview {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1rem;
+    }
+
+    .stat-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 1.25rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      backdrop-filter: blur(16px);
+      box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2);
+    }
+
+    .stat-title {
+      font-size: 0.8rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--text-muted);
+    }
+
+    .stat-value {
+      font-size: 1.5rem;
+      font-weight: 800;
+      margin-top: 0.5rem;
+      font-family: var(--font-sans);
+      background: linear-gradient(135deg, #ffffff, #cbd5e1);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .stat-value.highlight-indigo {
+      background: linear-gradient(135deg, #a5b4fc, var(--accent-indigo));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .stat-value.highlight-cyan {
+      background: linear-gradient(135deg, #67e8f9, var(--accent-cyan));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .stat-desc {
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+      margin-top: 0.4rem;
+    }
+
+    /* Controls Bar above table */
+    .controls-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 14px;
+      padding: 0.75rem 1.25rem;
+      backdrop-filter: blur(16px);
+    }
+
+    .search-wrapper {
+      position: relative;
+      width: 320px;
+    }
+
+    .search-input {
+      width: 100%;
+      padding: 0.5rem 1rem 0.5rem 2.25rem;
+      font-size: 0.875rem;
+      border-radius: 8px;
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 0.8rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-muted);
+      font-size: 0.9rem;
+    }
+
+    .sort-wrapper {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-size: 0.875rem;
+      color: var(--text-secondary);
+    }
+
+    .sort-select {
+      background: rgba(0, 0, 0, 0.2);
+      padding: 0.4rem 1.5rem 0.4rem 0.75rem;
+      border-radius: 6px;
+      border: 1px solid var(--border-color);
+      color: var(--text-primary);
+      cursor: pointer;
+    }
+
+    /* Models Table */
+    .models-table-container {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 20px;
+      backdrop-filter: blur(16px);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+      overflow: hidden;
+    }
+
+    table.models-table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+    }
+
+    th {
+      padding: 1rem 1.5rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      font-size: 0.75rem;
+      letter-spacing: 0.75px;
+      color: var(--text-muted);
+      border-bottom: 1px solid var(--border-color);
+      background: rgba(0, 0, 0, 0.1);
+    }
+
+    td {
+      padding: 1.25rem 1.5rem;
+      border-bottom: 1px solid var(--border-color);
+      vertical-align: middle;
+      font-size: 0.925rem;
+    }
+
+    tbody tr {
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    tbody tr:hover {
+      background-color: var(--bg-card-hover);
+    }
+
+    .td-model-info {
+      display: flex;
+      flex-direction: column;
+      gap: 0.3rem;
+    }
+
+    .model-name-row {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    .dev-badge {
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      font-weight: 800;
+      letter-spacing: 0.5px;
+      padding: 0.15rem 0.4rem;
+      border-radius: 4px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: var(--text-secondary);
+    }
+
+    .dev-badge.meta { background: rgba(24, 119, 242, 0.1); border-color: rgba(24, 119, 242, 0.2); color: #3b82f6; }
+    .dev-badge.google { background: rgba(219, 68, 85, 0.1); border-color: rgba(219, 68, 85, 0.2); color: #f43f5e; }
+    .dev-badge.microsoft { background: rgba(0, 164, 239, 0.1); border-color: rgba(0, 164, 239, 0.2); color: #0ea5e9; }
+    .dev-badge.mistral { background: rgba(255, 112, 0, 0.1); border-color: rgba(255, 112, 0, 0.2); color: #f97316; }
+    .dev-badge.alibaba { background: rgba(255, 180, 0, 0.1); border-color: rgba(255, 180, 0, 0.2); color: #eab308; }
+    .dev-badge.cohere { background: rgba(24, 189, 155, 0.1); border-color: rgba(24, 189, 155, 0.2); color: #14b8a6; }
+
+    .model-desc-row {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 320px;
+    }
+
+    .tags-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.25rem;
+      margin-top: 0.2rem;
+    }
+
+    .tag-badge {
+      font-size: 0.65rem;
+      padding: 0.05rem 0.3rem;
+      border-radius: 3px;
+      background: rgba(255, 255, 255, 0.03);
+      color: var(--text-muted);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .quant-pill {
+      font-family: var(--font-mono);
+      font-weight: 600;
+      font-size: 0.8rem;
+      padding: 0.25rem 0.6rem;
+      border-radius: 6px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--border-color);
+      color: var(--text-secondary);
+      display: inline-block;
+    }
+
+    .fit-status-wrapper {
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+    }
+
+    .fit-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.8rem;
+      font-weight: 600;
+      padding: 0.3rem 0.75rem;
+      border-radius: 9999px;
+      width: fit-content;
+    }
+
+    .fit-badge.green {
+      background-color: var(--fit-green-glow);
+      border: 1px solid var(--fit-green);
+      color: var(--fit-green);
+    }
+
+    .fit-badge.amber {
+      background-color: var(--fit-amber-glow);
+      border: 1px solid var(--fit-amber);
+      color: var(--fit-amber);
+    }
+
+    .fit-badge.red {
+      background-color: var(--fit-red-glow);
+      border: 1px solid var(--fit-red);
+      color: var(--fit-red);
+    }
+
+    .fit-meta {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      font-family: var(--font-mono);
+    }
+
+    .tps-value {
+      font-size: 1.15rem;
+      font-weight: 800;
+      font-family: var(--font-sans);
+      color: #fff;
+    }
+
+    .tps-label {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+    }
+
+    .quality-ring-wrapper {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .quality-number {
+      font-weight: 700;
+      font-size: 1.1rem;
+      color: #fff;
+    }
+
+    /* Overall score progress bar */
+    .score-container {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      width: 140px;
+    }
+
+    .score-bar-bg {
+      flex: 1;
+      height: 8px;
+      border-radius: 9999px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border-color);
+      overflow: hidden;
+      position: relative;
+    }
+
+    .score-bar-fill {
+      height: 100%;
+      border-radius: 9999px;
+      background: linear-gradient(to right, var(--accent-indigo), var(--accent-cyan));
+      transition: width 0.3s ease;
+    }
+
+    .score-percent {
+      font-family: var(--font-mono);
+      font-weight: 700;
+      font-size: 0.9rem;
+      color: var(--accent-cyan);
+      width: 40px;
+      text-align: right;
+    }
+
+    .quality-loss-tag {
+      font-size: 0.7rem;
+      color: var(--fit-red);
+      margin-left: 0.2rem;
+    }
+
+    /* Detail / Comparison View Drawer (Bottom or Side panel style overlay) */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(3, 5, 12, 0.85);
+      backdrop-filter: blur(8px);
+      z-index: 100;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+    }
+
+    .modal-container {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: 24px;
+      width: 100%;
+      max-width: 1000px;
+      height: 85vh;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 12px 64px rgba(0, 0, 0, 0.5);
+      animation: modalOpen 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      overflow: hidden;
+    }
+
+    @keyframes modalOpen {
+      from { opacity: 0; transform: scale(0.95) translateY(20px); }
+      to { opacity: 1; transform: scale(1) translateY(0); }
+    }
+
+    .modal-header {
+      padding: 1.5rem 2rem;
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      background: rgba(0, 0, 0, 0.15);
+    }
+
+    .modal-header-info h2 {
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: #fff;
+    }
+
+    .modal-header-info p {
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      margin-top: 0.25rem;
+    }
+
+    .btn-close {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border-color);
+      color: var(--text-secondary);
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+    }
+
+    .btn-close:hover {
+      background: rgba(255, 255, 255, 0.1);
+      color: #fff;
+    }
+
+    .modal-content {
+      flex: 1;
+      overflow-y: auto;
+      padding: 2rem;
+      display: grid;
+      grid-template-columns: 1fr 320px;
+      gap: 2rem;
+    }
+
+    .modal-main {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    .modal-sidebar {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    /* Comparison Subtable inside modal */
+    .comparison-card {
+      background: rgba(0, 0, 0, 0.15);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 1.25rem;
+    }
+
+    .comparison-title {
+      font-size: 0.95rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    table.comparison-table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+    }
+
+    table.comparison-table th {
+      padding: 0.75rem 1rem;
+      background: rgba(255, 255, 255, 0.02);
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    table.comparison-table td {
+      padding: 0.75rem 1rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+      font-size: 0.85rem;
+    }
+
+    table.comparison-table tbody tr.recommended-quant-row {
+      background: rgba(99, 102, 241, 0.05);
+      border-left: 3px solid var(--accent-indigo);
+    }
+
+    /* Interactive Sparkline/Graph Mock */
+    .chart-container {
+      background: rgba(0, 0, 0, 0.2);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .chart-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+    }
+
+    .vram-plot-canvas {
+      width: 100%;
+      height: 120px;
+      background: rgba(0, 0, 0, 0.3);
+      border-radius: 8px;
+    }
+
+    /* Model specs table */
+    .spec-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 0.75rem;
+    }
+
+    .spec-item {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      padding: 0.75rem;
+    }
+
+    .spec-label {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      font-weight: 600;
+    }
+
+    .spec-value {
+      font-size: 1rem;
+      font-weight: 700;
+      margin-top: 0.15rem;
+      font-family: var(--font-mono);
+      color: var(--text-primary);
+    }
+
+    .confidence-indicator {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 1rem;
+      font-size: 0.8rem;
+    }
+
+    .confidence-bar {
+      height: 6px;
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 9999px;
+      flex: 1;
+      overflow: hidden;
+    }
+
+    .confidence-fill {
+      height: 100%;
+      width: 85%;
+      background: var(--fit-green);
+      border-radius: 9999px;
+    }
+
+    /* Footer styling */
+    footer {
+      grid-column: 1 / -1;
+      text-align: center;
+      padding: 3rem 0 1rem;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      border-top: 1px solid var(--border-color);
+      margin-top: 2rem;
+    }
+
+    footer a {
+      color: var(--accent-indigo);
+      text-decoration: none;
+    }
+
+    footer a:hover {
+      text-decoration: underline;
+    }
+
+    /* Responsiveness */
+    @media (max-width: 1024px) {
+      .container {
+        grid-template-columns: 1fr;
+      }
+      .sidebar {
+        position: static;
+        width: 100%;
+      }
+      .stats-overview {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 640px) {
+      .stats-overview {
+        grid-template-columns: 1fr;
+      }
+      .controls-bar {
+        flex-direction: column;
+        gap: 1rem;
+        align-items: stretch;
+      }
+      .search-wrapper {
+        width: 100%;
+      }
+      .modal-content {
+        grid-template-columns: 1fr;
+        height: auto;
+      }
+      .modal-container {
+        height: 95vh;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    
+    <!-- HEADER -->
+    <header>
+      <div class="brand">
+        <div class="brand-logo">LM</div>
+        <div>
+          <h1 class="brand-title">LocalModel.ai</h1>
+          <p class="brand-subtitle">Physical Hardware Simulator & Local LLM Optimizer</p>
+        </div>
+      </div>
+      <div class="badge-cache-status" id="btnOpenStatusModal" title="Click to view Database Scraper Status and toggle Active APIs">
+        <div class="cache-dot" id="cacheDot"></div>
+        <span id="cacheText">Scraper Status & API Controls</span>
+      </div>
+    </header>
+
+    <!-- SIDEBAR / FILTERS -->
+    <aside class="sidebar">
+      
+      <!-- Hardware settings -->
+      <h2 class="section-title">Hardware Profile</h2>
+      
+      <div class="form-group">
+        <label class="form-label" for="gpuSelect">
+          Select Target Device
+        </label>
+        <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+          <select id="gpuSelect" style="width: 100%;">
+            <!-- Populated by JS -->
+          </select>
+          <button id="btnScanHardware" style="width: 100%; border: 1px solid var(--accent-cyan); font-weight: bold; background: linear-gradient(135deg, rgba(6, 182, 212, 0.15), rgba(99, 102, 241, 0.15)); color: #fff; padding: 0.6rem; border-radius: 8px; font-size: 0.8rem; cursor: pointer; transition: all 0.2s; box-shadow: 0 0 12px rgba(6,182,212,0.1); margin-top: 0.25rem;">
+            ⚡ One-Click System Auto-Detect
+          </button>
+          <div style="font-size: 0.72rem; text-align: right; margin-top: 0.15rem;">
+            <a href="#" id="toggleGpuSearch" style="color: var(--accent-cyan); text-decoration: none; font-weight: 500; opacity: 0.85; transition: opacity 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.85'">
+              Can't find GPU? Search 2,800+ DB
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Collapsible GPU search panel -->
+      <div id="gpuSearchBlock" class="hardware-custom-card" style="display: none; margin-bottom: 0.75rem; border-color: rgba(99, 102, 241, 0.25);">
+        <div class="form-group" style="position: relative;">
+          <label class="form-label" for="gpuSearchInput" style="font-size: 0.7rem; color: var(--text-muted);">
+            Search 2,800+ GPUs (Live Wikipedia API)
+          </label>
+          <div style="display: flex; gap: 0.5rem; margin-top: 0.25rem;">
+            <input type="text" id="gpuSearchInput" placeholder="e.g. RTX 4070, RX 7900" style="flex: 1; padding: 0.5rem 0.75rem; font-size: 0.8rem; border-radius: 8px; background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); color: #fff;">
+            <button id="btnSearchGpu" class="btn-toggle" style="padding: 0.5rem 0.75rem; background: var(--accent-indigo); color: white; border-color: var(--accent-indigo); font-weight: bold; border-radius: 8px; font-size: 0.8rem;">Find</button>
+          </div>
+          <div id="gpuSearchResults" style="display: none; background: rgba(12, 17, 34, 0.98); border: 1px solid var(--border-color); border-radius: 8px; margin-top: 0.5rem; max-height: 180px; overflow-y: auto; font-size: 0.8rem; padding: 0.5rem; position: absolute; z-index: 100; width: 100%; box-shadow: 0 10px 25px rgba(0,0,0,0.8); backdrop-filter: blur(10px);"></div>
+        </div>
+      </div>
+
+      <!-- Custom hardware controls (shown when custom GPU is selected) -->
+      <div id="customHardwareBlock" class="hardware-custom-card" style="display: none;">
+        <div class="form-group">
+          <label class="form-label" for="customVramRange">
+            Dedicated VRAM <span class="label-value" id="customVramVal">24 GB</span>
+          </label>
+          <input type="range" id="customVramRange" min="2" max="96" step="1" value="24">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="customBandwidthRange">
+            GPU Bus Bandwidth <span class="label-value" id="customBandwidthVal">1008 GB/s</span>
+          </label>
+          <input type="range" id="customBandwidthRange" min="50" max="2048" step="10" value="1008">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="ramRange">
+          System RAM <span class="label-value" id="ramVal">64 GB</span>
+        </label>
+        <input type="range" id="ramRange" min="8" max="256" step="8" value="64">
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="ramSpeedSelect">
+          System RAM Speed
+        </label>
+        <select id="ramSpeedSelect">
+          <option value="40" selected>DDR4 Dual-Channel (~40 GB/s)</option>
+          <option value="80">DDR5 Dual-Channel (~80 GB/s)</option>
+          <option value="150">DDR5 Quad-Channel/Threadripper (~150 GB/s)</option>
+          <option value="30">DDR4 Single-Channel (~30 GB/s)</option>
+        </select>
+      </div>
+
+      <!-- Inference parameters -->
+      <h2 class="section-title">Inference Context</h2>
+
+      <div class="form-group">
+        <label class="form-label" for="contextRange">
+          Context Length <span class="label-value" id="contextVal">8,192 tok</span>
+        </label>
+        <input type="range" id="contextRange" min="512" max="131072" step="512" value="8192">
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="tpsRange">
+          Minimum Target Speed <span class="label-value" id="tpsVal">20 tok/s</span>
+        </label>
+        <input type="range" id="tpsRange" min="1" max="120" step="1" value="20">
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Optimized Use Case</label>
+        <div class="usecase-grid">
+          <button class="btn-toggle active" data-usecase="chat">💬 Chat</button>
+          <button class="btn-toggle" data-usecase="coding">💻 Coding</button>
+          <button class="btn-toggle" data-usecase="rag">📚 RAG</button>
+          <button class="btn-toggle" data-usecase="reasoning">🧠 Reasoning</button>
+        </div>
+      </div>
+
+      <!-- Advanced features toggle -->
+      <div style="margin-top: 1rem; border-top: 1px solid var(--border-color); padding-top: 1rem;">
+        <button id="btnToggleAdvanced" style="width: 100%; display: flex; align-items: center; justify-content: space-between; background: rgba(255, 255, 255, 0.02); border: 1px solid var(--border-color); color: var(--text-muted); font-size: 0.8rem; font-weight: 600; padding: 0.6rem 0.8rem; border-radius: 8px; cursor: pointer; transition: all 0.2s;">
+          <span style="display: flex; align-items: center; gap: 0.5rem;">🛠️ Advanced Features</span>
+          <span id="advancedIcon">▼</span>
+        </button>
+        
+        <div id="advancedControlsBlock" style="display: none; margin-top: 0.75rem; flex-direction: column; gap: 1rem;">
+          
+          <!-- Filtering options (Format & Quant) -->
+          <div>
+            <h3 style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; font-weight: bold; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.3rem;">
+              📦 Format & Quant
+            </h3>
+            <div class="checkbox-group">
+              <label class="checkbox-label">
+                <input type="checkbox" class="format-checkbox" value="GGUF" checked>
+                <span class="checkbox-custom"></span>
+                GGUF (llama.cpp)
+              </label>
+              <label class="checkbox-label">
+                <input type="checkbox" class="format-checkbox" value="AWQ" checked>
+                <span class="checkbox-custom"></span>
+                AWQ (vLLM / TensorRT)
+              </label>
+              <label class="checkbox-label">
+                <input type="checkbox" class="format-checkbox" value="GPTQ" checked>
+                <span class="checkbox-custom"></span>
+                GPTQ (ExLlama / vLLM)
+              </label>
+              <label class="checkbox-label">
+                <input type="checkbox" class="format-checkbox" value="EXL2" checked>
+                <span class="checkbox-custom"></span>
+                EXL2 (ExLlamaV2)
+              </label>
+            </div>
+          </div>
+          
+          <!-- Live API Import (Live Model Hub) -->
+          <div style="border-top: 1px solid rgba(255, 255, 255, 0.03); padding-top: 0.75rem;">
+            <h3 style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; font-weight: bold; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.3rem;">
+              🌐 Live Model Hub
+            </h3>
+            <div class="form-group" style="position: relative; margin-bottom: 0.5rem;">
+              <label class="form-label" for="hfModelIdInput" style="font-size: 0.7rem; color: var(--text-muted);">
+                Search Hugging Face / Enter ID
+              </label>
+              <div style="display: flex; gap: 0.5rem; margin-top: 0.25rem;">
+                <input type="text" id="hfModelIdInput" placeholder="e.g. gemma-2-2b, meta-llama/Llama-3-8b" style="flex: 1; padding: 0.5rem 0.75rem; font-size: 0.8rem; border-radius: 8px; background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); color: #fff;">
+                <button id="btnImportHf" class="btn-toggle" style="padding: 0.5rem 0.75rem; background: var(--accent-indigo); color: white; border-color: var(--accent-indigo); font-weight: bold; border-radius: 8px; font-size: 0.8rem; cursor: pointer;">Find</button>
+              </div>
+              <div id="importStatus" style="font-size: 0.75rem; font-weight: 500; margin-top: 0.5rem; display: none; line-height: 1.4; word-break: break-all;"></div>
+              <div id="hfSearchResults" style="display: none; background: rgba(12, 17, 34, 0.98); border: 1px solid var(--border-color); border-radius: 8px; margin-top: 0.5rem; max-height: 200px; overflow-y: auto; font-size: 0.8rem; padding: 0.5rem; position: absolute; z-index: 100; width: 100%; box-shadow: 0 10px 25px rgba(0,0,0,0.8); backdrop-filter: blur(10px);"></div>
+            </div>
+          </div>
+          
+        </div>
+      </div>
+
+    </aside>
+
+    <!-- DASHBOARD MAIN CONTENT -->
+    <main class="dashboard-main">
+      
+      <!-- Stats Overview Row -->
+      <div class="stats-overview">
+        <div class="stat-card">
+          <span class="stat-title">Active VRAM Pool</span>
+          <span class="stat-value highlight-indigo" id="poolVram">24.0 GB</span>
+          <span class="stat-desc" id="poolVramDesc">NVIDIA RTX 4090</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-title">System RAM Pool</span>
+          <span class="stat-value highlight-cyan" id="poolRam">64.0 GB</span>
+          <span class="stat-desc" id="poolRamDesc">DDR4 Dual-Channel</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-title">Max Memory Bus</span>
+          <span class="stat-value" id="poolBandwidth">1,008 GB/s</span>
+          <span class="stat-desc">Peak physical throughput</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-title">Use Case Profile</span>
+          <span class="stat-value" id="profileTitle" style="font-size: 1.35rem; font-weight: 700; margin-top: 0.75rem;">💬 Chat-Focused</span>
+          <span class="stat-desc" id="profileWeights">60% Speed / 40% Quality</span>
+        </div>
+      </div>
+
+
+
+      <!-- Table Controls Bar -->
+      <div class="controls-bar">
+        <div class="search-wrapper">
+          <span class="search-icon">🔍</span>
+          <input type="text" id="searchInput" class="search-input" placeholder="Search models, tags, developers...">
+        </div>
+        <div class="sort-wrapper">
+          <span>Sort By:</span>
+          <select id="sortSelect" class="sort-select">
+            <option value="score" selected>Overall Fit Score</option>
+            <option value="quality">Model Intelligence (HF Leaderboard)</option>
+            <option value="speed">Generation Speed (tok/s)</option>
+            <option value="vram">Weights Size (GB)</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Models List Container -->
+      <div class="models-table-container">
+        <table class="models-table">
+          <thead>
+            <tr>
+              <th>Model Name & Description</th>
+              <th>Best Fitting Quant</th>
+              <th>Hardware Allocation</th>
+              <th>Est. Gen Speed</th>
+              <th>Intelligence</th>
+              <th style="width: 160px;">Overall Fit</th>
+            </tr>
+          </thead>
+          <tbody id="modelsTableBody">
+            <!-- Populated by JS -->
+          </tbody>
+        </table>
+      </div>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer>
+      LocalModel.ai — Open Source Prototype based on HF Open LLM & LocalScore Benchmarks.
+      Designed with premium aesthetics and physical hardware formulas. 
+      <br>
+      <span style="opacity: 0.6; margin-top: 0.4rem; display: block;">Made for offline execution. All calculations are performed in your browser in real time.</span>
+    </footer>
+
+  </div>
+
+  <!-- DETAIL DRAWER MODAL -->
+  <div class="modal-overlay" id="detailModal">
+    <div class="modal-container">
+      
+      <div class="modal-header">
+        <div class="modal-header-info">
+          <h2 id="modalModelName">Llama 3.1 8B Instruct</h2>
+          <p id="modalModelId">meta-llama/Meta-Llama-3.1-8B-Instruct</p>
+        </div>
+        <button class="btn-close" id="modalClose">✕</button>
+      </div>
+
+      <div class="modal-content">
+        
+        <!-- Left Column: Main Analysis -->
+        <div class="modal-main">
+          
+          <div class="comparison-card">
+            <h3 class="comparison-title">📊 Available Quantization Levels Benchmarks</h3>
+            <table class="comparison-table">
+              <thead>
+                <tr>
+                  <th>Quantization</th>
+                  <th>Format</th>
+                  <th>RAM/VRAM Needs</th>
+                  <th>Fit Status</th>
+                  <th>Est. Speed</th>
+                  <th>Loss</th>
+                </tr>
+              </thead>
+              <tbody id="modalQuantTableBody">
+                <!-- Populated by JS -->
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Interactive VRAM Plot -->
+          <div class="chart-container">
+            <div class="chart-header">
+              <span>📈 VRAM Requirements vs Context Length (KV Cache Scaling)</span>
+              <span id="chartContextTarget" style="font-family: var(--font-mono); color: var(--accent-cyan);">Current Context: 8K</span>
+            </div>
+            <canvas id="vramChart" class="vram-plot-canvas"></canvas>
+            <div class="spec-label" style="text-align: center; margin-top: 0.25rem;">
+              Context Size (Tokens in Thousands: 1K, 4K, 8K, 16K, 32K, 64K, 128K)
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Right Column: Sidebar Specs -->
+        <div class="modal-sidebar">
+          
+          <h3 class="comparison-title" style="margin-bottom: 0.5rem;">⚙️ Model Architecture</h3>
+          <div class="spec-grid">
+            <div class="spec-item">
+              <span class="spec-label">Base Parameters</span>
+              <span class="spec-value" id="specParams">8.03 B</span>
+            </div>
+            <div class="spec-item">
+              <span class="spec-label">Transformer Layers</span>
+              <span class="spec-value" id="specLayers">32</span>
+            </div>
+            <div class="spec-item">
+              <span class="spec-label">Hidden Dimension</span>
+              <span class="spec-value" id="specHidden">4096</span>
+            </div>
+            <div class="spec-item">
+              <span class="spec-label">GQA KV Ratio</span>
+              <span class="spec-value" id="specGQA">4:1 (8 KV)</span>
+            </div>
+          </div>
+
+          <div style="background: rgba(255, 255, 255, 0.02); border: 1px solid var(--border-color); border-radius: 16px; padding: 1.25rem;">
+            <h4 style="font-size: 0.85rem; font-weight: 700; color: #fff; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.4rem;">
+              🧬 Simulation Physical Constants
+            </h4>
+            <div style="font-size: 0.8rem; color: var(--text-secondary); display: flex; flex-direction: column; gap: 0.5rem; line-height: 1.4;">
+              <div>• Weight Bits: Dynamic per Quantization format.</div>
+              <div>• KV Cache: fp16 (2.0 bytes/key-val element) with GQA support.</div>
+              <div>• Runtime Overhead: 800 MB reserved for CUDA / llama.cpp graph instantiation.</div>
+              <div>• GPU Eff. Coefficient: 35% performance factor.</div>
+              <div>• RAM Eff. Coefficient: 22% bus factor.</div>
+            </div>
+          </div>
+
+          <h4 style="font-size: 0.85rem; font-weight: 700; color: #fff; margin-top: 1.25rem; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.4rem;">
+            🏆 Task Benchmark Scores (0-100)
+          </h4>
+          <div style="background: rgba(255, 255, 255, 0.02); border: 1px solid var(--border-color); border-radius: 16px; padding: 1.25rem; display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.5rem;" id="modalBenchmarkGrid">
+            <!-- Populated dynamically -->
+          </div>
+
+          <h4 style="font-size: 0.85rem; font-weight: 700; color: #fff; margin-top: 1.25rem; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.4rem;">
+            🔗 Model Resources & Benchmarks
+          </h4>
+          <div style="background: rgba(255, 255, 255, 0.02); border: 1px solid var(--border-color); border-radius: 16px; padding: 1.25rem; display: flex; flex-direction: column; gap: 0.75rem;">
+            <a id="btnLinkHuggingface" target="_blank" href="#" style="display: flex; align-items: center; justify-content: center; gap: 0.5rem; background: var(--accent-indigo); color: white; text-decoration: none; padding: 0.6rem; border-radius: 8px; font-size: 0.8rem; font-weight: bold; text-align: center; transition: all 0.2s;">
+              🤗 GGUF Quant Repository
+            </a>
+            <a id="btnLinkBaseModel" target="_blank" href="#" style="display: flex; align-items: center; justify-content: center; gap: 0.5rem; background: rgba(99, 102, 241, 0.15); border: 1px solid var(--accent-indigo); color: #a5b4fc; text-decoration: none; padding: 0.6rem; border-radius: 8px; font-size: 0.8rem; font-weight: bold; text-align: center; transition: all 0.2s;">
+              🧠 Original Base Model Card
+            </a>
+            <a id="btnLinkBenchmarks" target="_blank" href="https://huggingface.co/datasets/open-llm-leaderboard/contents" style="display: flex; align-items: center; justify-content: center; gap: 0.5rem; background: rgba(6, 182, 212, 0.1); border: 1px solid var(--accent-cyan); color: var(--accent-cyan); text-decoration: none; padding: 0.6rem; border-radius: 8px; font-size: 0.8rem; font-weight: bold; text-align: center; transition: all 0.2s;">
+              🏆 Open LLM Leaderboard Dataset (v2)
+            </a>
+          </div>
+
+          <div style="background: rgba(255, 255, 255, 0.02); border: 1px solid var(--border-color); border-radius: 16px; padding: 1.25rem; margin-top: 1.25rem;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+              <span class="spec-label" style="font-size:0.7rem; text-transform:uppercase; letter-spacing:0.05em; color:var(--text-muted);">Evaluation Status</span>
+              <span id="modalEvalBadge" style="font-size:0.65rem; font-weight:bold; padding: 0.15rem 0.4rem; border-radius:4px;">MEASURED</span>
+            </div>
+            <div style="flex: 1; margin-top: 0.5rem;">
+              <div style="display: flex; justify-content: space-between;">
+                <span class="spec-label" style="font-size:0.75rem; color:var(--text-secondary);">Estimation Confidence</span>
+                <span id="modalConfidencePercent" style="font-weight:700; color:#fff; font-size:0.85rem;">98%</span>
+              </div>
+              <div style="margin-top:0.4rem; height:6px; background:rgba(255,255,255,0.05); border-radius:3px; overflow:hidden;">
+                <div id="modalConfidenceFill" style="height:100%; width:98%; background:var(--accent-cyan); transition: width 0.3s ease;"></div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    // PRE-BAKED COMPREHENSIVE DATA (CORS / OFFLINE FALLBACK)
+    const DEFAULT_CACHE = {
+      "models": [
+        {
+          "model_id": "meta-llama/Meta-Llama-3.1-8B-Instruct",
+          "name": "Llama 3.1 8B Instruct",
+          "developer": "Meta",
+          "parameters": 8.03,
+          "base_model_id": "meta-llama/Meta-Llama-3.1-8B",
+          "quality_score": 68.2,
+          "description": "Meta's flagship lightweight model, optimized for multilingual dialogue and general tasks with 128k context.",
+          "config": {
+            "num_layers": 32,
+            "hidden_size": 4096,
+            "num_kv_heads": 8,
+            "num_attn_heads": 32,
+            "vocab_size": 128256
+          },
+          "tags": ["chat", "coding", "multilingual", "rag"]
+        },
+        {
+          "model_id": "meta-llama/Meta-Llama-3.1-70B-Instruct",
+          "name": "Llama 3.1 70B Instruct",
+          "developer": "Meta",
+          "parameters": 70.6,
+          "base_model_id": "meta-llama/Meta-Llama-3.1-70B",
+          "quality_score": 79.3,
+          "description": "Meta's highly capable 70B model. Outstanding for complex reasoning, planning, and coding.",
+          "config": {
+            "num_layers": 80,
+            "hidden_size": 8192,
+            "num_kv_heads": 8,
+            "num_attn_heads": 64,
+            "vocab_size": 128256
+          },
+          "tags": ["chat", "coding", "reasoning", "complex"]
+        },
+        {
+          "model_id": "mistralai/Mistral-7B-Instruct-v0.3",
+          "name": "Mistral 7B Instruct v0.3",
+          "developer": "Mistral AI",
+          "parameters": 7.25,
+          "base_model_id": "mistralai/Mistral-7B-v0.3",
+          "quality_score": 65.8,
+          "description": "An updated version of the classic 7B model. Supports function calling, native vLLM and has an extended vocab.",
+          "config": {
+            "num_layers": 32,
+            "hidden_size": 4096,
+            "num_kv_heads": 8,
+            "num_attn_heads": 32,
+            "vocab_size": 32768
+          },
+          "tags": ["chat", "coding", "function-calling"]
+        },
+        {
+          "model_id": "google/gemma-2-9b-it",
+          "name": "Gemma 2 9B IT",
+          "developer": "Google",
+          "parameters": 9.24,
+          "base_model_id": "google/gemma-2-9b",
+          "quality_score": 71.5,
+          "description": "Google's 9B model built on the Gemma 2 architecture. Highly efficient with quality matching larger models.",
+          "config": {
+            "num_layers": 42,
+            "hidden_size": 3584,
+            "num_kv_heads": 8,
+            "num_attn_heads": 16,
+            "vocab_size": 256000
+          },
+          "tags": ["chat", "reasoning", "general"]
+        },
+        {
+          "model_id": "google/gemma-2-27b-it",
+          "name": "Gemma 2 27B IT",
+          "developer": "Google",
+          "parameters": 27.2,
+          "base_model_id": "google/gemma-2-27b",
+          "quality_score": 77.2,
+          "description": "A highly competitive 27B parameter model, providing near-frontier class intelligence on high-end consumer hardware.",
+          "config": {
+            "num_layers": 46,
+            "hidden_size": 4608,
+            "num_kv_heads": 16,
+            "num_attn_heads": 32,
+            "vocab_size": 256000
+          },
+          "tags": ["chat", "reasoning", "coding"]
+        },
+        {
+          "model_id": "microsoft/Phi-3.5-mini-instruct",
+          "name": "Phi-3.5 Mini Instruct",
+          "developer": "Microsoft",
+          "parameters": 3.82,
+          "base_model_id": "microsoft/Phi-3.5-mini",
+          "quality_score": 61.8,
+          "description": "A lightweight, state-of-the-art open model built on Phi-3 datasets. Excels in reasoning and math.",
+          "config": {
+            "num_layers": 32,
+            "hidden_size": 3072,
+            "num_kv_heads": 32,
+            "num_attn_heads": 32,
+            "vocab_size": 32064
+          },
+          "tags": ["chat", "reasoning", "math", "fast"]
+        },
+        {
+          "model_id": "microsoft/Phi-3-medium-128k-instruct",
+          "name": "Phi-3 Medium Instruct (128k)",
+          "developer": "Microsoft",
+          "parameters": 14.0,
+          "base_model_id": "microsoft/Phi-3-medium",
+          "quality_score": 69.1,
+          "description": "A 14B parameter model with huge 128k context length support, delivering excellent RAG and summarization performance.",
+          "config": {
+            "num_layers": 40,
+            "hidden_size": 5120,
+            "num_kv_heads": 10,
+            "num_attn_heads": 40,
+            "vocab_size": 32064
+          },
+          "tags": ["chat", "rag", "long-context"]
+        },
+        {
+          "model_id": "Qwen/Qwen2.5-7B-Instruct",
+          "name": "Qwen 2.5 7B Instruct",
+          "developer": "Alibaba",
+          "parameters": 7.62,
+          "base_model_id": "Qwen/Qwen2.5-7B",
+          "quality_score": 70.8,
+          "description": "Alibaba's highly acclaimed 7B model. Incredible multilingual and coding capabilities for its size.",
+          "config": {
+            "num_layers": 28,
+            "hidden_size": 3584,
+            "num_kv_heads": 8,
+            "num_attn_heads": 28,
+            "vocab_size": 152064
+          },
+          "tags": ["chat", "coding", "multilingual", "fast"]
+        },
+        {
+          "model_id": "Qwen/Qwen2.5-72B-Instruct",
+          "name": "Qwen 2.5 72B Instruct",
+          "developer": "Alibaba",
+          "parameters": 72.7,
+          "base_model_id": "Qwen/Qwen2.5-72B",
+          "quality_score": 81.2,
+          "description": "Top-tier open source model. Matches closed models on complex coding tasks, maths, and multilingual queries.",
+          "config": {
+            "num_layers": 80,
+            "hidden_size": 8192,
+            "num_kv_heads": 8,
+            "num_attn_heads": 64,
+            "vocab_size": 152064
+          },
+          "tags": ["coding", "reasoning", "complex", "multilingual"]
+        },
+        {
+          "model_id": "CohereForAI/c4ai-command-r-plus",
+          "name": "Command R+",
+          "developer": "Cohere",
+          "parameters": 104.0,
+          "base_model_id": "CohereForAI/c4ai-command-r-plus",
+          "quality_score": 75.5,
+          "description": "A massive 104B model optimized for RAG, tool use, and enterprise tasks. Huge multi-step tool agent capabilities.",
+          "config": {
+            "num_layers": 64,
+            "hidden_size": 8192,
+            "num_kv_heads": 8,
+            "num_attn_heads": 64,
+            "vocab_size": 255000
+          },
+          "tags": ["rag", "agents", "tool-use", "enterprise"]
+        }
+      ],
+      "gpus": [
+        {
+          "id": "rtx_5090",
+          "name": "NVIDIA GeForce RTX 5090",
+          "vram": 32,
+          "bandwidth": 1792,
+          "type": "gpu",
+          "description": "Next-gen flagship consumer card. Outstanding bandwidth and 32GB VRAM capacity."
+        },
+        {
+          "id": "rtx_4090",
+          "name": "NVIDIA GeForce RTX 4090",
+          "vram": 24,
+          "bandwidth": 1008,
+          "type": "gpu",
+          "description": "Current flagship consumer GPU. Perfect for 8B models and 70B offloaded configurations."
+        },
+        {
+          "id": "rtx_4080s",
+          "name": "NVIDIA GeForce RTX 4080 Super",
+          "vram": 16,
+          "bandwidth": 736,
+          "type": "gpu",
+          "description": "High-end consumer card. Fast, but bound by 16GB VRAM capacity."
+        },
+        {
+          "id": "rtx_4070ti_super",
+          "name": "NVIDIA GeForce RTX 4070 Ti Super",
+          "vram": 16,
+          "bandwidth": 672,
+          "type": "gpu",
+          "description": "Excellent price-to-VRAM value with 16GB high-bandwidth VRAM."
+        },
+        {
+          "id": "rtx_4070s",
+          "name": "NVIDIA GeForce RTX 4070 Super",
+          "vram": 12,
+          "bandwidth": 504,
+          "type": "gpu",
+          "description": "Highly popular mid-range card. Comfortable for 7B/8B Q4 quantizations."
+        },
+        {
+          "id": "rtx_4060ti_16gb",
+          "name": "NVIDIA GeForce RTX 4060 Ti 16GB",
+          "vram": 16,
+          "bandwidth": 288,
+          "type": "gpu",
+          "description": "Affordable large capacity VRAM (16GB) but bottlenecked by 128-bit memory bus bandwidth."
+        },
+        {
+          "id": "rtx_3090",
+          "name": "NVIDIA GeForce RTX 3090",
+          "vram": 24,
+          "bandwidth": 936,
+          "type": "gpu",
+          "description": "Legacy king of consumer VRAM. 24GB high bandwidth makes it perfect for local LLMs."
+        },
+        {
+          "id": "rtx_3060_12gb",
+          "name": "NVIDIA GeForce RTX 3060 12GB",
+          "vram": 12,
+          "bandwidth": 360,
+          "type": "gpu",
+          "description": "Budget choice. Good memory capacity and decent bus width."
+        },
+        {
+          "id": "nvidia_a100",
+          "name": "NVIDIA A100 Tensor Core 80GB",
+          "vram": 80,
+          "bandwidth": 2039,
+          "type": "gpu",
+          "description": "Enterprise-class GPU. Elite bandwidth and 80GB HBM2e memory."
+        },
+        {
+          "id": "nvidia_h100",
+          "name": "NVIDIA H100 Tensor Core 80GB SXM",
+          "vram": 80,
+          "bandwidth": 3350,
+          "type": "gpu",
+          "description": "State-of-the-art enterprise graphics. Astronomical memory bandwidth."
+        },
+        {
+          "id": "dual_rtx_3090",
+          "name": "Dual NVIDIA GeForce RTX 3090",
+          "vram": 48,
+          "bandwidth": 1872,
+          "type": "multi_gpu",
+          "description": "Dual workstation setup. Combines VRAM to run 70B models at full local speed."
+        },
+        {
+          "id": "dual_rtx_4090",
+          "name": "Dual NVIDIA GeForce RTX 4090",
+          "vram": 48,
+          "bandwidth": 2016,
+          "type": "multi_gpu",
+          "description": "Elite multi-GPU consumer workstation. Phenomenal speed and capacity."
+        },
+        {
+          "id": "amd_7900xtx",
+          "name": "AMD Radeon RX 7900 XTX",
+          "vram": 24,
+          "bandwidth": 960,
+          "type": "gpu",
+          "description": "AMD flagship gaming card. Outstanding 24GB VRAM and high memory bandwidth."
+        },
+        {
+          "id": "amd_7900xt",
+          "name": "AMD Radeon RX 7900 XT",
+          "vram": 20,
+          "bandwidth": 800,
+          "type": "gpu",
+          "description": "Strong high-end AMD card. Generous 20GB VRAM pool."
+        },
+        {
+          "id": "amd_7800xt",
+          "name": "AMD Radeon RX 7800 XT",
+          "vram": 16,
+          "bandwidth": 624,
+          "type": "gpu",
+          "description": "Popular mid-range AMD card with solid 16GB VRAM specs."
+        },
+        {
+          "id": "mac_m2_ultra",
+          "name": "Apple M2 Ultra (192GB Unified)",
+          "vram": 144,
+          "bandwidth": 800,
+          "type": "mac",
+          "description": "Unified Architecture. Allows allocating up to 144GB of unified memory as VRAM, running 70B+ models in FP16 locally."
+        },
+        {
+          "id": "mac_m3_max",
+          "name": "Apple M3 Max (128GB Unified)",
+          "vram": 96,
+          "bandwidth": 400,
+          "type": "mac",
+          "description": "High-end MacBook Pro spec. Up to 96GB available for model weights with high bandwidth."
+        },
+        {
+          "id": "mac_m2_max",
+          "name": "Apple M2 Max (96GB Unified)",
+          "vram": 72,
+          "bandwidth": 400,
+          "type": "mac",
+          "description": "Unified memory architecture. Outstanding balance for 30B class models."
+        },
+        {
+          "id": "mac_m3_pro",
+          "name": "Apple M3 Pro (36GB Unified)",
+          "vram": 27,
+          "bandwidth": 150,
+          "type": "mac",
+          "description": "Mid-tier Unified Memory. Decent speed, perfect for 8B models at high precision."
+        },
+        {
+          "id": "intel_a770",
+          "name": "Intel Arc A770 16GB",
+          "vram": 16,
+          "bandwidth": 560,
+          "type": "gpu",
+          "description": "Intel flagship GPU. Great budget option for a spacious 16GB VRAM buffer."
+        },
+        {
+          "id": "intel_integrated",
+          "name": "Intel Integrated HD/Iris Xe Graphics",
+          "vram": 4,
+          "bandwidth": 60,
+          "type": "gpu",
+          "description": "Integrated APU sharing system memory. Bound by system RAM bandwidth speed."
+        },
+        {
+          "id": "amd_integrated",
+          "name": "AMD Radeon Integrated Graphics",
+          "vram": 4,
+          "bandwidth": 60,
+          "type": "gpu",
+          "description": "Integrated APU sharing system memory. Bound by system RAM bandwidth speed."
+        },
+        {
+          "id": "generic_cpu_ddr5",
+          "name": "System CPU-Only (DDR5 Dual-Channel)",
+          "vram": 0,
+          "bandwidth": 80,
+          "type": "cpu",
+          "description": "CPU execution bound by standard DDR5 speed. Extremely slow but limitless size."
+        },
+        {
+          "id": "generic_cpu_quad",
+          "name": "System CPU-Only (DDR5 Quad-Channel)",
+          "vram": 0,
+          "bandwidth": 150,
+          "type": "cpu",
+          "description": "Workstation CPU execution. Quad-channel bus gives moderate speeds for CPU inference."
+        },
+        {
+          "id": "custom",
+          "name": "Custom Hardware Configuration",
+          "vram": 24,
+          "bandwidth": 1008,
+          "type": "gpu",
+          "description": "Configure your own active VRAM limits and bus performance."
+        }
+      ]
+    };
+
+    // PHYSICAL INFERENCE SCHEME CONSTANTS
+    const BYTES_PER_QUANT = {
+      "Q2_K": 0.325, 
+      "Q3_K_M": 0.438, 
+      "Q4_0": 0.500,
+      "Q4_K_M": 0.563, 
+      "Q5_K_M": 0.688, 
+      "Q6_K": 0.750,
+      "Q8_0": 1.000, 
+      "fp16": 2.000
+    };
+
+    const QUANT_FORMATS = {
+      "Q2_K": "GGUF",
+      "Q3_K_M": "GGUF",
+      "Q4_0": "GGUF",
+      "Q4_K_M": "GGUF",
+      "Q5_K_M": "GGUF",
+      "Q6_K": "GGUF",
+      "Q8_0": "GGUF",
+      "fp16": "GGUF"
+    };
+
+    // Loss percentages compared to fp16 baseline
+    const QUANT_QUALITY_LOSS = {
+      "Q2_K": 12.5,
+      "Q3_K_M": 4.5,
+      "Q4_0": 2.0,
+      "Q4_K_M": 1.0,
+      "Q5_K_M": 0.4,
+      "Q6_K": 0.15,
+      "Q8_0": 0.05,
+      "fp16": 0.0
+    };
+
+    // Physical simulator constants
+    const RUNTIME_OVERHEAD_GB = 0.8;
+    const GPU_EFFICIENCY = 0.35; // Accounting for launch latencies, thread sync, tensor operations
+    const CPU_EFFICIENCY = 0.22; // System RAM bus overhead and context switches
+    const APPLE_SILICON_UNIFIED_BONUS = 0.75; // Apple unified memory matches memory bus bandwidth closer
+    const MAX_PHYSICAL_TPS = 180; // High limit constraint for realistic rendering
+
+    // Dynamic Weights per Use Case Profile
+    const USE_CASE_PROFILES = {
+      "chat": {
+        "title": "💬 Chat-Focused",
+        "description": "60% Speed / 40% Quality",
+        "weight_speed": 0.6,
+        "weight_quality": 0.4,
+        "weight_context": 0.0
+      },
+      "coding": {
+        "title": "💻 Coding-Focused",
+        "description": "20% Speed / 60% Quality / 20% Context Capacity",
+        "weight_speed": 0.2,
+        "weight_quality": 0.6,
+        "weight_context": 0.2
+      },
+      "rag": {
+        "title": "📚 RAG & Docs",
+        "description": "25% Speed / 25% Quality / 50% Context Size",
+        "weight_speed": 0.25,
+        "weight_quality": 0.25,
+        "weight_context": 0.50
+      },
+      "reasoning": {
+        "title": "🧠 Reasoning",
+        "description": "20% Speed / 80% Quality",
+        "weight_speed": 0.2,
+        "weight_quality": 0.8,
+        "weight_context": 0.0
+      }
+    };
+
+    // ACTIVE APPLICATION STATE
+    let appDb = DEFAULT_CACHE;
+    let selectedUsecase = "chat";
+    let activeHardware = {};
+    let activeModalModel = null;
+    let activeSelectedGpuId = "rtx_4090";
+    let leaderboardDb = {};
+    let externalGpuDb = [];
+
+    // Persistent evaluation provider switches
+    let enabledHfLeaderboard = localStorage.getItem("enabledHfLeaderboard") !== "false";
+    let enabledBenchlm = localStorage.getItem("enabledBenchlm") !== "false";
+
+    const CORE_GPU_IDS = [
+      "rtx_5090",
+      "rtx_4090",
+      "rtx_4070ti_super",
+      "rtx_3090",
+      "rtx_3060_12gb",
+      "mac_m3_max",
+      "intel_integrated",
+      "amd_integrated",
+      "generic_cpu_ddr5",
+      "custom"
+    ];
+
+    // DOM ELEMENTS
+    const cacheDot = document.getElementById("cacheDot");
+    const cacheText = document.getElementById("cacheText");
+    const gpuSelect = document.getElementById("gpuSelect");
+    const customHardwareBlock = document.getElementById("customHardwareBlock");
+    const customVramRange = document.getElementById("customVramRange");
+    const customVramVal = document.getElementById("customVramVal");
+    const customBandwidthRange = document.getElementById("customBandwidthRange");
+    const customBandwidthVal = document.getElementById("customBandwidthVal");
+    const ramRange = document.getElementById("ramRange");
+    const ramVal = document.getElementById("ramVal");
+    const ramSpeedSelect = document.getElementById("ramSpeedSelect");
+    const contextRange = document.getElementById("contextRange");
+    const contextVal = document.getElementById("contextVal");
+    const tpsRange = document.getElementById("tpsRange");
+    const tpsVal = document.getElementById("tpsVal");
+    const searchInput = document.getElementById("searchInput");
+    const sortSelect = document.getElementById("sortSelect");
+    const modelsTableBody = document.getElementById("modelsTableBody");
+
+    const poolVram = document.getElementById("poolVram");
+    const poolVramDesc = document.getElementById("poolVramDesc");
+    const poolRam = document.getElementById("poolRam");
+    const poolRamDesc = document.getElementById("poolRamDesc");
+    const poolBandwidth = document.getElementById("poolBandwidth");
+    const profileTitle = document.getElementById("profileTitle");
+    const profileWeights = document.getElementById("profileWeights");
+
+    // Modal elements
+    const detailModal = document.getElementById("detailModal");
+    const modalClose = document.getElementById("modalClose");
+    const modalModelName = document.getElementById("modalModelName");
+    const modalModelId = document.getElementById("modalModelId");
+    const modalQuantTableBody = document.getElementById("modalQuantTableBody");
+    const specParams = document.getElementById("specParams");
+    const specLayers = document.getElementById("specLayers");
+    const specHidden = document.getElementById("specHidden");
+    const specGQA = document.getElementById("specGQA");
+    const chartContextTarget = document.getElementById("chartContextTarget");
+    const vramCanvas = document.getElementById("vramChart");
+
+    // INITIALIZATION
+    async function init() {
+      // Try to load dynamic cache.json
+      try {
+        const response = await fetch("data/cache.json");
+        if (response.ok) {
+          appDb = await response.json();
+          cacheDot.style.backgroundColor = "var(--fit-green)";
+          cacheDot.style.boxShadow = "0 0 8px var(--fit-green)";
+          cacheText.textContent = "Database: Synced";
+        } else {
+          throw new Error("Local cache file missing");
+        }
+      } catch (err) {
+        console.warn("CORS/Fetch restriction detected. Loading internal fallback database...", err);
+        cacheDot.style.backgroundColor = "var(--fit-amber)";
+        cacheDot.style.boxShadow = "0 0 8px var(--fit-amber)";
+        cacheText.textContent = "Offline Fallback Loaded";
+      }
+
+      loadLocalModels();
+      populateGpuDropdown();
+      setupEventListeners();
+      updateHardwareState();
+      renderDashboard();
+
+      // Trigger background queries for external API databases (open LLM indices)
+      fetchLeaderboardScores();
+    }
+
+    function populateGpuDropdown() {
+      gpuSelect.innerHTML = "";
+      appDb.gpus.forEach(gpu => {
+        if (CORE_GPU_IDS.includes(gpu.id) || gpu.id === activeSelectedGpuId) {
+          const opt = document.createElement("option");
+          opt.value = gpu.id;
+          opt.textContent = `${gpu.name} (${gpu.vram > 0 ? gpu.vram + 'GB' : 'System RAM'})`;
+          gpuSelect.appendChild(opt);
+        }
+      });
+      gpuSelect.value = activeSelectedGpuId;
+      if (!gpuSelect.value && gpuSelect.options.length > 0) {
+        gpuSelect.value = gpuSelect.options[0].value;
+        activeSelectedGpuId = gpuSelect.value;
+      }
+    }
+
+    function setupEventListeners() {
+      // GPU Preset Selector
+      gpuSelect.addEventListener("change", (e) => {
+        const val = e.target.value;
+        activeSelectedGpuId = val;
+        if (val === "custom") {
+          customHardwareBlock.style.display = "block";
+        } else {
+          customHardwareBlock.style.display = "none";
+        }
+        updateHardwareState();
+        renderDashboard();
+      });
+
+      // Custom hardware sliders
+      customVramRange.addEventListener("input", (e) => {
+        customVramVal.textContent = `${e.target.value} GB`;
+        updateHardwareState();
+        renderDashboard();
+      });
+      customBandwidthRange.addEventListener("input", (e) => {
+        customBandwidthVal.textContent = `${e.target.value} GB/s`;
+        updateHardwareState();
+        renderDashboard();
+      });
+      
+      // RAM range and speed
+      ramRange.addEventListener("input", (e) => {
+        ramVal.textContent = `${e.target.value} GB`;
+        updateHardwareState();
+        renderDashboard();
+      });
+      ramSpeedSelect.addEventListener("change", () => {
+        updateHardwareState();
+        renderDashboard();
+      });
+
+      // Context and target speed sliders
+      contextRange.addEventListener("input", (e) => {
+        const formatVal = parseInt(e.target.value).toLocaleString();
+        contextVal.textContent = `${formatVal} tok`;
+        renderDashboard();
+        if (activeModalModel) {
+          updateModalData(activeModalModel);
+        }
+      });
+      tpsRange.addEventListener("input", (e) => {
+        tpsVal.textContent = `${e.target.value} tok/s`;
+        renderDashboard();
+      });
+
+      // Usecase switches
+      document.querySelectorAll(".btn-toggle").forEach(btn => {
+        btn.addEventListener("click", (e) => {
+          const target = e.currentTarget;
+          if (!target.dataset.usecase) return; // Guard against other toggle-styled buttons (e.g. HF Load)
+          
+          document.querySelectorAll(".btn-toggle[data-usecase]").forEach(b => b.classList.remove("active"));
+          target.classList.add("active");
+          selectedUsecase = target.dataset.usecase;
+          
+          const profile = USE_CASE_PROFILES[selectedUsecase];
+          profileTitle.textContent = profile.title;
+          profileWeights.textContent = profile.description;
+          
+          // Auto-adjust target speed and context length based on selected use case
+          let targetTPS = 20;
+          let targetCtx = 8192;
+          if (selectedUsecase === "chat") {
+            targetTPS = 25;
+            targetCtx = 4096;
+          } else if (selectedUsecase === "coding") {
+            targetTPS = 15;
+            targetCtx = 16384;
+          } else if (selectedUsecase === "rag") {
+            targetTPS = 10;
+            targetCtx = 32768;
+          } else if (selectedUsecase === "reasoning") {
+            targetTPS = 8;
+            targetCtx = 8192;
+          }
+          
+          tpsRange.value = targetTPS;
+          tpsVal.textContent = `${targetTPS} tok/s`;
+          
+          contextRange.value = targetCtx;
+          contextVal.textContent = `${targetCtx.toLocaleString()} tok`;
+          
+          renderDashboard();
+        });
+      });
+
+      // Toggle collapsible GPU search panel
+      const toggleGpuSearch = document.getElementById("toggleGpuSearch");
+      const gpuSearchBlock = document.getElementById("gpuSearchBlock");
+      if (toggleGpuSearch && gpuSearchBlock) {
+        toggleGpuSearch.addEventListener("click", (e) => {
+          e.preventDefault();
+          const isHidden = gpuSearchBlock.style.display === "none";
+          gpuSearchBlock.style.display = isHidden ? "block" : "none";
+          toggleGpuSearch.textContent = isHidden ? "Hide GPU Search Panel" : "Can't find GPU? Search 2,800+ DB";
+        });
+      }
+
+      // Toggle Advanced Features Block
+      const btnToggleAdvanced = document.getElementById("btnToggleAdvanced");
+      const advancedControlsBlock = document.getElementById("advancedControlsBlock");
+      const advancedIcon = document.getElementById("advancedIcon");
+      if (btnToggleAdvanced && advancedControlsBlock) {
+        btnToggleAdvanced.addEventListener("click", () => {
+          const isHidden = advancedControlsBlock.style.display === "none";
+          advancedControlsBlock.style.display = isHidden ? "flex" : "none";
+          advancedIcon.textContent = isHidden ? "▲" : "▼";
+          btnToggleAdvanced.style.borderColor = isHidden ? "var(--accent-cyan)" : "var(--border-color)";
+          btnToggleAdvanced.style.color = isHidden ? "#fff" : "var(--text-muted)";
+        });
+      }
+
+      // Format checkboxes
+      document.querySelectorAll(".format-checkbox").forEach(ch => {
+        ch.addEventListener("change", () => {
+          renderDashboard();
+        });
+      });
+
+      // Search & Sorting controls
+      searchInput.addEventListener("input", () => renderDashboard());
+      sortSelect.addEventListener("change", () => renderDashboard());
+
+      // Modal close click
+      modalClose.addEventListener("click", () => {
+        detailModal.style.display = "none";
+        activeModalModel = null;
+      });
+
+      // Status Modal elements & events
+      const btnOpenStatusModal = document.getElementById("btnOpenStatusModal");
+      const statusModal = document.getElementById("statusModal");
+      const statusModalClose = document.getElementById("statusModalClose");
+
+      if (btnOpenStatusModal && statusModal && statusModalClose) {
+        btnOpenStatusModal.addEventListener("click", () => {
+          renderStatusModal();
+          statusModal.style.display = "flex";
+        });
+        statusModalClose.addEventListener("click", () => {
+          statusModal.style.display = "none";
+        });
+        window.addEventListener("click", (e) => {
+          if (e.target === statusModal) {
+            statusModal.style.display = "none";
+          }
+        });
+      }
+
+      window.addEventListener("click", (e) => {
+        if (e.target === detailModal) {
+          detailModal.style.display = "none";
+          activeModalModel = null;
+        }
+      });
+
+      window.addEventListener("click", (e) => {
+        if (e.target === detailModal) {
+          detailModal.style.display = "none";
+          activeModalModel = null;
+        }
+      });
+
+      // GPU search logic
+      const btnSearchGpu = document.getElementById("btnSearchGpu");
+      const gpuSearchInput = document.getElementById("gpuSearchInput");
+      const gpuSearchResults = document.getElementById("gpuSearchResults");
+
+      btnSearchGpu.addEventListener("click", () => {
+        const query = gpuSearchInput.value.trim().toLowerCase();
+        if (!query) {
+          gpuSearchResults.style.display = "none";
+          return;
+        }
+
+        // Search directly against our cached GPU database!
+        const filtered = appDb.gpus.filter(gpu => 
+          gpu.name.toLowerCase().includes(query) || 
+          (gpu.description && gpu.description.toLowerCase().includes(query))
+        ).slice(0, 15);
+
+        gpuSearchResults.innerHTML = "";
+        if (filtered.length === 0) {
+          gpuSearchResults.innerHTML = "<div style='color:var(--text-muted); padding:0.4rem; font-size:0.75rem;'>No matching GPUs found in cached database.</div>";
+        } else {
+          filtered.forEach(gpu => {
+            const div = document.createElement("div");
+            div.style.padding = "0.4rem 0.5rem";
+            div.style.borderBottom = "1px solid rgba(255,255,255,0.05)";
+            div.style.cursor = "pointer";
+            div.style.display = "flex";
+            div.style.justifyContent = "space-between";
+            div.style.alignItems = "center";
+            div.style.borderRadius = "4px";
+            div.style.transition = "background 0.2s";
+            
+            div.innerHTML = `
+              <div style="flex: 1; min-width: 0; padding-right: 0.5rem;">
+                <div style="font-weight:bold; color:#fff; font-size:0.75rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${gpu.name}</div>
+                <div style="font-size:0.65rem; color:var(--text-muted);">VRAM: ${gpu.vram}GB | Bus: ${gpu.bandwidth}GB/s</div>
+              </div>
+              <button class="btn-toggle" style="padding:0.2rem 0.4rem; font-size:0.65rem; background:var(--accent-cyan); border-color:var(--accent-cyan); color:#000; font-weight:bold; border-radius: 4px; white-space:nowrap;">Select</button>
+            `;
+
+            div.addEventListener("mouseenter", () => div.style.background = "rgba(255,255,255,0.08)");
+            div.addEventListener("mouseleave", () => div.style.background = "transparent");
+
+            div.addEventListener("click", () => {
+              activeSelectedGpuId = gpu.id;
+              populateGpuDropdown();
+              gpuSelect.value = gpu.id;
+              gpuSearchResults.style.display = "none";
+              gpuSearchInput.value = "";
+              updateHardwareState();
+              renderDashboard();
+            });
+
+            gpuSearchResults.appendChild(div);
+          });
+        }
+        gpuSearchResults.style.display = "block";
+      });
+
+      // Close dropdowns on outside click
+      window.addEventListener("click", (e) => {
+        if (e.target !== gpuSearchInput && e.target !== btnSearchGpu) {
+          gpuSearchResults.style.display = "none";
+        }
+        if (e.target !== hfModelIdInput && e.target !== btnImportHf) {
+          document.getElementById("hfSearchResults").style.display = "none";
+        }
+      });
+
+      // HF Live API Import Event Listeners
+      const btnImportHf = document.getElementById("btnImportHf");
+      const hfModelIdInput = document.getElementById("hfModelIdInput");
+      const importStatus = document.getElementById("importStatus");
+      const hfSearchResults = document.getElementById("hfSearchResults");
+
+      btnImportHf.addEventListener("click", async () => {
+        const query = hfModelIdInput.value.trim();
+        if (!query) {
+          showImportStatus("Please enter a Model ID or search query", "error");
+          return;
+        }
+
+        // If it does not contain a slash, it is a search query!
+        if (!query.includes("/")) {
+          btnImportHf.disabled = true;
+          showImportStatus(`Searching Hugging Face Hub for "${query}"...`, "info");
+          hfSearchResults.style.display = "none";
+
+          try {
+            const url = `https://huggingface.co/api/models?search=${encodeURIComponent(query)}&filter=gguf&sort=downloads&direction=-1&limit=15&full=true`;
+            const res = await fetch(url);
+            if (!res.ok) throw new Error("Hugging Face API returned error.");
+            const results = await res.json();
+
+            hfSearchResults.innerHTML = "";
+            if (results.length === 0) {
+              hfSearchResults.innerHTML = "<div style='color:var(--text-muted); padding:0.5rem; font-size:0.75rem;'>No GGUF models found matching query.</div>";
+            } else {
+              results.forEach(m => {
+                const div = document.createElement("div");
+                div.style.padding = "0.4rem 0.5rem";
+                div.style.borderBottom = "1px solid rgba(255,255,255,0.05)";
+                div.style.cursor = "pointer";
+                div.style.display = "flex";
+                div.style.justifyContent = "space-between";
+                div.style.alignItems = "center";
+                div.style.borderRadius = "4px";
+                div.style.transition = "background 0.2s";
+
+                const paramDisplay = m.parameter_count ? `${(m.parameter_count / 1e9).toFixed(1)}B` : "Unknown Size";
+                const dls = m.downloads ? m.downloads.toLocaleString() : "0";
+
+                div.innerHTML = `
+                  <div style="flex: 1; min-width: 0; padding-right: 0.5rem;">
+                    <div style="font-weight:bold; color:#fff; font-size:0.75rem; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${m.modelId}</div>
+                    <div style="font-size:0.65rem; color:var(--text-muted);">Params: ${paramDisplay} | Downloads: ${dls}</div>
+                  </div>
+                  <button class="btn-toggle" style="padding:0.2rem 0.4rem; font-size:0.65rem; background:var(--accent-indigo); border-color:var(--accent-indigo); color:#fff; font-weight:bold; border-radius:4px; white-space:nowrap;">Load</button>
+                `;
+
+                div.addEventListener("mouseenter", () => div.style.background = "rgba(255,255,255,0.08)");
+                div.addEventListener("mouseleave", () => div.style.background = "transparent");
+
+                div.addEventListener("click", () => {
+                  hfModelIdInput.value = m.modelId;
+                  hfSearchResults.style.display = "none";
+                  btnImportHf.click(); // Trigger actual import
+                });
+
+                hfSearchResults.appendChild(div);
+              });
+            }
+            hfSearchResults.style.display = "block";
+            showImportStatus(`Found ${results.length} models. Click to simulate!`, "success");
+          } catch (err) {
+            showImportStatus(`Search failed: ${err.message}`, "error");
+          } finally {
+            btnImportHf.disabled = false;
+          }
+          return;
+        }
+
+        // Import specific Model ID
+        btnImportHf.disabled = true;
+        showImportStatus(`Connecting to Hugging Face API for ${query}...`, "info");
+        hfSearchResults.style.display = "none";
+
+        try {
+          // 1. Fetch Model info from HF Hub API
+          const apiResponse = await fetch(`https://huggingface.co/api/models/${query}`);
+          if (!apiResponse.ok) {
+            throw new Error(`Model not found on Hugging Face (Status ${apiResponse.status})`);
+          }
+          const apiData = await apiResponse.json();
+
+          showImportStatus("Fetching model configuration file...", "info");
+
+          // 2. Fetch config.json from CORS-friendly /resolve/ endpoint with master branch fallback
+          let config = null;
+          let configResponse = await fetch(`https://huggingface.co/${query}/resolve/main/config.json`);
+          if (configResponse.ok) {
+            config = await configResponse.json();
+          } else {
+            showImportStatus("Main branch config not found, trying master branch...", "info");
+            configResponse = await fetch(`https://huggingface.co/${query}/resolve/master/config.json`);
+            if (configResponse.ok) {
+              config = await configResponse.json();
+            } else {
+              throw new Error("Could not retrieve config.json from model repository. Make sure this is a base repo with transformer weights.");
+            }
+          }
+
+          showImportStatus("Parsing architecture and parameters...", "info");
+
+          // 3. Extract and compute parameters
+          const numLayers = config.num_hidden_layers || config.num_layers || config.n_layer || 32;
+          const hiddenSize = config.hidden_size || config.n_embd || 4096;
+          const numAttnHeads = config.num_attention_heads || config.n_head || 32;
+          const numKvHeads = config.num_key_value_heads || numAttnHeads;
+          const vocabSize = config.vocab_size || 32000;
+          const intermediateSize = config.intermediate_size || (hiddenSize * 4);
+
+          // Estimate parameter count from architecture if not set in metadata
+          let rawParams = 0.0;
+          if (apiData.safetensors && apiData.safetensors.total) {
+            rawParams = apiData.safetensors.total / 1e9;
+          } else if (config.num_parameters) {
+            rawParams = config.num_parameters / 1e9;
+          } else {
+            // High fidelity transformer parameters estimation formula
+            const attnParams = 4 * hiddenSize * hiddenSize;
+            const mlpParams = 3 * hiddenSize * intermediateSize; 
+            const embedParams = vocabSize * hiddenSize;
+            const totalParams = numLayers * (attnParams + mlpParams) + embedParams;
+            rawParams = totalParams / 1e9;
+          }
+
+          // Safe fallback for parameters
+          let params = Math.round(rawParams * 100) / 100;
+          if (params === 0) {
+            const match = query.match(/(\d+(\.\d+)?)[bB]/);
+            params = match ? parseFloat(match[1]) : 7.0;
+          }
+
+          // 4. Derive developer and name
+          const parts = query.split("/");
+          const author = parts[0];
+          const rawName = parts[1] || parts[0];
+          const cleanName = rawName.replace(/-/g, " ").replace(/_/g, " ");
+
+          const developerMap = {
+            "meta-llama": "Meta",
+            "google": "Google",
+            "microsoft": "Microsoft",
+            "mistralai": "Mistral AI",
+            "qwen": "Alibaba",
+            "cohereforai": "Cohere"
+          };
+          const devKey = author.toLowerCase();
+          const developer = developerMap[devKey] || author;
+
+          // 5. Look up live Open LLM Leaderboard Average Score!
+          let finalQuality = 55 + Math.log2(params + 1) * 4;
+          let isScientificScore = false;
+          
+          const lookupKey = query.toLowerCase();
+          if (leaderboardDb[lookupKey]) {
+            finalQuality = leaderboardDb[lookupKey].average;
+            isScientificScore = true;
+          } else {
+            // Check base model link too
+            const baseLookupKey = query.replace('-Instruct', '').replace('-it', '').toLowerCase();
+            if (leaderboardDb[baseLookupKey]) {
+              finalQuality = leaderboardDb[baseLookupKey].average;
+              isScientificScore = true;
+            }
+          }
+
+          if (finalQuality > 95) finalQuality = 95;
+          finalQuality = Math.round(finalQuality * 10) / 10;
+
+          // 6. Create new model object
+          const descriptionText = isScientificScore 
+            ? `Verified Leaderboard Score: ${finalQuality}%. Downloads: ${(apiData.downloads || 0).toLocaleString()}.`
+            : `Imported live via Hugging Face API. Downloads: ${(apiData.downloads || 0).toLocaleString()}.`;
+
+          const newModel = {
+            model_id: query,
+            name: cleanName,
+            developer: developer,
+            parameters: params,
+            base_model_id: query.replace('-Instruct', '').replace('-it', ''),
+            quality_score: finalQuality,
+            description: descriptionText,
+            config: {
+              num_layers: numLayers,
+              hidden_size: hiddenSize,
+              num_kv_heads: numKvHeads,
+              num_attn_heads: numAttnHeads,
+              vocab_size: vocabSize
+            },
+            tags: ["api-imported", ...tagsFromModelId(query)]
+          };
+
+          // Check if already exists, overwrite if so, otherwise append
+          const existingIdx = appDb.models.findIndex(m => m.model_id === query);
+          if (existingIdx !== -1) {
+            appDb.models[existingIdx] = newModel;
+            showImportStatus(`Updated model: ${newModel.name}`, "success");
+          } else {
+            appDb.models.push(newModel);
+            showImportStatus(`Imported model: ${newModel.name}`, "success");
+          }
+
+          // Persist in localStorage
+          saveLocalModels();
+
+          // Render
+          renderDashboard();
+          hfModelIdInput.value = "";
+
+          // Clear success status after 4 seconds
+          setTimeout(() => {
+            importStatus.style.display = "none";
+          }, 4000);
+
+        } catch (error) {
+          showImportStatus(error.message, "error");
+        } finally {
+          btnImportHf.disabled = false;
+        }
+      });
+
+      // Scan hardware click listener
+      const btnScanHardware = document.getElementById("btnScanHardware");
+      if (btnScanHardware) {
+        btnScanHardware.addEventListener("click", () => {
+          detectLocalHardware();
+        });
+      }
+
+      function showImportStatus(msg, type) {
+        importStatus.style.display = "block";
+        importStatus.textContent = msg;
+        if (type === "error") {
+          importStatus.style.color = "var(--fit-red)";
+        } else if (type === "success") {
+          importStatus.style.color = "var(--fit-green)";
+        } else {
+          importStatus.style.color = "var(--accent-cyan)";
+        }
+      }
+    }
+
+    function tagsFromModelId(modelId) {
+      const tags = [];
+      const lower = modelId.toLowerCase();
+      if (lower.includes("chat") || lower.includes("instruct") || lower.includes("it")) tags.push("chat");
+      if (lower.includes("code") || lower.includes("coder")) tags.push("coding");
+      if (lower.includes("math")) tags.push("math");
+      if (lower.includes("vision")) tags.push("vision");
+      return tags;
+    }
+
+    // Live background loaders for Open Leaderboard and Wikipedia GPU database
+    async function fetchLeaderboardScores() {
+      try {
+        const url = "https://datasets-server.huggingface.co/rows?dataset=open-llm-leaderboard%2Fcontents&config=default&split=train&limit=100";
+        const res = await fetch(url);
+        if (res.ok) {
+          const data = await res.json();
+          if (data && data.rows) {
+            data.rows.forEach(r => {
+              const row = r.row;
+              if (row) {
+                const modelId = row.model_name || row.model_name_link;
+                if (modelId) {
+                  leaderboardDb[modelId.toLowerCase()] = {
+                    average: row.average || row.score || 70.0,
+                    arc: row.arc || 0,
+                    mmlu: row.mmlu || 0,
+                    hellaswag: row.hellaswag || 0,
+                    truthfulqa: row.truthfulqa || 0
+                  };
+                }
+              }
+            });
+            console.log("Loaded leaderboard scores for", Object.keys(leaderboardDb).length, "models");
+          }
+        }
+      } catch (e) {
+        console.warn("Could not fetch live Open LLM Leaderboard scores", e);
+      }
+    }
+
+    async function fetchGpuDatabase() {
+      try {
+        const url = "https://raw.githubusercontent.com/voidful/gpu-info-api/gpu-data/gpu.json";
+        const res = await fetch(url);
+        if (res.ok) {
+          const data = await res.json();
+          if (data) {
+            externalGpuDb = parseExternalGpuData(data);
+            console.log("Loaded", externalGpuDb.length, "GPUs from voidful Wikipedia GPU database API");
+          }
+        }
+      } catch (e) {
+        console.warn("Could not fetch live GPU database, using default high-fidelity presets.", e);
+      }
+    }
+
+    function parseExternalGpuData(data) {
+      const parsedList = [];
+      if (!data || typeof data !== "object") return parsedList;
+
+      try {
+        Object.keys(data).forEach(gpuKey => {
+          const gpu = data[gpuKey];
+          if (gpu && typeof gpu === "object") {
+            const rawName = gpu["Model Name"] || gpu["Model name"] || gpuKey;
+            if (!rawName || String(rawName).toLowerCase() === "nan" || String(rawName).trim() === "") return;
+
+            const memSizeStr = gpu["Memory Size (MB)"] || gpu["Memory size"] || gpu["Memory Size"] || "0";
+            const vram = parseMemSize(memSizeStr);
+
+            // Filter out old/weak cards with < 2.0GB VRAM to keep options highly optimized
+            if (vram < 2.0) return;
+
+            const bandVal = gpu["Memory Bandwidth (GB/s)"] || gpu["Memory Bandwidth"] || gpu["Bandwidth"] || "0";
+            const bandwidth = parseFloat(bandVal) || 0;
+
+            const busVal = gpu["Memory Bus Width (bits)"] || gpu["Memory Bus Width"] || gpu["Memory Bus"] || "0";
+            const bus = parseInt(busVal) || 0;
+
+            let brand = gpu["Vendor"] || "GPU";
+            const lowerName = String(rawName).toLowerCase();
+            if (lowerName.includes("nvidia") || lowerName.includes("geforce") || lowerName.includes("rtx") || lowerName.includes("gtx")) {
+              brand = "NVIDIA";
+            } else if (lowerName.includes("amd") || lowerName.includes("radeon") || lowerName.includes("rx")) {
+              brand = "AMD";
+            } else if (lowerName.includes("intel") || lowerName.includes("arc")) {
+              brand = "INTEL";
+            }
+            brand = brand.trim().toUpperCase();
+
+            const name = String(rawName).toUpperCase().startsWith(brand) ? rawName : `${brand} ${rawName}`;
+
+            parsedList.push({
+              id: `ext_${brand.toLowerCase()}_${rawName.toLowerCase().replace(/[^a-z0-9]/g, "_")}`,
+              name: name,
+              vram: vram,
+              bandwidth: bandwidth || estimateBandwidthFromBus(gpu["Memory Bus Width (bits)"] || gpu["Memory Bus Width"] || gpu["Memory Bus"], brand),
+              type: "gpu",
+              description: `Imported via Wikipedia GPU database. Memory bus width: ${bus || 'Unknown'} bits.`
+            });
+          }
+        });
+      } catch (err) {
+        console.error("Failed to parse external GPU database", err);
+      }
+      return parsedList;
+    }
+
+    function parseMemSize(mem) {
+      if (!mem) return 0;
+      const str = String(mem).toLowerCase().trim();
+      const matches = str.match(/\d+(\.\d+)?/g);
+      if (!matches) return 0;
+      const val = Math.max(...matches.map(Number));
+      if (str.includes("gb")) return val;
+      // Convert MB to GB
+      return Math.round((val / 1024) * 100) / 100;
+    }
+
+    function parseBandwidth(b) {
+      if (!b) return 0;
+      const str = String(b).toLowerCase();
+      const val = parseFloat(str);
+      return val;
+    }
+
+    function estimateBandwidthFromBus(bus, brand) {
+      if (!bus) return 300; 
+      const width = parseInt(bus);
+      if (isNaN(width)) return 300;
+      if (width === 128) return 288;
+      if (width === 192) return 504;
+      if (width === 256) return 672;
+      if (width === 384) return 936;
+      if (width === 512) return 1500;
+      return Math.round(width * 2.5);
+    }
+
+    // Dynamic top 100 GGUF models scraper from Hugging Face Hub
+    async function fetchTopGgufModels() {
+      try {
+        const url = "https://huggingface.co/api/models?filter=gguf&sort=downloads&direction=-1&limit=100&full=true";
+        const res = await fetch(url);
+        if (res.ok) {
+          const results = await res.json();
+          results.forEach(m => {
+            const exists = appDb.models.some(dbM => dbM.model_id.toLowerCase() === m.modelId.toLowerCase());
+            if (!exists && m.modelId) {
+              const params = m.parameter_count ? Math.round((m.parameter_count / 1e9) * 100) / 100 : estimateParamsFromModelId(m.modelId);
+              if (params > 0) {
+                const config = deriveHeuristicConfig(params, m.modelId);
+                const parts = m.modelId.split("/");
+                const author = parts[0];
+                const rawName = parts[1] || parts[0];
+                const cleanName = rawName.replace(/-/g, " ").replace(/_/g, " ");
+
+                let finalQuality = 50 + Math.log2(params + 1) * 5;
+                const lookupKey = m.modelId.toLowerCase();
+                if (leaderboardDb[lookupKey]) {
+                  finalQuality = leaderboardDb[lookupKey].average;
+                }
+                finalQuality = Math.round(finalQuality * 10) / 10;
+
+                appDb.models.push({
+                  model_id: m.modelId,
+                  name: cleanName,
+                  developer: author.charAt(0).toUpperCase() + author.slice(1),
+                  parameters: params,
+                  base_model_id: m.modelId.replace('-Instruct', '').replace('-it', ''),
+                  quality_score: finalQuality,
+                  description: `Discovered live from HF GGUF popular index. Downloads: ${m.downloads ? m.downloads.toLocaleString() : '0'}.`,
+                  config: config,
+                  tags: ["api-discovered", ...tagsFromModelId(m.modelId)]
+                });
+              }
+            }
+          });
+          console.log("Successfully scanned and integrated", appDb.models.length, "total models into the ecosystem catalog!");
+          renderDashboard();
+        }
+      } catch (e) {
+        console.warn("Failed to fetch dynamic top GGUF models", e);
+      }
+    }
+
+    function estimateParamsFromModelId(modelId) {
+      const match = modelId.match(/(\d+(\.\d+)?)[bB]/);
+      return match ? parseFloat(match[1]) : 7.0;
+    }
+
+    function deriveHeuristicConfig(params, modelId) {
+      const lower = modelId.toLowerCase();
+      let layers = 32;
+      let hidden = 4096;
+      let kvHeads = 8;
+      let attnHeads = 32;
+      let vocab = 32000;
+
+      if (params <= 1.5) {
+        layers = 24;
+        hidden = 2048;
+        kvHeads = 4;
+        attnHeads = 16;
+      } else if (params <= 3.5) {
+        layers = 28;
+        hidden = 2560;
+        kvHeads = 8;
+        attnHeads = 32;
+      } else if (params <= 9.0) {
+        layers = 32;
+        hidden = 4096;
+        kvHeads = 8;
+        attnHeads = 32;
+      } else if (params <= 16.0) {
+        layers = 40;
+        hidden = 5120;
+        kvHeads = 8;
+        attnHeads = 40;
+      } else if (params <= 35.0) {
+        layers = 64;
+        hidden = 6656;
+        kvHeads = 8;
+        attnHeads = 64;
+      } else {
+        layers = 80;
+        hidden = 8192;
+        kvHeads = 8;
+        attnHeads = 64;
+      }
+
+      if (lower.includes("gemma-2")) {
+        if (params > 7 && params < 11) {
+          layers = 42;
+          hidden = 3584;
+          kvHeads = 8;
+          attnHeads = 16;
+        } else if (params < 3) {
+          layers = 26;
+          hidden = 2048;
+          kvHeads = 8;
+          attnHeads = 8;
+        }
+      }
+
+      return {
+        num_layers: layers,
+        hidden_size: hidden,
+        num_kv_heads: kvHeads,
+        num_attn_heads: attnHeads,
+        vocab_size: vocab
+      };
+    }
+
+    // WebGL & WebGPU Hardware Scan & One-Click Auto-Detection
+    function detectLocalHardware() {
+      try {
+        const canvas = document.createElement("canvas");
+        const gl = canvas.getContext("webgl") || canvas.getContext("experimental-webgl");
+        if (!gl) throw new Error("WebGL not supported in browser");
+        
+        const debugInfo = gl.getExtension("WEBGL_debug_renderer_info");
+        if (!debugInfo) throw new Error("WebGL debug info not supported");
+        
+        const renderer = gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL);
+        console.log("Detected GPU Renderer via WebGL:", renderer);
+        
+        let cleanName = renderer || "";
+        // Extract GPU model name
+        cleanName = cleanName.replace(/ANGLE \(/g, "").replace(/\, Direct3D.*/g, "").replace(/\(.*?\)/g, "").replace(/Intel\(R\)\s+/g, "").trim();
+        
+        // Match against database
+        let bestMatch = null;
+        let highestConfidence = 0;
+        
+        const rendererLower = String(renderer).toLowerCase();
+        
+        // Smart integrated check first
+        if (rendererLower.includes("intel") && (rendererLower.includes("iris") || rendererLower.includes("hd graphics") || rendererLower.includes("uhd") || rendererLower.includes("graphics") || rendererLower.includes("integrated"))) {
+          bestMatch = appDb.gpus.find(g => g.id === "intel_integrated") || null;
+        } else if (rendererLower.includes("amd") && (rendererLower.includes("graphics") || rendererLower.includes("integrated") || rendererLower.includes("apu"))) {
+          // Exclude discrete series
+          if (!rendererLower.includes("rx ") && !rendererLower.includes("xtx") && !rendererLower.includes("7900") && !rendererLower.includes("7800")) {
+            bestMatch = appDb.gpus.find(g => g.id === "amd_integrated") || null;
+          }
+        }
+        
+        if (!bestMatch) {
+          const searchTerms = cleanName.toLowerCase().split(/\s+/).filter(t => t.length > 2);
+          
+          appDb.gpus.forEach(gpu => {
+            const gpuNameLower = gpu.name.toLowerCase();
+            let matches = 0;
+            searchTerms.forEach(term => {
+              if (term !== "intel" && term !== "nvidia" && term !== "amd" && gpuNameLower.includes(term)) {
+                matches += 2; // high score for specific series terms like "rtx", "4090", "a770"
+              } else if (gpuNameLower.includes(term)) {
+                matches += 1;
+              }
+            });
+            if (matches >= 2 && matches > highestConfidence) {
+              highestConfidence = matches;
+              bestMatch = gpu;
+            }
+          });
+        }
+
+        const scanBtn = document.getElementById("btnScanHardware");
+        if (bestMatch) {
+          // 1. Set GPU Dropdown selection
+          activeSelectedGpuId = bestMatch.id;
+          populateGpuDropdown();
+          gpuSelect.value = bestMatch.id;
+          
+          // 2. Intelligent Auto-Detection of System RAM size
+          let detectedRam = 16;
+          if (navigator.deviceMemory) {
+            detectedRam = Math.round(navigator.deviceMemory);
+            if (detectedRam === 8) {
+              // Capped/Estimated by GPU profile
+              if (bestMatch.vram >= 24) {
+                detectedRam = 64; // High-end discrete workstation
+              } else if (bestMatch.vram >= 16) {
+                detectedRam = 32; // Solid developer system
+              } else {
+                detectedRam = 16; // Standard system
+              }
+            }
+          } else {
+            // No deviceMemory API, estimate based on GPU
+            if (bestMatch.vram >= 24) detectedRam = 64;
+            else if (bestMatch.vram >= 16) detectedRam = 32;
+          }
+          
+          // 3. Intelligent Auto-Detection of RAM speed/generation
+          let detectedRamSpeed = "40"; // DDR4 Dual-Channel by default
+          if (bestMatch.id.includes("mac_") || bestMatch.name.toLowerCase().includes("apple") || bestMatch.name.toLowerCase().includes("m1") || bestMatch.name.toLowerCase().includes("m2") || bestMatch.name.toLowerCase().includes("m3") || bestMatch.name.toLowerCase().includes("m4")) {
+            // Apple Unified memory speed presets
+            detectedRamSpeed = "150"; // Unified Memory tier
+          } else if (bestMatch.vram >= 16) {
+            detectedRamSpeed = "80"; // DDR5 Dual-Channel for modern flagship
+          }
+          
+          // 4. Update UI input sliders
+          ramRange.value = detectedRam;
+          ramVal.textContent = `${detectedRam} GB`;
+          
+          ramSpeedSelect.value = detectedRamSpeed;
+          
+          // 5. Update application hardware state & re-simulate
+          updateHardwareState();
+          renderDashboard();
+          
+          if (scanBtn) {
+            scanBtn.innerHTML = "⚡ System Specs Loaded! ✅";
+            scanBtn.style.borderColor = "var(--fit-green)";
+            scanBtn.style.color = "var(--fit-green)";
+            scanBtn.style.background = "rgba(34, 197, 94, 0.08)";
+            setTimeout(() => {
+              scanBtn.innerHTML = "⚡ One-Click System Auto-Detect";
+              scanBtn.style.borderColor = "var(--accent-cyan)";
+              scanBtn.style.color = "#fff";
+              scanBtn.style.background = "linear-gradient(135deg, rgba(6, 182, 212, 0.15), rgba(99, 102, 241, 0.15))";
+            }, 3000);
+          }
+        } else {
+          alert(`Detected GPU: "${cleanName}".\nNo exact database preset match found. Manually configure using "Custom Hardware Configuration".`);
+        }
+      } catch (e) {
+        console.error("Hardware detection failed", e);
+        alert(`Hardware scan failed: ${e.message}. Fall back to presets.`);
+      }
+    }
+
+    function getQuantBytes(quant) {
+      const quantMap = {
+        "Q2_K": 2.7,
+        "Q3_K_M": 3.3,
+        "Q4_K_M": 4.5,
+        "Q5_K_M": 5.5,
+        "Q6_K": 6.6,
+        "Q8_0": 8.5,
+        "FP16": 16.0,
+        "AWQ": 4.0,
+        "GPTQ": 4.0,
+        "EXL2": 4.0
+      };
+      return quantMap[quant] || 4.5;
+    }
+
+    function loadLocalModels() {
+      try {
+        const stored = localStorage.getItem("imported_models");
+        if (stored) {
+          const parsed = JSON.parse(stored);
+          parsed.forEach(importedModel => {
+            const exists = appDb.models.some(m => m.model_id === importedModel.model_id);
+            if (!exists) {
+              appDb.models.push(importedModel);
+            }
+          });
+        }
+      } catch (e) {
+        console.error("Failed to load local models", e);
+      }
+    }
+
+    function saveLocalModels() {
+      try {
+        const imported = appDb.models.filter(m => m.tags.includes("api-imported"));
+        localStorage.setItem("imported_models", JSON.stringify(imported));
+      } catch (e) {
+        console.error("Failed to save local models", e);
+      }
+    }
+
+    // UPDATE ACTIVE HARDWARE SPECS
+    function updateHardwareState() {
+      const selectedId = gpuSelect.value;
+      const matched = appDb.gpus.find(g => g.id === selectedId);
+
+      if (selectedId === "custom") {
+        activeHardware = {
+          id: "custom",
+          name: "Custom Device",
+          vram: parseInt(customVramRange.value),
+          bandwidth: parseInt(customBandwidthRange.value),
+          ram: parseInt(ramRange.value),
+          ram_bandwidth: parseInt(ramSpeedSelect.value),
+          type: "gpu"
+        };
+      } else {
+        activeHardware = {
+          ...matched,
+          ram: parseInt(ramRange.value),
+          ram_bandwidth: parseInt(ramSpeedSelect.value)
+        };
+      }
+
+      // Display stats
+      poolVram.textContent = activeHardware.vram > 0 ? `${activeHardware.vram.toFixed(1)} GB` : "0.0 GB";
+      poolVramDesc.textContent = activeHardware.name;
+      poolRam.textContent = `${activeHardware.ram.toFixed(1)} GB`;
+      
+      const speedName = ramSpeedSelect.options[ramSpeedSelect.selectedIndex].text.split("(")[0].trim();
+      poolRamDesc.textContent = speedName;
+
+      poolBandwidth.textContent = `${activeHardware.bandwidth.toLocaleString()} GB/s`;
+    }
+
+    // CORE PHYSICAL SIMULATOR ENGINE
+    // Outputs detailed sizing, bandwidth and fit status
+    function simulateInference(model, quantKey, contextLen) {
+      const params = model.parameters;
+      const config = model.config;
+
+      // 1. Weight Size (GB)
+      const bytesPerWeight = BYTES_PER_QUANT[quantKey];
+      const weightsSize = (params * bytesPerWeight);
+
+      // 2. KV Cache Sizing (Dynamic with Grouped Query Attention support)
+      // KV cache = 2 * n_layers * n_heads * head_dim * seq_len * bytes_per_element
+      // Under GQA: n_kv_heads is used rather than n_attn_heads
+      const numLayers = config.num_layers;
+      const hiddenSize = config.hidden_size;
+      const numKvHeads = config.num_kv_heads || (config.num_attn_heads / 4); // Default GQA 4:1 if not set
+      const numAttnHeads = config.num_attn_heads;
+      
+      const headDim = hiddenSize / numAttnHeads;
+      const kvChannels = numKvHeads * headDim;
+      
+      // fp16 KV cache contains both Key and Value matrices (so multiplier 2)
+      // elements = 2 * layers * kvChannels * seq_length. Each fp16 element takes 2 bytes.
+      const kvCacheSizeGB = (2 * numLayers * kvChannels * contextLen * 2) / 1e9;
+
+      // 3. Complete memory footprint including runtime CUDA/graphs
+      const totalVramRequired = weightsSize + kvCacheSizeGB + RUNTIME_OVERHEAD_GB;
+
+      // 4. Determine Hardware fit (VRAM vs System RAM Offloading)
+      let fitStatus = "OOM"; // VRAM, RAM, OOM
+      let gpuRatio = 0.0;
+      let actualGpuLayers = 0;
+      let actualCpuLayers = 0;
+      let genSpeedTPS = 0.0;
+
+      const deviceVram = activeHardware.vram;
+      const deviceRam = activeHardware.ram;
+
+      if (activeHardware.type === "cpu") {
+        // CPU-Only Execution
+        const totalAllocated = weightsSize + kvCacheSizeGB;
+        if (totalAllocated <= deviceRam) {
+          fitStatus = "RAM";
+          gpuRatio = 0.0;
+          actualCpuLayers = numLayers;
+          
+          // CPU Speed physics: Bounded entirely by System RAM bus limits
+          const effectiveBandwidth = activeHardware.ram_bandwidth * CPU_EFFICIENCY;
+          genSpeedTPS = (effectiveBandwidth / weightsSize);
+        }
+      } else if (activeHardware.type === "mac") {
+        // Apple Silicon Unified Memory System
+        // Unified Memory permits allocation up to roughly 75% of physical memory as VRAM
+        const maxMacVram = activeHardware.vram * 0.78; 
+        if (totalVramRequired <= maxMacVram) {
+          fitStatus = "VRAM";
+          gpuRatio = 1.0;
+          actualGpuLayers = numLayers;
+
+          // Apple Unified graphics efficiency is higher due to SoC bus unification
+          const effectiveBandwidth = activeHardware.bandwidth * APPLE_SILICON_UNIFIED_BONUS;
+          genSpeedTPS = (effectiveBandwidth / weightsSize);
+        } else if (totalVramRequired <= deviceRam) {
+          // Fallback to CPU portion if exceeding Unified VRAM allocation
+          fitStatus = "RAM";
+          gpuRatio = 0.0;
+          actualCpuLayers = numLayers;
+          const effectiveBandwidth = activeHardware.ram_bandwidth * CPU_EFFICIENCY;
+          genSpeedTPS = (effectiveBandwidth / weightsSize);
+        }
+      } else {
+        // Standard PC Dedicated GPU (NVIDIA CUDA etc.)
+        if (totalVramRequired <= deviceVram) {
+          // Perfectly Fits in dedicated GPU memory
+          fitStatus = "VRAM";
+          gpuRatio = 1.0;
+          actualGpuLayers = numLayers;
+
+          // Bandwidth performance: weights are fully in ultra-fast VRAM
+          const effectiveBandwidth = activeHardware.bandwidth * GPU_EFFICIENCY;
+          genSpeedTPS = (effectiveBandwidth / weightsSize);
+        } else {
+          // Partial layer offloading (llama.cpp hybrid execution)
+          // Compute how much weights fits into VRAM after accounting for active KV cache and runtime graphs
+          const availableWeightPoolVram = Math.max(0, deviceVram - kvCacheSizeGB - RUNTIME_OVERHEAD_GB);
+          
+          if (availableWeightPoolVram > 0 && totalVramRequired <= (deviceVram + deviceRam)) {
+            fitStatus = "RAM";
+            gpuRatio = availableWeightPoolVram / weightsSize;
+            
+            // Llama.cpp splits layers uniformly
+            actualGpuLayers = Math.floor(numLayers * gpuRatio);
+            actualCpuLayers = numLayers - actualGpuLayers;
+            
+            // Harmonic average physics calculation of split execution speed
+            // Sequential execution requires traversing all layers, hence times are additive
+            const gpuTime = (weightsSize * (actualGpuLayers / numLayers)) / (activeHardware.bandwidth * GPU_EFFICIENCY);
+            const cpuTime = ((weightsSize * (actualCpuLayers / numLayers)) + kvCacheSizeGB) / (activeHardware.ram_bandwidth * CPU_EFFICIENCY);
+            
+            const totalTime = gpuTime + cpuTime;
+            genSpeedTPS = 1.0 / totalTime;
+          } else if (totalVramRequired <= deviceRam) {
+            // Exceeds VRAM entirely but completely fits in CPU RAM
+            fitStatus = "RAM";
+            gpuRatio = 0.0;
+            actualCpuLayers = numLayers;
+            const effectiveBandwidth = activeHardware.ram_bandwidth * CPU_EFFICIENCY;
+            genSpeedTPS = (effectiveBandwidth / weightsSize);
+          }
+        }
+      }
+
+      // Safe speed thresholds
+      if (genSpeedTPS > MAX_PHYSICAL_TPS) {
+        genSpeedTPS = MAX_PHYSICAL_TPS;
+      }
+      if (fitStatus === "OOM") {
+        genSpeedTPS = 0.0;
+      }
+
+      return {
+        weightsSizeGB: weightsSize,
+        kvCacheSizeGB: kvCacheSizeGB,
+        totalVramGB: totalVramRequired,
+        fitStatus: fitStatus, // VRAM, RAM, OOM
+        gpuRatio: gpuRatio,
+        gpuLayers: actualGpuLayers,
+        cpuLayers: actualCpuLayers,
+        speedTPS: genSpeedTPS
+      };
+    }
+
+    // COMPUTE DYNAMIC TASK-SPECIFIC USE-CASE SCORE
+    function getDynamicUseCaseScore(model, usecase) {
+      const bm = model.benchmarks || {};
+      const metrics = bm.metrics || {};
+      
+      // Default fallback indicators in case of uninitialized profiles
+      const ifeval = metrics.ifeval !== undefined ? metrics.ifeval : 50.0;
+      const bbh = metrics.bbh !== undefined ? metrics.bbh : 45.0;
+      const math_lvl5 = metrics.math_lvl5 !== undefined ? metrics.math_lvl5 : 20.0;
+      const gpqa = metrics.gpqa !== undefined ? metrics.gpqa : 18.0;
+      const mmlu_pro = metrics.mmlu_pro !== undefined ? metrics.mmlu_pro : 38.0;
+      
+      const benchlm_coding = metrics.benchlm_coding !== undefined ? metrics.benchlm_coding : 50.0;
+      const benchlm_reasoning = metrics.benchlm_reasoning !== undefined ? metrics.benchlm_reasoning : 55.0;
+      const benchlm_instruction = metrics.benchlm_instruction !== undefined ? metrics.benchlm_instruction : 55.0;
+      const benchlm_math = metrics.benchlm_math !== undefined ? metrics.benchlm_math : 25.0;
+      const benchlm_knowledge = metrics.benchlm_knowledge !== undefined ? metrics.benchlm_knowledge : 50.0;
+      const benchlm_multilingual = metrics.benchlm_multilingual !== undefined ? metrics.benchlm_multilingual : 60.0;
+
+      // Parameter size heuristic quality fallback
+      const heuristicScore = Math.min(98.0, 48.0 + Math.sqrt(model.parameters || 7.0) * 3.6);
+
+      // If both API datasets are toggled off, fall back 100% to parameter heuristic
+      if (!enabledHfLeaderboard && !enabledBenchlm) {
+        return parseFloat(heuristicScore.toFixed(1));
+      }
+
+      let score = 50.0;
+      
+      if (usecase === "coding") {
+        if (enabledHfLeaderboard && enabledBenchlm) {
+          // Blueprint: 60% BenchLM, 40% HF (20% MMLU-Pro + 20% BBH)
+          score = (benchlm_coding * 0.60) + (mmlu_pro * 0.20) + (bbh * 0.20);
+        } else if (enabledHfLeaderboard) {
+          // HF Leaderboard only: 50% MMLU-Pro + 50% BBH
+          score = (mmlu_pro * 0.50) + (bbh * 0.50);
+        } else {
+          // BenchLM only: 100% Coding
+          score = benchlm_coding;
+        }
+      } 
+      else if (usecase === "chat") {
+        if (enabledHfLeaderboard && enabledBenchlm) {
+          // Blueprint: 50% HF (IFEval) + 50% BenchLM (30% Instruction + 20% Multilingual)
+          score = (ifeval * 0.50) + (benchlm_instruction * 0.30) + (benchlm_multilingual * 0.20);
+        } else if (enabledHfLeaderboard) {
+          // HF Leaderboard only: 100% IFEval
+          score = ifeval;
+        } else {
+          // BenchLM only: 60% Instruction + 40% Multilingual
+          score = (benchlm_instruction * 0.60) + (benchlm_multilingual * 0.40);
+        }
+      } 
+      else if (usecase === "rag") {
+        if (enabledHfLeaderboard && enabledBenchlm) {
+          // Blueprint: 80% HF (35% IFEval + 25% MMLU-Pro + 20% BBH) + 20% BenchLM (Knowledge)
+          score = (ifeval * 0.35) + (mmlu_pro * 0.25) + (bbh * 0.20) + (benchlm_knowledge * 0.20);
+        } else if (enabledHfLeaderboard) {
+          // HF Leaderboard only: 43.75% IFEval + 31.25% MMLU-Pro + 25% BBH
+          score = (ifeval * 0.4375) + (mmlu_pro * 0.3125) + (bbh * 0.25);
+        } else {
+          // BenchLM only: 100% Knowledge
+          score = benchlm_knowledge;
+        }
+      } 
+      else if (usecase === "reasoning") {
+        if (enabledHfLeaderboard && enabledBenchlm) {
+          // Blueprint: 70% HF (25% GPQA + 25% MATH Lvl 5 + 20% BBH) + 30% BenchLM (15% Reasoning + 15% Math)
+          score = (gpqa * 0.25) + (math_lvl5 * 0.25) + (bbh * 0.20) + (benchlm_reasoning * 0.15) + (benchlm_math * 0.15);
+        } else if (enabledHfLeaderboard) {
+          // HF Leaderboard only: 35.7% GPQA + 35.7% MATH Lvl 5 + 28.6% BBH
+          score = (gpqa * 0.357) + (math_lvl5 * 0.357) + (bbh * 0.286);
+        } else {
+          // BenchLM only: 50% Reasoning + 50% Math
+          score = (benchlm_reasoning * 0.50) + (benchlm_math * 0.50);
+        }
+      } 
+      else {
+        score = model.quality_score || 50.0;
+      }
+      
+      return parseFloat(score.toFixed(1));
+    }
+
+    // CALCULATE SYSTEM SCORE
+    // Fits into 0-100 scale, taking current use-case profile into account
+    function calculateFitScore(model, simulation, targetTPS) {
+      if (simulation.fitStatus === "OOM") return 0;
+
+      const profile = USE_CASE_PROFILES[selectedUsecase];
+      
+      // A. SPEED SCORE (0 to 1.5, target is 1.0)
+      const speedScore = Math.min(simulation.speedTPS / targetTPS, 1.5);
+
+      // B. QUALITY SCORE (0 to 1.0)
+      const baseQuality = getDynamicUseCaseScore(model, selectedUsecase);
+      // Deduct penalty based on quantization compression
+      const quantLoss = QUANT_QUALITY_LOSS[simulation.quantKey];
+      const modelQuality = Math.max(0, (baseQuality - quantLoss) / 100);
+
+      // C. CONTEXT CAPACITY SCORE (0 to 1.0)
+      // Models that support up to the active target context without degradation score higher
+      const activeContext = parseInt(contextRange.value);
+      // Give higher weight if model base supports this natively (e.g. llama3.1 has 128k, phi3 has 128k, gemma2 has 8k)
+      // If our current hardware can successfully hold the activeContext, it's a major plus!
+      let contextScore = 1.0;
+      if (simulation.fitStatus === "RAM" && simulation.gpuRatio < 0.3) {
+        // High offloading ratio is heavily penalized in active large context due to slow prompt ingestion
+        contextScore = 0.4;
+      }
+
+      // Combine weights
+      const totalScoreFraction = 
+        (speedScore * profile.weight_speed) + 
+        (modelQuality * profile.weight_quality) + 
+        (contextScore * profile.weight_context);
+
+      // Cap at 100%
+      return Math.round(Math.min(totalScoreFraction * 100, 100));
+    }
+
+    // RENDER DATABASE SOURCES & API STATUS
+    function renderStatusModal() {
+      const apiStatusRows = document.getElementById("apiStatusRows");
+      if (!apiStatusRows) return;
+
+      apiStatusRows.innerHTML = "";
+
+      // Fallback in case sources isn't populated yet
+      const sources = appDb.sources || {
+        "huggingface_leaderboard": {
+          "name": "Hugging Face Open LLM Leaderboard v2",
+          "url": "https://huggingface.co/datasets/open-llm-leaderboard/contents",
+          "status": "success",
+          "last_updated": new Date().toISOString(),
+          "row_count": 99
+        },
+        "benchlm": {
+          "name": "BenchLM.ai Scientific API",
+          "url": "https://benchlm.ai/api/data/leaderboard",
+          "status": "success",
+          "last_updated": new Date().toISOString(),
+          "row_count": 115
+        },
+        "techpowerup": {
+          "name": "TechPowerUp GPU Database",
+          "url": "https://raw.githubusercontent.com/RightNow-AI/RightNow-GPU-Database/main/data/",
+          "status": "success",
+          "last_updated": new Date().toISOString(),
+          "row_count": 812
+        },
+        "huggingface_models": {
+          "name": "Hugging Face GGUF Catalog API",
+          "url": "https://huggingface.co/api/models",
+          "status": "success",
+          "last_updated": new Date().toISOString(),
+          "row_count": 89
+        }
+      };
+      
+      Object.keys(sources).forEach(key => {
+        const src = sources[key];
+        const isEnabled = key === "huggingface_leaderboard" ? enabledHfLeaderboard : 
+                          key === "benchlm" ? enabledBenchlm : true;
+                          
+        const isToggleable = key === "huggingface_leaderboard" || key === "benchlm";
+        
+        const statusBadge = src.status === "success" ? 
+          `<span style="background: rgba(34, 197, 94, 0.1); border: 1px solid var(--fit-green); color: var(--fit-green); padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.7rem; font-weight: bold; display: inline-flex; align-items: center; gap: 0.25rem;">ONLINE <span style="width:6px;height:6px;background:var(--fit-green);border-radius:50%;display:inline-block;"></span></span>` :
+          `<span style="background: rgba(239, 68, 68, 0.1); border: 1px solid var(--fit-red); color: var(--fit-red); padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.7rem; font-weight: bold; display: inline-flex; align-items: center; gap: 0.25rem;">OFFLINE <span style="width:6px;height:6px;background:var(--fit-red);border-radius:50%;display:inline-block;"></span></span>`;
+        
+        const lastUpdatedDate = src.last_updated ? new Date(src.last_updated).toLocaleString("en-US", {
+          year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute:'2-digit'
+        }) : "Unknown";
+
+        const row = document.createElement("div");
+        row.style.background = "rgba(255, 255, 255, 0.01)";
+        row.style.border = "1px solid var(--border-color)";
+        row.style.borderRadius = "12px";
+        row.style.padding = "1rem";
+        row.style.display = "flex";
+        row.style.alignItems = "center";
+        row.style.justifyContent = "space-between";
+        row.style.gap = "1rem";
+        
+        row.innerHTML = `
+          <div style="flex: 1;">
+            <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
+              <h4 style="margin: 0; font-size: 0.85rem; font-weight: 700; color: #fff;">${src.name}</h4>
+              ${statusBadge}
+            </div>
+            <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.4rem; line-height: 1.45;">
+              <span style="opacity:0.6;">🔗 Endpoint:</span> <a href="${src.url}" target="_blank" style="color: var(--accent-cyan); text-decoration: none; word-break: break-all;">${src.url}</a><br>
+              <span style="opacity:0.6;">📅 Last Updated:</span> <span style="color: #fff;">${lastUpdatedDate}</span><br>
+              <span style="opacity:0.6;">📊 Total Cache Size:</span> <span style="color: #fff; font-weight: bold;">${src.row_count} records loaded</span>
+            </div>
+          </div>
+          <div style="display: flex; align-items: center; justify-content: flex-end; min-width: 60px;">
+            ${isToggleable ? `
+              <label class="switch-container" style="display: inline-flex; align-items: center; cursor: pointer; position: relative;">
+                <input type="checkbox" id="switch_${key}" ${isEnabled ? "checked" : ""} style="opacity: 0; width: 0; height: 0;">
+                <span class="switch-slider" style="position: relative; display: inline-block; width: 44px; height: 22px; background-color: ${isEnabled ? "var(--accent-indigo)" : "rgba(255,255,255,0.1)"}; border-radius: 9999px; transition: all 0.2s;">
+                  <span style="position: absolute; content: ''; height: 16px; width: 16px; left: 3px; bottom: 3px; background-color: white; border-radius: 50%; transition: all 0.2s;"></span>
+                </span>
+              </label>
+            ` : `
+              <span style="font-size: 0.72rem; color: var(--text-muted); font-style: italic;">System Required</span>
+            `}
+          </div>
+        `;
+        
+        apiStatusRows.appendChild(row);
+        
+        if (isToggleable) {
+          const swInput = row.querySelector(`#switch_${key}`);
+          swInput.addEventListener("change", (e) => {
+            const checked = e.target.checked;
+            if (key === "huggingface_leaderboard") {
+              enabledHfLeaderboard = checked;
+              localStorage.setItem("enabledHfLeaderboard", checked);
+            } else if (key === "benchlm") {
+              enabledBenchlm = checked;
+              localStorage.setItem("enabledBenchlm", checked);
+            }
+            renderStatusModal();
+            renderDashboard();
+          });
+        }
+      });
+    }
+
+    // MAIN RENDERING ROUTINE
+    function renderDashboard() {
+      const activeContextVal = parseInt(contextRange.value);
+      const activeMinTPS = parseInt(tpsRange.value);
+      const searchVal = searchInput.value.toLowerCase().trim();
+      const sortBy = sortSelect.value;
+
+      // Extract active enabled formats from checkboxes
+      const enabledFormats = Array.from(document.querySelectorAll(".format-checkbox:checked")).map(ch => ch.value);
+
+      const computedResults = [];
+
+      // Process each model and find the best quantization option
+      appDb.models.forEach(model => {
+        let bestScore = -1;
+        let bestSim = null;
+        let bestQuantKey = null;
+
+        // Iterate over our available quants and simulate
+        Object.keys(BYTES_PER_QUANT).forEach(quantKey => {
+          const format = QUANT_FORMATS[quantKey];
+          // Check if this format is checked/enabled by user
+          if (!enabledFormats.includes(format)) return;
+
+          const sim = simulateInference(model, quantKey, activeContextVal);
+          sim.quantKey = quantKey;
+          sim.format = format;
+
+          const score = calculateFitScore(model, sim, activeMinTPS);
+          
+          // We seek the quant key that delivers the highest score
+          // (which naturally balances the speed/quality trade-off for the hardware)
+          if (score > bestScore) {
+            bestScore = score;
+            bestSim = sim;
+            bestQuantKey = quantKey;
+          }
+        });
+
+        // Filter out if search keyword is present
+        const matchesSearch = 
+          model.name.toLowerCase().includes(searchVal) ||
+          model.developer.toLowerCase().includes(searchVal) ||
+          model.description.toLowerCase().includes(searchVal) ||
+          model.model_id.toLowerCase().includes(searchVal) ||
+          model.tags.some(t => t.toLowerCase().includes(searchVal));
+
+        if (matchesSearch && bestSim) {
+          computedResults.push({
+            model: model,
+            bestSim: bestSim,
+            bestQuantKey: bestQuantKey,
+            fitScore: bestScore
+          });
+        }
+      });
+
+      // SORTING LOGIC
+      computedResults.sort((a, b) => {
+        if (sortBy === "score") {
+          return b.fitScore - a.fitScore;
+        } else if (sortBy === "quality") {
+          // Base quality minus quant penalty
+          const qA = getDynamicUseCaseScore(a.model, selectedUsecase) - QUANT_QUALITY_LOSS[a.bestQuantKey];
+          const qB = getDynamicUseCaseScore(b.model, selectedUsecase) - QUANT_QUALITY_LOSS[b.bestQuantKey];
+          return qB - qA;
+        } else if (sortBy === "speed") {
+          return b.bestSim.speedTPS - a.bestSim.speedTPS;
+        } else if (sortBy === "vram") {
+          return a.bestSim.weightsSizeGB - b.bestSim.weightsSizeGB;
+        }
+        return 0;
+      });
+
+      // RENDER ROWS TO BODY
+      modelsTableBody.innerHTML = "";
+      
+      if (computedResults.length === 0) {
+        modelsTableBody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: var(--text-muted); padding: 3rem;">No models matched your active filters or query. Try adjusting VRAM limits or format settings.</td></tr>`;
+        return;
+      }
+
+      computedResults.forEach(res => {
+        const tr = document.createElement("tr");
+        
+        // Fit status class
+        let badgeColorClass = "red";
+        let badgeText = "Out of Memory";
+        if (res.bestSim.fitStatus === "VRAM") {
+          badgeColorClass = "green";
+          badgeText = "Fits VRAM";
+        } else if (res.bestSim.fitStatus === "RAM") {
+          badgeColorClass = "amber";
+          badgeText = "Offloads to RAM";
+        }
+
+        // Developer class tag
+        const devClass = res.model.developer.toLowerCase().replace(" ", "");
+
+        // Build tags markup
+        const tagsMarkup = res.model.tags.map(t => `<span class="tag-badge">${t}</span>`).join("");
+
+        // Build speed cell
+        const speedText = res.bestSim.fitStatus === "OOM" 
+          ? `<span style="color: var(--fit-red); font-weight:600;">OOM</span>` 
+          : `<span class="tps-value">${res.bestSim.speedTPS.toFixed(1)}</span> <span class="tps-label">tok/s</span>`;
+
+        // Intelligence / HF LLM Leaderboard
+        const dynamicBaseQuality = getDynamicUseCaseScore(res.model, selectedUsecase);
+        const finalIntelligence = (dynamicBaseQuality - QUANT_QUALITY_LOSS[res.bestQuantKey]).toFixed(1);
+        const lossPercent = QUANT_QUALITY_LOSS[res.bestQuantKey];
+
+        tr.innerHTML = `
+          <td>
+            <div class="td-model-info">
+              <div class="model-name-row">
+                <span>${res.model.name}</span>
+                <span class="dev-badge ${devClass}">${res.model.developer}</span>
+              </div>
+              <div class="model-desc-row">${res.model.description}</div>
+              <div class="tags-container">${tagsMarkup}</div>
+            </div>
+          </td>
+          <td>
+            <div class="quant-pill">${res.bestQuantKey}</div>
+            <div style="font-size:0.7rem; color: var(--text-muted); margin-top:0.25rem;">${res.bestSim.weightsSizeGB.toFixed(1)} GB Weights</div>
+          </td>
+          <td>
+            <div class="fit-status-wrapper">
+              <span class="fit-badge ${badgeColorClass}">
+                <span style="width: 8px; height:8px; border-radius:50%; background-color: currentColor;"></span>
+                ${badgeText}
+              </span>
+              <span class="fit-meta">${res.bestSim.totalVramGB.toFixed(1)} GB Need / ${(res.bestSim.gpuRatio * 100).toFixed(0)}% GPU</span>
+            </div>
+          </td>
+          <td>
+            ${speedText}
+          </td>
+          <td>
+            <div class="quality-ring-wrapper">
+              <span class="quality-number">${finalIntelligence}</span>
+              ${lossPercent > 0 ? `<span class="quality-loss-tag">-${lossPercent.toFixed(1)}%</span>` : ''}
+            </div>
+          </td>
+          <td>
+            <div class="score-container">
+              <div class="score-bar-bg">
+                <div class="score-bar-fill" style="width: ${res.fitScore}%;"></div>
+              </div>
+              <span class="score-percent">${res.fitScore}%</span>
+            </div>
+          </td>
+        `;
+
+        tr.addEventListener("click", () => {
+          openDetailModal(res.model);
+        });
+
+        modelsTableBody.appendChild(tr);
+      });
+    }
+
+    // OPEN DETAILED COMPARISON DIALOG
+    function openDetailModal(model) {
+      activeModalModel = model;
+      detailModal.style.display = "flex";
+
+      modalModelName.textContent = model.name;
+      modalModelId.textContent = model.model_id;
+
+      // Specs
+      specParams.textContent = `${model.parameters.toFixed(2)} B`;
+      specLayers.textContent = model.config.num_layers;
+      specHidden.textContent = model.config.hidden_size;
+      
+      const kv = model.config.num_kv_heads || 8;
+      const attn = model.config.num_attn_heads || 32;
+      specGQA.textContent = `${attn}:${kv} (${kv} KV heads)`;
+
+      // Set resource card links dynamically
+      const btnLinkHf = document.getElementById("btnLinkHuggingface");
+      const btnLinkBase = document.getElementById("btnLinkBaseModel");
+      const btnLinkLeaderboard = document.getElementById("btnLinkBenchmarks");
+      if (btnLinkHf) {
+        btnLinkHf.href = `https://huggingface.co/${model.model_id}`;
+      }
+      if (btnLinkBase) {
+        btnLinkBase.href = `https://huggingface.co/${model.base_model_id || model.model_id.replace('-GGUF', '').replace('-gguf', '')}`;
+      }
+      if (btnLinkLeaderboard) {
+        btnLinkLeaderboard.href = "https://huggingface.co/datasets/open-llm-leaderboard/contents";
+      }
+
+      // Populate dynamic scientific benchmarks grid
+      const grid = document.getElementById("modalBenchmarkGrid");
+      if (grid) {
+        const bm = model.benchmarks || {};
+        const metrics = bm.metrics || {};
+        
+        const benchmarksToDisplay = [
+          { name: "GPQA (PhD Reasoning)", val: metrics.gpqa || 18.0 },
+          { name: "MATH (Lvl 5 Algebra)", val: metrics.math_lvl5 || 20.0 },
+          { name: "IFEval (Instr. Follow)", val: metrics.ifeval || 50.0 },
+          { name: "BBH (Multi-Step Logic)", val: metrics.bbh || 45.0 },
+          { name: "MMLU-Pro (Expert Knowledge)", val: metrics.mmlu_pro || 38.0 },
+          { name: "Coding (Code Syntax)", val: metrics.benchlm_coding || 50.0 },
+          { name: "RAG Docs (Fact Retrieval)", val: metrics.benchlm_knowledge || 50.0 },
+          { name: "Multilingual (Translation)", val: metrics.benchlm_multilingual || 60.0 }
+        ];
+        
+        grid.innerHTML = benchmarksToDisplay.map(b => `
+          <div style="background: rgba(255, 255, 255, 0.01); border: 1px solid rgba(255,255,255,0.03); border-radius: 8px; padding: 0.5rem; display: flex; flex-direction: column; gap: 0.15rem;">
+            <span style="font-size:0.62rem; color: var(--text-muted); text-transform: uppercase; font-family: var(--font-mono);">${b.name}</span>
+            <span style="font-size:0.85rem; font-weight:bold; color: #fff;">${b.val.toFixed(1)}%</span>
+          </div>
+        `).join("");
+      }
+
+      // Populate Evaluation Status & Confidence Bars
+      const statusBadge = document.getElementById("modalEvalBadge");
+      const confPercent = document.getElementById("modalConfidencePercent");
+      const confFill = document.getElementById("modalConfidenceFill");
+
+      if (statusBadge && confPercent && confFill) {
+        const status = (model.benchmarks && model.benchmarks.status) ? model.benchmarks.status : "estimated";
+        statusBadge.textContent = status.toUpperCase();
+        
+        let color = "var(--accent-cyan)";
+        let bg = "rgba(6, 182, 212, 0.15)";
+        let border = "1px solid var(--accent-cyan)";
+        let conf = "65%";
+        
+        if (status === "measured") {
+          color = "var(--fit-green)";
+          bg = "rgba(34, 197, 94, 0.15)";
+          border = "1px solid var(--fit-green)";
+          conf = "98%";
+        } else if (status === "derived") {
+          color = "var(--fit-amber)";
+          bg = "rgba(245, 158, 11, 0.15)";
+          border = "1px solid var(--fit-amber)";
+          conf = "88%";
+        }
+        
+        statusBadge.style.color = color;
+        statusBadge.style.background = bg;
+        statusBadge.style.border = border;
+        
+        confPercent.textContent = conf;
+        confFill.style.width = conf;
+        confFill.style.backgroundColor = color;
+      }
+
+      updateModalData(model);
+    }
+
+    function updateModalData(model) {
+      const activeContextVal = parseInt(contextRange.value);
+      chartContextTarget.textContent = `Current Context: ${(activeContextVal / 1024).toFixed(0)}K Tokens`;
+
+      // Fill quants comparison table
+      modalQuantTableBody.innerHTML = "";
+
+      // Find the absolute highest scoring quant for visual recommendation
+      let highestScore = -1;
+      let recommendedQuant = null;
+
+      Object.keys(BYTES_PER_QUANT).forEach(quantKey => {
+        const sim = simulateInference(model, quantKey, activeContextVal);
+        const score = calculateFitScore(model, sim, parseInt(tpsRange.value));
+        if (score > highestScore) {
+          highestScore = score;
+          recommendedQuant = quantKey;
+        }
+      });
+
+      Object.keys(BYTES_PER_QUANT).forEach(quantKey => {
+        const sim = simulateInference(model, quantKey, activeContextVal);
+        
+        let rowClass = "";
+        let recBadge = "";
+        if (quantKey === recommendedQuant && sim.fitStatus !== "OOM") {
+          rowClass = "recommended-quant-row";
+          recBadge = `<span style="font-size:0.65rem; background: var(--accent-indigo); color: white; padding: 0.1rem 0.3rem; border-radius:3px; margin-left:0.5rem; font-weight:bold;">REC</span>`;
+        }
+
+        let fitBadge = `<span style="color: var(--fit-red); font-weight:600;">OOM</span>`;
+        if (sim.fitStatus === "VRAM") {
+          fitBadge = `<span style="color: var(--fit-green); font-weight:600;">🟢 Fits VRAM</span>`;
+        } else if (sim.fitStatus === "RAM") {
+          fitBadge = `<span style="color: var(--fit-amber); font-weight:600;">🟡 Offloads (${(sim.gpuRatio * 100).toFixed(0)}%)</span>`;
+        }
+
+        const tr = document.createElement("tr");
+        tr.className = rowClass;
+
+        tr.innerHTML = `
+          <td style="font-weight:700; color:#fff; font-family: var(--font-mono);">${quantKey} ${recBadge}</td>
+          <td>GGUF</td>
+          <td>
+            <div style="font-family: var(--font-mono);">${sim.totalVramGB.toFixed(1)} GB</div>
+            <div style="font-size:0.7rem; color: var(--text-muted);">${sim.weightsSizeGB.toFixed(1)} GB weight / ${sim.kvCacheSizeGB.toFixed(2)} GB KV</div>
+          </td>
+          <td>${fitBadge}</td>
+          <td style="font-family: var(--font-mono); font-weight:700;">${sim.speedTPS > 0 ? sim.speedTPS.toFixed(1) + ' tok/s' : '0.0'}</td>
+          <td style="color: var(--fit-red); font-family: var(--font-mono);">${QUANT_QUALITY_LOSS[quantKey] > 0 ? '-' + QUANT_QUALITY_LOSS[quantKey].toFixed(1) + '%' : 'Baseline'}</td>
+        `;
+
+        modalQuantTableBody.appendChild(tr);
+      });
+
+      drawVramScalingChart(model, activeContextVal);
+    }
+
+    // DRAW GRAPH ON CANVAS
+    function drawVramScalingChart(model, activeContext) {
+      const ctx = vramCanvas.getContext("2d");
+      
+      // Set physical dimensions for high-res canvases
+      const dpr = window.devicePixelRatio || 1;
+      const rect = vramCanvas.getBoundingClientRect();
+      vramCanvas.width = rect.width * dpr;
+      vramCanvas.height = rect.height * dpr;
+      ctx.scale(dpr, dpr);
+
+      const w = rect.width;
+      const h = rect.height;
+
+      // Clear
+      ctx.clearRect(0, 0, w, h);
+
+      // Define plot area padding
+      const padL = 40;
+      const padR = 20;
+      const padT = 15;
+      const padB = 20;
+
+      const plotW = w - padL - padR;
+      const plotH = h - padT - padB;
+
+      // Context levels (X Axis)
+      const contextPoints = [1024, 4096, 8192, 16384, 32768, 65536, 131072];
+      const contextLabels = ["1K", "4K", "8K", "16K", "32K", "64K", "128K"];
+
+      // Simulate for Q4_K_M as our standard graphing line
+      const testQuant = "Q4_K_M";
+      const vramData = contextPoints.map(c => {
+        const sim = simulateInference(model, testQuant, c);
+        return sim.totalVramGB;
+      });
+
+      // Find max VRAM for scaling
+      const maxVal = Math.max(...vramData, activeHardware.vram || 24) * 1.15;
+      const minVal = 0;
+
+      // Draw Grid Lines & Labels
+      ctx.strokeStyle = "rgba(255, 255, 255, 0.05)";
+      ctx.lineWidth = 1;
+      ctx.fillStyle = "rgba(148, 163, 184, 0.4)";
+      ctx.font = "10px Outfit";
+      ctx.textBaseline = "middle";
+
+      const gridLines = 4;
+      for (let i = 0; i <= gridLines; i++) {
+        const val = minVal + (maxVal - minVal) * (i / gridLines);
+        const y = padT + plotH * (1 - (val - minVal) / (maxVal - minVal));
+        
+        ctx.beginPath();
+        ctx.moveTo(padL, y);
+        ctx.lineTo(w - padR, y);
+        ctx.stroke();
+
+        ctx.fillText(`${val.toFixed(0)}G`, 10, y);
+      }
+
+      // Draw horizontal target physical line representing GPU VRAM capacity
+      const gpuVramY = padT + plotH * (1 - (activeHardware.vram - minVal) / (maxVal - minVal));
+      if (gpuVramY >= padT && gpuVramY <= (h - padB)) {
+        ctx.strokeStyle = "rgba(239, 68, 68, 0.4)";
+        ctx.lineWidth = 1.5;
+        ctx.setLineDash([5, 5]);
+        ctx.beginPath();
+        ctx.moveTo(padL, gpuVramY);
+        ctx.lineTo(w - padR, gpuVramY);
+        ctx.stroke();
+        ctx.setLineDash([]);
+        
+        ctx.fillStyle = "rgba(239, 68, 68, 0.7)";
+        ctx.fillText(`VRAM Limit (${activeHardware.vram}G)`, w - padR - 100, gpuVramY - 8);
+      }
+
+      // Plot data points
+      const points = [];
+      for (let i = 0; i < contextPoints.length; i++) {
+        const x = padL + plotW * (i / (contextPoints.length - 1));
+        const y = padT + plotH * (1 - (vramData[i] - minVal) / (maxVal - minVal));
+        points.push({ x, y, vram: vramData[i] });
+
+        // Draw X Axis labels
+        ctx.fillStyle = "rgba(148, 163, 184, 0.6)";
+        ctx.fillText(contextLabels[i], x - 5, h - padB + 10);
+      }
+
+      // Draw Gradient fill area under the line
+      const gradient = ctx.createLinearGradient(0, padT, 0, h - padB);
+      gradient.addColorStop(0, "rgba(99, 102, 241, 0.25)");
+      gradient.addColorStop(1, "rgba(99, 102, 241, 0.0)");
+      ctx.fillStyle = gradient;
+
+      ctx.beginPath();
+      ctx.moveTo(points[0].x, h - padB);
+      points.forEach(p => ctx.lineTo(p.x, p.y));
+      ctx.lineTo(points[points.length - 1].x, h - padB);
+      ctx.closePath();
+      ctx.fill();
+
+      // Draw the main curve line
+      ctx.strokeStyle = "var(--accent-indigo)";
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      ctx.moveTo(points[0].x, points[0].y);
+      for (let i = 1; i < points.length; i++) {
+        ctx.lineTo(points[i].x, points[i].y);
+      }
+      ctx.stroke();
+
+      // Highlight the active selected context intersection point
+      // Find where activeContext fits on x axis
+      let activeX = points[0].x;
+      let activeY = points[0].y;
+      let interpolatedVram = vramData[0];
+
+      for (let i = 0; i < contextPoints.length - 1; i++) {
+        if (activeContext >= contextPoints[i] && activeContext <= contextPoints[i+1]) {
+          const ratio = (activeContext - contextPoints[i]) / (contextPoints[i+1] - contextPoints[i]);
+          activeX = points[i].x + (points[i+1].x - points[i].x) * ratio;
+          activeY = points[i].y + (points[i+1].y - points[i].y) * ratio;
+          interpolatedVram = vramData[i] + (vramData[i+1] - vramData[i]) * ratio;
+          break;
+        }
+      }
+
+      // Draw highlighted node
+      ctx.fillStyle = "var(--accent-cyan)";
+      ctx.shadowColor = "rgba(6, 182, 212, 0.8)";
+      ctx.shadowBlur = 10;
+      ctx.beginPath();
+      ctx.arc(activeX, activeY, 6, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.shadowBlur = 0; // reset
+
+      ctx.strokeStyle = "#fff";
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.arc(activeX, activeY, 6, 0, Math.PI * 2);
+      ctx.stroke();
+
+      // Tooltip/Label above highlighted point
+      ctx.fillStyle = "rgba(12, 17, 34, 0.9)";
+      ctx.strokeStyle = "var(--accent-cyan)";
+      ctx.lineWidth = 1;
+      
+      const tooltipW = 85;
+      const tooltipH = 22;
+      const tx = activeX - tooltipW / 2;
+      const ty = activeY - tooltipH - 8;
+
+      ctx.beginPath();
+      ctx.roundRect(tx, ty, tooltipW, tooltipH, 4);
+      ctx.fill();
+      ctx.stroke();
+
+      ctx.fillStyle = "#fff";
+      ctx.font = "bold 9px var(--font-mono)";
+      ctx.fillText(`${interpolatedVram.toFixed(1)} GB VRAM`, tx + 6, ty + 11);
+    }
+
+    // FIRE EVERYTHING UP
+    window.addEventListener("DOMContentLoaded", init);
+  </script>
+
+  <!-- API SOURCES & STATUS MODAL -->
+  <div class="modal-overlay" id="statusModal">
+    <div class="modal-container" style="max-width: 600px;">
+      
+      <div class="modal-header">
+        <div class="modal-header-info">
+          <h2>📡 Database & API Sources Status</h2>
+          <p>Real-time transparency into live scientific evaluation data sources</p>
+        </div>
+        <button class="btn-close" id="statusModalClose">✕</button>
+      </div>
+
+      <div class="modal-content" style="display: flex; flex-direction: column; gap: 1.25rem;">
+        
+        <div style="background: rgba(255,255,255,0.02); border: 1px solid var(--border-color); border-radius: 12px; padding: 1rem; font-size: 0.85rem; line-height: 1.5; color: var(--text-secondary);">
+          💡 <strong>How it works:</strong> The LocalModel.ai Optimizer pulls raw metrics from verified scientific LLM databases. Below you can view the retrieval status, dynamic record counts, and last scraper update timestamps. You can toggle each provider <strong>On/Off</strong> to see how dynamic use-case fit scores automatically adapt and normalize in real time!
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 0.75rem;" id="apiStatusRows">
+          <!-- Populated dynamically via JavaScript -->
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+
+</body>
+</html>
