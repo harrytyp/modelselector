@@ -1852,6 +1852,8 @@
     // Persistent evaluation provider switches
     let enabledHfLeaderboard = localStorage.getItem("enabledHfLeaderboard") !== "false";
     let enabledBenchlm = localStorage.getItem("enabledBenchlm") !== "false";
+    let enabledLiveBench = localStorage.getItem("enabledLiveBench") !== "false";
+    let enabledEvalPlus = localStorage.getItem("enabledEvalPlus") !== "false";
 
     const CORE_GPU_IDS = [
       "rtx_5090",
@@ -3039,69 +3041,89 @@
       const benchlm_knowledge = metrics.benchlm_knowledge !== undefined ? metrics.benchlm_knowledge : 50.0;
       const benchlm_multilingual = metrics.benchlm_multilingual !== undefined ? metrics.benchlm_multilingual : 60.0;
 
+      const livebench = metrics.livebench !== undefined ? metrics.livebench : 50.0;
+      const evalplus_humaneval = metrics.evalplus_humaneval !== undefined ? metrics.evalplus_humaneval : 55.0;
+      const evalplus_mbpp = metrics.evalplus_mbpp !== undefined ? metrics.evalplus_mbpp : 58.0;
+
       // Parameter size heuristic quality fallback
       const heuristicScore = Math.min(98.0, 48.0 + Math.sqrt(model.parameters || 7.0) * 3.6);
 
-      // If both API datasets are toggled off, fall back 100% to parameter heuristic
-      if (!enabledHfLeaderboard && !enabledBenchlm) {
+      // If all evaluation APIs are toggled off, fall back 100% to parameter heuristic
+      if (!enabledHfLeaderboard && !enabledBenchlm && !enabledLiveBench && !enabledEvalPlus) {
         return parseFloat(heuristicScore.toFixed(1));
       }
 
-      let score = 50.0;
+      let components = [];
       
       if (usecase === "coding") {
-        if (enabledHfLeaderboard && enabledBenchlm) {
-          // Blueprint: 60% BenchLM, 40% HF (20% MMLU-Pro + 20% BBH)
-          score = (benchlm_coding * 0.60) + (mmlu_pro * 0.20) + (bbh * 0.20);
-        } else if (enabledHfLeaderboard) {
-          // HF Leaderboard only: 50% MMLU-Pro + 50% BBH
-          score = (mmlu_pro * 0.50) + (bbh * 0.50);
-        } else {
-          // BenchLM only: 100% Coding
-          score = benchlm_coding;
+        if (enabledEvalPlus) {
+          components.push({ val: evalplus_humaneval, w: 0.30 });
+          components.push({ val: evalplus_mbpp, w: 0.20 });
+        }
+        if (enabledLiveBench) {
+          components.push({ val: livebench, w: 0.20 });
+        }
+        if (enabledBenchlm) {
+          components.push({ val: benchlm_coding, w: 0.15 });
+        }
+        if (enabledHfLeaderboard) {
+          components.push({ val: mmlu_pro, w: 0.10 });
+          components.push({ val: bbh, w: 0.05 });
         }
       } 
       else if (usecase === "chat") {
-        if (enabledHfLeaderboard && enabledBenchlm) {
-          // Blueprint: 50% HF (IFEval) + 50% BenchLM (30% Instruction + 20% Multilingual)
-          score = (ifeval * 0.50) + (benchlm_instruction * 0.30) + (benchlm_multilingual * 0.20);
-        } else if (enabledHfLeaderboard) {
-          // HF Leaderboard only: 100% IFEval
-          score = ifeval;
-        } else {
-          // BenchLM only: 60% Instruction + 40% Multilingual
-          score = (benchlm_instruction * 0.60) + (benchlm_multilingual * 0.40);
+        if (enabledHfLeaderboard) {
+          components.push({ val: ifeval, w: 0.40 });
+        }
+        if (enabledLiveBench) {
+          components.push({ val: livebench, w: 0.30 });
+        }
+        if (enabledBenchlm) {
+          components.push({ val: benchlm_instruction, w: 0.20 });
+          components.push({ val: benchlm_multilingual, w: 0.10 });
         }
       } 
       else if (usecase === "rag") {
-        if (enabledHfLeaderboard && enabledBenchlm) {
-          // Blueprint: 80% HF (35% IFEval + 25% MMLU-Pro + 20% BBH) + 20% BenchLM (Knowledge)
-          score = (ifeval * 0.35) + (mmlu_pro * 0.25) + (bbh * 0.20) + (benchlm_knowledge * 0.20);
-        } else if (enabledHfLeaderboard) {
-          // HF Leaderboard only: 43.75% IFEval + 31.25% MMLU-Pro + 25% BBH
-          score = (ifeval * 0.4375) + (mmlu_pro * 0.3125) + (bbh * 0.25);
-        } else {
-          // BenchLM only: 100% Knowledge
-          score = benchlm_knowledge;
+        if (enabledHfLeaderboard) {
+          components.push({ val: ifeval, w: 0.30 });
+          components.push({ val: mmlu_pro, w: 0.20 });
+          components.push({ val: bbh, w: 0.10 });
+        }
+        if (enabledBenchlm) {
+          components.push({ val: benchlm_knowledge, w: 0.20 });
+        }
+        if (enabledLiveBench) {
+          components.push({ val: livebench, w: 0.20 });
         }
       } 
       else if (usecase === "reasoning") {
-        if (enabledHfLeaderboard && enabledBenchlm) {
-          // Blueprint: 70% HF (25% GPQA + 25% MATH Lvl 5 + 20% BBH) + 30% BenchLM (15% Reasoning + 15% Math)
-          score = (gpqa * 0.25) + (math_lvl5 * 0.25) + (bbh * 0.20) + (benchlm_reasoning * 0.15) + (benchlm_math * 0.15);
-        } else if (enabledHfLeaderboard) {
-          // HF Leaderboard only: 35.7% GPQA + 35.7% MATH Lvl 5 + 28.6% BBH
-          score = (gpqa * 0.357) + (math_lvl5 * 0.357) + (bbh * 0.286);
-        } else {
-          // BenchLM only: 50% Reasoning + 50% Math
-          score = (benchlm_reasoning * 0.50) + (benchlm_math * 0.50);
+        if (enabledHfLeaderboard) {
+          components.push({ val: gpqa, w: 0.20 });
+          components.push({ val: math_lvl5, w: 0.20 });
+          components.push({ val: bbh, w: 0.10 });
         }
-      } 
-      else {
-        score = model.quality_score || 50.0;
+        if (enabledLiveBench) {
+          components.push({ val: livebench, w: 0.20 });
+        }
+        if (enabledBenchlm) {
+          components.push({ val: benchlm_reasoning, w: 0.15 });
+          components.push({ val: benchlm_math, w: 0.15 });
+        }
       }
       
-      return parseFloat(score.toFixed(1));
+      if (components.length === 0) {
+        return parseFloat(heuristicScore.toFixed(1));
+      }
+      
+      let sumW = 0;
+      let weightedSum = 0;
+      components.forEach(c => {
+        sumW += c.w;
+        weightedSum += c.val * c.w;
+      });
+      
+      const finalScore = weightedSum / sumW;
+      return parseFloat(finalScore.toFixed(1));
     }
 
     // CALCULATE SYSTEM SCORE
@@ -3164,6 +3186,20 @@
           "last_updated": new Date().toISOString(),
           "row_count": 115
         },
+        "livebench": {
+          "name": "LiveBench LLM Benchmark",
+          "url": "https://raw.githubusercontent.com/LiveBench/LiveBench/main/livebench/data/live_bench/leaderboard.json",
+          "status": "fallback",
+          "last_updated": new Date().toISOString(),
+          "row_count": 14
+        },
+        "evalplus": {
+          "name": "EvalPlus Code Benchmark (HumanEval+ & MBPP+)",
+          "url": "https://evalplus.github.io/results/humaneval.json",
+          "status": "fallback",
+          "last_updated": new Date().toISOString(),
+          "row_count": 14
+        },
         "techpowerup": {
           "name": "TechPowerUp GPU Database",
           "url": "https://raw.githubusercontent.com/RightNow-AI/RightNow-GPU-Database/main/data/",
@@ -3176,19 +3212,23 @@
           "url": "https://huggingface.co/api/models",
           "status": "success",
           "last_updated": new Date().toISOString(),
-          "row_count": 89
+          "row_count": 864
         }
       };
       
       Object.keys(sources).forEach(key => {
         const src = sources[key];
         const isEnabled = key === "huggingface_leaderboard" ? enabledHfLeaderboard : 
-                          key === "benchlm" ? enabledBenchlm : true;
+                          key === "benchlm" ? enabledBenchlm : 
+                          key === "livebench" ? enabledLiveBench : 
+                          key === "evalplus" ? enabledEvalPlus : true;
                           
-        const isToggleable = key === "huggingface_leaderboard" || key === "benchlm";
+        const isToggleable = key === "huggingface_leaderboard" || key === "benchlm" || key === "livebench" || key === "evalplus";
         
         const statusBadge = src.status === "success" ? 
           `<span style="background: rgba(34, 197, 94, 0.1); border: 1px solid var(--fit-green); color: var(--fit-green); padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.7rem; font-weight: bold; display: inline-flex; align-items: center; gap: 0.25rem;">ONLINE <span style="width:6px;height:6px;background:var(--fit-green);border-radius:50%;display:inline-block;"></span></span>` :
+          src.status === "fallback" ?
+          `<span style="background: rgba(6, 182, 212, 0.1); border: 1px solid var(--accent-cyan); color: var(--accent-cyan); padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.7rem; font-weight: bold; display: inline-flex; align-items: center; gap: 0.25rem;">OFFLINE (FALLBACK) <span style="width:6px;height:6px;background:var(--accent-cyan);border-radius:50%;display:inline-block;"></span></span>` :
           `<span style="background: rgba(239, 68, 68, 0.1); border: 1px solid var(--fit-red); color: var(--fit-red); padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.7rem; font-weight: bold; display: inline-flex; align-items: center; gap: 0.25rem;">OFFLINE <span style="width:6px;height:6px;background:var(--fit-red);border-radius:50%;display:inline-block;"></span></span>`;
         
         const lastUpdatedDate = src.last_updated ? new Date(src.last_updated).toLocaleString("en-US", {
@@ -3243,6 +3283,12 @@
             } else if (key === "benchlm") {
               enabledBenchlm = checked;
               localStorage.setItem("enabledBenchlm", checked);
+            } else if (key === "livebench") {
+              enabledLiveBench = checked;
+              localStorage.setItem("enabledLiveBench", checked);
+            } else if (key === "evalplus") {
+              enabledEvalPlus = checked;
+              localStorage.setItem("enabledEvalPlus", checked);
             }
             renderStatusModal();
             renderDashboard();
