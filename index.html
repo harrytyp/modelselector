@@ -1092,29 +1092,52 @@
       </div>
 
       <!-- Inference parameters -->
-      <h2 class="section-title">Inference Context</h2>
+      <h2 class="section-title">Inference Settings</h2>
 
-      <div class="form-group">
-        <label class="form-label" for="contextRange">
-          Context Length <span class="label-value" id="contextVal">8,192 tok</span>
-        </label>
-        <input type="range" id="contextRange" min="512" max="131072" step="512" value="8192">
+      <!-- Mode Selector -->
+      <div style="display: flex; gap: 0.25rem; background: rgba(0,0,0,0.25); padding: 0.25rem; border-radius: 8px; margin-bottom: 1rem; border: 1px solid var(--border-color);">
+        <button id="btnModePreset" class="btn-toggle" style="flex: 1; padding: 0.4rem 0.5rem; font-size: 0.75rem; font-weight: bold; border-radius: 6px; border: none; cursor: pointer;">🎯 Presets</button>
+        <button id="btnModeCustom" class="btn-toggle" style="flex: 1; padding: 0.4rem 0.5rem; font-size: 0.75rem; font-weight: bold; border-radius: 6px; border: none; cursor: pointer;">⚙️ Custom</button>
       </div>
 
-      <div class="form-group">
-        <label class="form-label" for="tpsRange">
-          Minimum Target Speed <span class="label-value" id="tpsVal">20 tok/s</span>
-        </label>
-        <input type="range" id="tpsRange" min="1" max="120" step="1" value="20">
+      <!-- Presets Block -->
+      <div id="presetModeBlock">
+        <div class="form-group">
+          <label class="form-label">Optimized Use Case Preset</label>
+          <div class="usecase-grid">
+            <button class="btn-toggle active" data-usecase="chat">💬 Chat</button>
+            <button class="btn-toggle" data-usecase="coding">💻 Coding</button>
+            <button class="btn-toggle" data-usecase="rag">📚 RAG</button>
+            <button class="btn-toggle" data-usecase="reasoning">🧠 Reasoning</button>
+          </div>
+        </div>
+        
+        <div style="background: rgba(255,255,255,0.015); border: 1px solid var(--border-color); border-radius: 8px; padding: 0.75rem; font-size: 0.78rem; color: var(--text-muted); line-height: 1.5; display: flex; flex-direction: column; gap: 0.35rem; margin-top: 0.5rem; backdrop-filter: blur(10px);">
+          <div style="display: flex; align-items: center; justify-content: space-between;">
+            <span>🎯 <span style="font-weight: 600; color: #fff;">Target Speed:</span></span>
+            <span id="presetSpeedSummary" style="color: var(--accent-cyan); font-weight: bold; font-family: monospace;">25 tok/s</span>
+          </div>
+          <div style="display: flex; align-items: center; justify-content: space-between;">
+            <span>📏 <span style="font-weight: 600; color: #fff;">Context Length:</span></span>
+            <span id="presetContextSummary" style="color: var(--accent-cyan); font-weight: bold; font-family: monospace;">8,192 tok</span>
+          </div>
+        </div>
       </div>
 
-      <div class="form-group">
-        <label class="form-label">Optimized Use Case</label>
-        <div class="usecase-grid">
-          <button class="btn-toggle active" data-usecase="chat">💬 Chat</button>
-          <button class="btn-toggle" data-usecase="coding">💻 Coding</button>
-          <button class="btn-toggle" data-usecase="rag">📚 RAG</button>
-          <button class="btn-toggle" data-usecase="reasoning">🧠 Reasoning</button>
+      <!-- Custom Parameters Block -->
+      <div id="customModeBlock" style="display: none; display: flex; flex-direction: column; gap: 1rem;">
+        <div class="form-group" style="margin-bottom: 0;">
+          <label class="form-label" for="contextRange">
+            Context Length <span class="label-value" id="contextVal">8,192 tok</span>
+          </label>
+          <input type="range" id="contextRange" min="512" max="131072" step="512" value="8192">
+        </div>
+
+        <div class="form-group" style="margin-bottom: 0;">
+          <label class="form-label" for="tpsRange">
+            Minimum Target Speed <span class="label-value" id="tpsVal">20 tok/s</span>
+          </label>
+          <input type="range" id="tpsRange" min="1" max="120" step="1" value="20">
         </div>
       </div>
 
@@ -1127,6 +1150,17 @@
         
         <div id="advancedControlsBlock" style="display: none; margin-top: 0.75rem; flex-direction: column; gap: 1rem;">
           
+          <!-- GPU-Only Load Option -->
+          <div style="background: rgba(99, 102, 241, 0.05); border: 1px solid rgba(99, 102, 241, 0.2); border-radius: 8px; padding: 0.6rem 0.75rem;">
+            <label class="checkbox-label" style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; font-size: 0.75rem; color: #fff; font-weight: 600; margin-bottom: 0;">
+              <input type="checkbox" id="gpuOnlyCheckbox" style="margin: 0;">
+              ⚡ Only GPU-Fully Loaded Models
+            </label>
+            <div style="font-size: 0.68rem; color: var(--text-muted); margin-top: 0.25rem; line-height: 1.35;">
+              Filter out any models requiring slow CPU/system RAM offloading.
+            </div>
+          </div>
+
           <!-- Filtering options (Format & Quant) -->
           <div>
             <h3 style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; font-weight: bold; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.3rem;">
@@ -1854,6 +1888,8 @@
     let enabledBenchlm = localStorage.getItem("enabledBenchlm") !== "false";
     let enabledLiveBench = localStorage.getItem("enabledLiveBench") !== "false";
     let enabledEvalPlus = localStorage.getItem("enabledEvalPlus") !== "false";
+    let enabledGpuOnly = localStorage.getItem("enabledGpuOnly") === "true";
+    let currentSettingMode = localStorage.getItem("currentSettingMode") || "preset";
 
     const CORE_GPU_IDS = [
       "rtx_5090",
@@ -2007,11 +2043,82 @@
         renderDashboard();
       });
 
+      // Helper to sync sliders to usecase presets
+      function syncUsecaseSliders() {
+        let targetTPS = 20;
+        let targetCtx = 8192;
+        if (selectedUsecase === "chat") {
+          targetTPS = 25;
+          targetCtx = 4096;
+        } else if (selectedUsecase === "coding") {
+          targetTPS = 15;
+          targetCtx = 16384;
+        } else if (selectedUsecase === "rag") {
+          targetTPS = 10;
+          targetCtx = 32768;
+        } else if (selectedUsecase === "reasoning") {
+          targetTPS = 8;
+          targetCtx = 8192;
+        }
+        
+        tpsRange.value = targetTPS;
+        tpsVal.textContent = `${targetTPS} tok/s`;
+        
+        contextRange.value = targetCtx;
+        contextVal.textContent = `${targetCtx.toLocaleString()} tok`;
+
+        const presetSpeedSummary = document.getElementById("presetSpeedSummary");
+        const presetContextSummary = document.getElementById("presetContextSummary");
+        if (presetSpeedSummary) presetSpeedSummary.textContent = `${targetTPS} tok/s`;
+        if (presetContextSummary) presetContextSummary.textContent = `${targetCtx.toLocaleString()} tok`;
+      }
+
+      // Mode Switcher handlers
+      const btnModePreset = document.getElementById("btnModePreset");
+      const btnModeCustom = document.getElementById("btnModeCustom");
+      const presetModeBlock = document.getElementById("presetModeBlock");
+      const customModeBlock = document.getElementById("customModeBlock");
+
+      function updateSettingModeUI() {
+        if (currentSettingMode === "preset") {
+          btnModePreset.classList.add("active");
+          btnModeCustom.classList.remove("active");
+          presetModeBlock.style.display = "block";
+          customModeBlock.style.display = "none";
+        } else {
+          btnModePreset.classList.remove("active");
+          btnModeCustom.classList.add("active");
+          presetModeBlock.style.display = "none";
+          customModeBlock.style.display = "flex";
+        }
+      }
+
+      if (btnModePreset && btnModeCustom) {
+        btnModePreset.addEventListener("click", () => {
+          currentSettingMode = "preset";
+          localStorage.setItem("currentSettingMode", "preset");
+          updateSettingModeUI();
+          syncUsecaseSliders();
+          renderDashboard();
+        });
+
+        btnModeCustom.addEventListener("click", () => {
+          currentSettingMode = "custom";
+          localStorage.setItem("currentSettingMode", "custom");
+          updateSettingModeUI();
+          renderDashboard();
+        });
+      }
+
+      // Initialize UI on load
+      updateSettingModeUI();
+      syncUsecaseSliders();
+
       // Usecase switches
       document.querySelectorAll(".btn-toggle").forEach(btn => {
         btn.addEventListener("click", (e) => {
           const target = e.currentTarget;
-          if (!target.dataset.usecase) return; // Guard against other toggle-styled buttons (e.g. HF Load)
+          if (!target.dataset.usecase) return; // Guard against other toggle-styled buttons
           
           document.querySelectorAll(".btn-toggle[data-usecase]").forEach(b => b.classList.remove("active"));
           target.classList.add("active");
@@ -2022,31 +2129,22 @@
           profileWeights.textContent = profile.description;
           
           // Auto-adjust target speed and context length based on selected use case
-          let targetTPS = 20;
-          let targetCtx = 8192;
-          if (selectedUsecase === "chat") {
-            targetTPS = 25;
-            targetCtx = 4096;
-          } else if (selectedUsecase === "coding") {
-            targetTPS = 15;
-            targetCtx = 16384;
-          } else if (selectedUsecase === "rag") {
-            targetTPS = 10;
-            targetCtx = 32768;
-          } else if (selectedUsecase === "reasoning") {
-            targetTPS = 8;
-            targetCtx = 8192;
-          }
-          
-          tpsRange.value = targetTPS;
-          tpsVal.textContent = `${targetTPS} tok/s`;
-          
-          contextRange.value = targetCtx;
-          contextVal.textContent = `${targetCtx.toLocaleString()} tok`;
+          syncUsecaseSliders();
           
           renderDashboard();
         });
       });
+
+      // GPU Only checkbox registration
+      const gpuOnlyCheckbox = document.getElementById("gpuOnlyCheckbox");
+      if (gpuOnlyCheckbox) {
+        gpuOnlyCheckbox.checked = enabledGpuOnly;
+        gpuOnlyCheckbox.addEventListener("change", (e) => {
+          enabledGpuOnly = e.target.checked;
+          localStorage.setItem("enabledGpuOnly", enabledGpuOnly);
+          renderDashboard();
+        });
+      }
 
       // Toggle collapsible GPU search panel
       const toggleGpuSearch = document.getElementById("toggleGpuSearch");
@@ -3324,6 +3422,11 @@
           const sim = simulateInference(model, quantKey, activeContextVal);
           sim.quantKey = quantKey;
           sim.format = format;
+
+          // If GPU-only filtering is active, discard any quants that don't load 100% to GPU VRAM
+          if (enabledGpuOnly && sim.fitStatus !== "VRAM") {
+            return;
+          }
 
           const score = calculateFitScore(model, sim, activeMinTPS);
           
