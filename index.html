@@ -1139,6 +1139,32 @@
           </label>
           <input type="range" id="tpsRange" min="1" max="120" step="1" value="20">
         </div>
+
+        <!-- Custom weights normalizers -->
+        <div style="border-top: 1px solid rgba(255,255,255,0.05); padding-top: 0.75rem; margin-top: 0.25rem; display: flex; flex-direction: column; gap: 0.75rem;">
+          <div style="font-size: 0.7rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;">🎛️ Recommendation Weights</div>
+          
+          <div class="form-group" style="margin-bottom: 0;">
+            <label class="form-label" for="weightSpeedRange" style="font-size: 0.75rem;">
+              Speed Importance <span class="label-value" id="weightSpeedVal">40%</span>
+            </label>
+            <input type="range" id="weightSpeedRange" min="0" max="100" step="5" value="40">
+          </div>
+
+          <div class="form-group" style="margin-bottom: 0;">
+            <label class="form-label" for="weightQualityRange" style="font-size: 0.75rem;">
+              Quality Importance <span class="label-value" id="weightQualityVal">40%</span>
+            </label>
+            <input type="range" id="weightQualityRange" min="0" max="100" step="5" value="40">
+          </div>
+
+          <div class="form-group" style="margin-bottom: 0;">
+            <label class="form-label" for="weightContextRange" style="font-size: 0.75rem;">
+              Context Importance <span class="label-value" id="weightContextVal">20%</span>
+            </label>
+            <input type="range" id="weightContextRange" min="0" max="100" step="5" value="20">
+          </div>
+        </div>
       </div>
 
       <!-- Advanced features toggle -->
@@ -1149,17 +1175,6 @@
         </button>
         
         <div id="advancedControlsBlock" style="display: none; margin-top: 0.75rem; flex-direction: column; gap: 1rem;">
-          
-          <!-- GPU-Only Load Option -->
-          <div style="background: rgba(99, 102, 241, 0.05); border: 1px solid rgba(99, 102, 241, 0.2); border-radius: 8px; padding: 0.6rem 0.75rem;">
-            <label class="checkbox-label" style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; font-size: 0.75rem; color: #fff; font-weight: 600; margin-bottom: 0;">
-              <input type="checkbox" id="gpuOnlyCheckbox" style="margin: 0;">
-              ⚡ Only GPU-Fully Loaded Models
-            </label>
-            <div style="font-size: 0.68rem; color: var(--text-muted); margin-top: 0.25rem; line-height: 1.35;">
-              Filter out any models requiring slow CPU/system RAM offloading.
-            </div>
-          </div>
 
           <!-- Filtering options (Format & Quant) -->
           <div>
@@ -1243,18 +1258,30 @@
 
 
       <!-- Table Controls Bar -->
-      <div class="controls-bar">
-        <div class="search-wrapper">
-          <span class="search-icon">🔍</span>
-          <input type="text" id="searchInput" class="search-input" placeholder="Search models, tags, developers...">
+      <div class="controls-bar" style="display: flex; flex-wrap: wrap; gap: 1rem; align-items: center; justify-content: space-between; padding: 0.85rem 1.25rem; border-radius: 16px; background: var(--bg-card); border: 1px solid var(--border-color); backdrop-filter: blur(20px);">
+        <div style="display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; flex: 1; min-width: 320px;">
+          <!-- Custom-styled premium search wrapper -->
+          <div class="search-wrapper" style="position: relative; flex: 1; max-width: 420px;">
+            <span class="search-icon" style="position: absolute; left: 0.95rem; top: 50%; transform: translateY(-50%); color: var(--accent-cyan); opacity: 0.9; font-size: 0.95rem; pointer-events: none; transition: all 0.2s;">🔍</span>
+            <input type="text" id="searchInput" class="search-input" placeholder="Search 866+ models, tags, developers..." style="width: 100%; padding: 0.65rem 1rem 0.65rem 2.6rem; font-size: 0.85rem; border-radius: 12px; background: rgba(0, 0, 0, 0.3); border: 1px solid var(--border-color); color: #fff; outline: none; transition: all 0.25s; box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);" onfocus="this.style.borderColor='var(--accent-cyan)'; this.style.boxShadow='0 0 12px rgba(6, 182, 212, 0.2), inset 0 2px 4px rgba(0,0,0,0.2)'; this.previousElementSibling.style.opacity='1'; this.previousElementSibling.style.color='var(--accent-cyan)';" onblur="this.style.borderColor='var(--border-color)'; this.style.boxShadow='inset 0 2px 4px rgba(0,0,0,0.2)'; this.previousElementSibling.style.opacity='0.9'; this.previousElementSibling.style.color='var(--accent-cyan)';">
+          </div>
+          
+          <!-- GPU-Fully Loaded Toggle next to Search in the main list bar -->
+          <label class="checkbox-label" style="display: inline-flex; align-items: center; gap: 0.5rem; cursor: pointer; font-size: 0.76rem; color: #fff; font-weight: 700; background: rgba(99, 102, 241, 0.08); border: 1px solid rgba(99, 102, 241, 0.25); padding: 0.55rem 0.95rem; border-radius: 12px; transition: all 0.2s; user-select: none; margin: 0; box-shadow: 0 4px 12px rgba(0,0,0,0.15);" onmouseover="this.style.background='rgba(99, 102, 241, 0.15)'; this.style.borderColor='rgba(99, 102, 241, 0.4)';" onmouseout="this.style.background='rgba(99, 102, 241, 0.08)'; this.style.borderColor='rgba(99, 102, 241, 0.25)';">
+            <input type="checkbox" id="gpuOnlyCheckbox" style="margin: 0; cursor: pointer; width: 14px; height: 14px; accent-color: var(--accent-indigo);">
+            <span style="display: flex; align-items: center; gap: 0.25rem;">⚡ Only GPU-Fully Loaded</span>
+          </label>
         </div>
-        <div class="sort-wrapper">
-          <span>Sort By:</span>
-          <select id="sortSelect" class="sort-select">
+
+        <div class="sort-wrapper" style="display: flex; align-items: center; gap: 0.75rem;">
+          <span style="font-size: 0.8rem; color: var(--text-muted); font-weight: 600;">Sort By:</span>
+          <select id="sortSelect" class="sort-select" style="background: rgba(0,0,0,0.25); border: 1px solid var(--border-color); border-radius: 12px; padding: 0.55rem 2rem 0.55rem 0.75rem; color: #fff; font-size: 0.825rem; font-weight: 600; cursor: pointer; outline: none; transition: all 0.2s; -webkit-appearance: none; -moz-appearance: none; appearance: none; background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23ffffff%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E'); background-repeat: no-repeat; background-position: right%200.75rem%20center; background-size: 0.65rem%20auto; min-width: 180px;">
             <option value="score" selected>Overall Fit Score</option>
-            <option value="quality">Model Intelligence (HF Leaderboard)</option>
+            <option value="quality">Model Intelligence (General)</option>
             <option value="speed">Generation Speed (tok/s)</option>
-            <option value="vram">Weights Size (GB)</option>
+            <option value="vram">Memory Required (GB)</option>
+            <option value="params">Parameter Size (B)</option>
+            <option value="context">Context Capacity Score</option>
           </select>
         </div>
       </div>
@@ -1842,35 +1869,35 @@
     const APPLE_SILICON_UNIFIED_BONUS = 0.75; // Apple unified memory matches memory bus bandwidth closer
     const MAX_PHYSICAL_TPS = 180; // High limit constraint for realistic rendering
 
-    // Dynamic Weights per Use Case Profile
+    // Dynamic Weights per Use Case Profile (Optimized to reflect highly realistic engineering benchmarks)
     const USE_CASE_PROFILES = {
       "chat": {
         "title": "💬 Chat-Focused",
-        "description": "60% Speed / 40% Quality",
-        "weight_speed": 0.6,
-        "weight_quality": 0.4,
-        "weight_context": 0.0
+        "description": "Speed: 40% | Quality: 50% | Context: 10%",
+        "weight_speed": 0.40,
+        "weight_quality": 0.50,
+        "weight_context": 0.10
       },
       "coding": {
         "title": "💻 Coding-Focused",
-        "description": "20% Speed / 60% Quality / 20% Context Capacity",
-        "weight_speed": 0.2,
-        "weight_quality": 0.6,
-        "weight_context": 0.2
+        "description": "Quality: 60% | Context: 25% | Speed: 15%",
+        "weight_speed": 0.15,
+        "weight_quality": 0.60,
+        "weight_context": 0.25
       },
       "rag": {
-        "title": "📚 RAG & Docs",
-        "description": "25% Speed / 25% Quality / 50% Context Size",
-        "weight_speed": 0.25,
-        "weight_quality": 0.25,
+        "title": "📚 RAG & Document Search",
+        "description": "Context Size: 50% | Quality: 30% | Speed: 20%",
+        "weight_speed": 0.20,
+        "weight_quality": 0.30,
         "weight_context": 0.50
       },
       "reasoning": {
-        "title": "🧠 Reasoning",
-        "description": "20% Speed / 80% Quality",
-        "weight_speed": 0.2,
-        "weight_quality": 0.8,
-        "weight_context": 0.0
+        "title": "🧠 Reasoning & Logic",
+        "description": "Quality: 70% | Context: 20% | Speed: 10%",
+        "weight_speed": 0.10,
+        "weight_quality": 0.70,
+        "weight_context": 0.20
       }
     };
 
@@ -2042,6 +2069,56 @@
         tpsVal.textContent = `${e.target.value} tok/s`;
         renderDashboard();
       });
+
+      // Custom weight sliders handlers
+      const weightSpeedRange = document.getElementById("weightSpeedRange");
+      const weightQualityRange = document.getElementById("weightQualityRange");
+      const weightContextRange = document.getElementById("weightContextRange");
+
+      const weightSpeedVal = document.getElementById("weightSpeedVal");
+      const weightQualityVal = document.getElementById("weightQualityVal");
+      const weightContextVal = document.getElementById("weightContextVal");
+
+      function updateCustomWeightsLabels() {
+        if (!weightSpeedRange || !weightQualityRange || !weightContextRange) return;
+        
+        const rawSpeed = parseFloat(weightSpeedRange.value);
+        const rawQuality = parseFloat(weightQualityRange.value);
+        const rawContext = parseFloat(weightContextRange.value);
+        const sum = rawSpeed + rawQuality + rawContext;
+
+        if (sum > 0) {
+          const speedPct = Math.round((rawSpeed / sum) * 100);
+          const qualityPct = Math.round((rawQuality / sum) * 100);
+          const contextPct = 100 - speedPct - qualityPct; // Avoid rounding discrepancies
+
+          if (weightSpeedVal) weightSpeedVal.textContent = `${speedPct}%`;
+          if (weightQualityVal) weightQualityVal.textContent = `${qualityPct}%`;
+          if (weightContextVal) weightContextVal.textContent = `${contextPct}%`;
+        }
+      }
+
+      if (weightSpeedRange) {
+        weightSpeedRange.addEventListener("input", () => {
+          updateCustomWeightsLabels();
+          renderDashboard();
+        });
+      }
+      if (weightQualityRange) {
+        weightQualityRange.addEventListener("input", () => {
+          updateCustomWeightsLabels();
+          renderDashboard();
+        });
+      }
+      if (weightContextRange) {
+        weightContextRange.addEventListener("input", () => {
+          updateCustomWeightsLabels();
+          renderDashboard();
+        });
+      }
+
+      // Initial call to sync custom slider percentages on load
+      updateCustomWeightsLabels();
 
       // Helper to sync sliders to usecase presets
       function syncUsecaseSliders() {
@@ -3229,7 +3306,26 @@
     function calculateFitScore(model, simulation, targetTPS) {
       if (simulation.fitStatus === "OOM") return 0;
 
-      const profile = USE_CASE_PROFILES[selectedUsecase];
+      let weightSpeed = 0.33;
+      let weightQuality = 0.33;
+      let weightContext = 0.34;
+
+      if (currentSettingMode === "custom") {
+        const rawSpeed = parseFloat(document.getElementById("weightSpeedRange")?.value || 40);
+        const rawQuality = parseFloat(document.getElementById("weightQualityRange")?.value || 40);
+        const rawContext = parseFloat(document.getElementById("weightContextRange")?.value || 20);
+        const sum = rawSpeed + rawQuality + rawContext;
+        if (sum > 0) {
+          weightSpeed = rawSpeed / sum;
+          weightQuality = rawQuality / sum;
+          weightContext = rawContext / sum;
+        }
+      } else {
+        const profile = USE_CASE_PROFILES[selectedUsecase];
+        weightSpeed = profile.weight_speed;
+        weightQuality = profile.weight_quality;
+        weightContext = profile.weight_context;
+      }
       
       // A. SPEED SCORE (0 to 1.5, target is 1.0)
       const speedScore = Math.min(simulation.speedTPS / targetTPS, 1.5);
@@ -3253,9 +3349,9 @@
 
       // Combine weights
       const totalScoreFraction = 
-        (speedScore * profile.weight_speed) + 
-        (modelQuality * profile.weight_quality) + 
-        (contextScore * profile.weight_context);
+        (speedScore * weightSpeed) + 
+        (modelQuality * weightQuality) + 
+        (contextScore * weightContext);
 
       // Cap at 100%
       return Math.round(Math.min(totalScoreFraction * 100, 100));
@@ -3470,6 +3566,10 @@
           return b.bestSim.speedTPS - a.bestSim.speedTPS;
         } else if (sortBy === "vram") {
           return a.bestSim.weightsSizeGB - b.bestSim.weightsSizeGB;
+        } else if (sortBy === "params") {
+          return b.model.parameters - a.model.parameters;
+        } else if (sortBy === "context") {
+          return b.bestSim.gpuRatio - a.bestSim.gpuRatio;
         }
         return 0;
       });
