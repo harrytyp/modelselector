@@ -3,6 +3,8 @@ name: Deploy to GitHub Pages
 on:
   push:
     branches: [main]
+    paths-ignore:
+      - 'data/cache.json'  # Nightly cache refreshes trigger their own deploy
   workflow_dispatch:
 
 permissions:

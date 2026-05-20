@@ -191,13 +191,13 @@ def refresh_cache():
     except Exception as be:
         print(f"[-] BenchLM.ai API failed: {be}.")
 
-    # 3.5 LiveBench — upstream no longer serves a static leaderboard.json
+    # 3.5 LiveBench - upstream no longer serves a static leaderboard.json
     # (now requires running their Python harness). High-fidelity family-level fallback used.
     print("[*] Loading LiveBench scores...")
     livebench_map = get_livebench_fallback_map()
     lb_status = "fallback"
 
-    # 3.6 EvalPlus — upstream no longer serves a static humaneval.json / mbpp.json.
+    # 3.6 EvalPlus - upstream no longer serves a static humaneval.json / mbpp.json.
     # (now requires running their Python eval harness). High-fidelity family-level fallback used.
     print("[*] Loading EvalPlus scores...")
     evalplus_map = get_evalplus_fallback_map()

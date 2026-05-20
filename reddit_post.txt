@@ -1,0 +1,11 @@
+Hey, I built this because I got sick of guessing what quant actually fits on my hardware. Originally built it for myself, figured it might help others so dropping it here.
+
+https://harrytyp.github.io/modelselector/
+
+**How it works:** Pick your GPU and it fetches the actual model config from Hugging Face, then runs GQA-aware KV cache math against it to figure out what actually fits. Speed numbers are tied to real memory bandwidth, so you get a real tokens/s estimate instead of a guess.
+
+**Quality scores:** Built by blending data from four sources - Open LLM Leaderboard, BenchLM.ai, LiveBench, and EvalPlus - weighted per use case. On the main table you see one quality score per row. Click through and it breaks that score out by source and task, so you know what a model is actually strong or weak at before you download it.
+
+**Catalog updates:** Nightly GitHub Actions refresh pulls fresh Hugging Face metadata for tracked models so the catalog does not go stale.
+
+Free, no account, runs in the browser. Happy for feedback or PRs if anyone spots bugs or wants to contribute.
