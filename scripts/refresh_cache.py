@@ -1,6 +1,7 @@
 import json
 import urllib.request
 import urllib.parse
+import urllib.error
 import re
 from datetime import datetime, timezone
 import os
@@ -101,19 +102,43 @@ def find_benchlm_match(hf_id, benchlm_models):
 def refresh_cache():
     print("[*] Starting LLM & GPU Database Scanner...")
     
-    # 1. Fetch Top 1000 GGUF Models from Hugging Face Hub API (ALL results!)
-    print("[*] Querying Hugging Face Hub API for top 1000 GGUF repositories...")
-    models_url = "https://huggingface.co/api/models?filter=gguf&sort=downloads&direction=-1&limit=1000&full=true"
-    req = urllib.request.Request(models_url, headers={'User-Agent': 'Mozilla/5.0'})
-    
-    hf_models = []
-    try:
-        with urllib.request.urlopen(req, timeout=120) as response:
-            hf_models = json.loads(response.read().decode("utf-8"))
-        print(f"[+] Found {len(hf_models)} GGUF models on Hugging Face.")
-    except Exception as e:
-        print(f"[-] Hugging Face GGUF query failed: {e}")
-        return
+    # 1. Fetch All GGUF Models from Hugging Face Hub API (paginated)
+    print("[*] Querying Hugging Face Hub API for all GGUF repositories (paginated)...")
+    def fetch_all_hf_gguf(limit_per_page=100, max_total=5000):
+        all_models = []
+        offset = 0
+        total = None
+        while True:
+            if len(all_models) >= max_total:
+                print(f"[+] Reached max total models limit ({max_total}). Stopping fetch.")
+                break
+            models_url = f"https://huggingface.co/api/models?filter=gguf&sort=downloads&direction=-1&limit={limit_per_page}&offset={offset}&full=true"
+            req = urllib.request.Request(models_url, headers={'User-Agent': 'Mozilla/5.0'})
+            attempt = 0
+            while True:
+                attempt += 1
+                try:
+                    with urllib.request.urlopen(req, timeout=120) as response:
+                        page_data = json.loads(response.read().decode("utf-8"))
+                        all_models.extend(page_data)
+                        if total is None:
+                            total_header = response.headers.get('X-Total-Count')
+                            total = int(total_header) if total_header else None
+                    break
+                except urllib.error.HTTPError as e:
+                    if e.code == 429 and attempt <= 5:
+                        print(f"[-] Rate limit hit, retrying after {attempt*2}s (attempt {attempt})")
+                        time.sleep(attempt * 2)
+                        continue
+                    else:
+                        raise
+            if total is not None and offset + limit_per_page >= total:
+                break
+            offset += limit_per_page
+            time.sleep(0.5)  # gentle pacing between pages
+        return all_models[:max_total]
+    hf_models = fetch_all_hf_gguf(max_total=2000)
+    print(f"[+] Retrieved {len(hf_models)} GGUF models from Hugging Face.")
 
     # 2. Fetch Open LLM Leaderboard v2 Scores via datasets-server (PAGINATED!)
     # The API returns HTTP 500 for large limit values; we paginate in batches of 100.
