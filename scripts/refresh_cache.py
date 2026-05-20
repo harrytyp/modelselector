@@ -2,7 +2,7 @@ import json
 import urllib.request
 import urllib.parse
 import re
-from datetime import datetime
+from datetime import datetime, timezone
 import os
 import sys
 
@@ -145,52 +145,17 @@ def refresh_cache():
     except Exception as be:
         print(f"[-] BenchLM.ai API failed: {be}.")
 
-    # 3.5 Fetch LiveBench Snapshot
-    print("[*] Scraping LiveBench snapshot...")
-    livebench_map = {}
-    lb_status = "success"
-    try:
-        lb_url = "https://raw.githubusercontent.com/LiveBench/LiveBench/main/livebench/data/live_bench/leaderboard.json"
-        lb_req = urllib.request.Request(lb_url, headers={'User-Agent': 'Mozilla/5.0'})
-        with urllib.request.urlopen(lb_req) as lb_res:
-            lb_data = json.loads(lb_res.read().decode("utf-8"))
-            for item in lb_data:
-                model_name = item.get("model")
-                if model_name:
-                    livebench_map[model_name.lower().strip()] = item
-        print(f"[+] Loaded {len(livebench_map)} LiveBench rows.")
-    except Exception as e:
-        print(f"[-] LiveBench remote fetch failed: {e}. Backfilling with high-fidelity pre-compiled LiveBench scores.")
-        livebench_map = get_livebench_fallback_map()
-        lb_status = "fallback"
+    # 3.5 LiveBench — upstream no longer serves a static leaderboard.json
+    # (now requires running their Python harness). High-fidelity family-level fallback used.
+    print("[*] Loading LiveBench scores...")
+    livebench_map = get_livebench_fallback_map()
+    lb_status = "fallback"
 
-    # 3.6 Fetch EvalPlus Scores
-    print("[*] Scraping EvalPlus static results...")
-    evalplus_map = {}
-    ep_status = "success"
-    try:
-        he_url = "https://evalplus.github.io/results/humaneval.json"
-        mb_url = "https://evalplus.github.io/results/mbpp.json"
-        # Fetch HumanEval+
-        he_req = urllib.request.Request(he_url, headers={'User-Agent': 'Mozilla/5.0'})
-        with urllib.request.urlopen(he_req) as he_res:
-            he_data = json.loads(he_res.read().decode("utf-8"))
-            for model_name, item in he_data.items():
-                if model_name:
-                    evalplus_map.setdefault(model_name.lower().strip(), {})["humaneval"] = item.get("pass@1", 0.0) * 100.0
-                    
-        # Fetch MBPP+
-        mb_req = urllib.request.Request(mb_url, headers={'User-Agent': 'Mozilla/5.0'})
-        with urllib.request.urlopen(mb_req) as mb_res:
-            mb_data = json.loads(mb_res.read().decode("utf-8"))
-            for model_name, item in mb_data.items():
-                if model_name:
-                    evalplus_map.setdefault(model_name.lower().strip(), {})["mbpp"] = item.get("pass@1", 0.0) * 100.0
-        print(f"[+] Successfully loaded {len(evalplus_map)} EvalPlus rows.")
-    except Exception as e:
-        print(f"[-] EvalPlus remote fetch failed: {e}. Backfilling with high-fidelity pre-compiled EvalPlus scores.")
-        evalplus_map = get_evalplus_fallback_map()
-        ep_status = "fallback"
+    # 3.6 EvalPlus — upstream no longer serves a static humaneval.json / mbpp.json.
+    # (now requires running their Python eval harness). High-fidelity family-level fallback used.
+    print("[*] Loading EvalPlus scores...")
+    evalplus_map = get_evalplus_fallback_map()
+    ep_status = "fallback"
 
     # Process models & resolve exact/derived benchmarks
     models_list = []
@@ -649,48 +614,48 @@ def refresh_cache():
 
     # 5. Consolidate and overwrite data/cache.json
     cache_payload = {
-        "generated_at": datetime.utcnow().isoformat() + "Z",
+        "generated_at": datetime.now(timezone.utc).isoformat(),
         "sources": {
             "huggingface_leaderboard": {
                 "name": "Hugging Face Open LLM Leaderboard v2",
                 "url": "https://huggingface.co/datasets/open-llm-leaderboard/contents",
                 "status": "success" if hf_leaderboard_map else "failed",
-                "last_updated": datetime.utcnow().isoformat() + "Z",
+                "last_updated": datetime.now(timezone.utc).isoformat(),
                 "row_count": len(hf_leaderboard_map)
             },
             "benchlm": {
                 "name": "BenchLM.ai Scientific API",
                 "url": "https://benchlm.ai/api/data/leaderboard",
                 "status": "success" if benchlm_models else "failed",
-                "last_updated": datetime.utcnow().isoformat() + "Z",
+                "last_updated": datetime.now(timezone.utc).isoformat(),
                 "row_count": len(benchlm_models)
             },
             "livebench": {
                 "name": "LiveBench LLM Benchmark",
                 "url": "https://raw.githubusercontent.com/LiveBench/LiveBench/main/livebench/data/live_bench/leaderboard.json",
                 "status": lb_status,
-                "last_updated": datetime.utcnow().isoformat() + "Z",
+                "last_updated": datetime.now(timezone.utc).isoformat(),
                 "row_count": len(livebench_map)
             },
             "evalplus": {
                 "name": "EvalPlus Code Benchmark (HumanEval+ & MBPP+)",
                 "url": "https://evalplus.github.io/results/humaneval.json",
                 "status": ep_status,
-                "last_updated": datetime.utcnow().isoformat() + "Z",
+                "last_updated": datetime.now(timezone.utc).isoformat(),
                 "row_count": len(evalplus_map)
             },
             "techpowerup": {
                 "name": "TechPowerUp GPU Database",
                 "url": "https://raw.githubusercontent.com/RightNow-AI/RightNow-GPU-Database/main/data/",
                 "status": "success" if parsed_gpus else "failed",
-                "last_updated": datetime.utcnow().isoformat() + "Z",
+                "last_updated": datetime.now(timezone.utc).isoformat(),
                 "row_count": len(parsed_gpus)
             },
             "huggingface_models": {
                 "name": "Hugging Face GGUF Catalog API",
                 "url": "https://huggingface.co/api/models",
                 "status": "success" if hf_models else "failed",
-                "last_updated": datetime.utcnow().isoformat() + "Z",
+                "last_updated": datetime.now(timezone.utc).isoformat(),
                 "row_count": len(hf_models)
             }
         },
