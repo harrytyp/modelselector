@@ -123,29 +123,40 @@ To keep the model catalog and Open LLM Leaderboard benchmark scores fresh withou
 Create a file at `.github/workflows/refresh_cache.yml`:
 ```yaml
 name: Refresh Model Cache
+
 on:
   schedule:
-    - cron: '0 0 * * *' # Runs every day at midnight UTC
-  workflow_dispatch: # Allows manual trigger
+    - cron: '0 0 * * *'  # Runs every night at 00:00 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: write
 
 jobs:
   refresh:
+    name: Nightly Refresh
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout Code
+      - name: Checkout
         uses: actions/checkout@v4
+
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.10'
-      - name: Run Database Scanner
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install requests urllib3
+
+      - name: Run cache refresh
         run: python scripts/refresh_cache.py
-      - name: Commit and Push Changes
+
+      - name: Commit and push updated cache
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git add data/cache.json
-          git commit -m "Auto-refresh model and GPU cache database [skip ci]" || exit 0
+          git diff --staged --quiet || git commit -m "Nightly refresh: update model & GPU cache database"
           git push
 ```
 
