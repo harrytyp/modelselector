@@ -6,7 +6,7 @@ The entire system is powered by **dynamic, live external APIs** to build the har
 
 ---
 
-### System Architecture & Data Flow
+## 🏗 System Architecture & Data Flow
 
 This diagram illustrates the full data pipeline — from browser-side simulation through live Hugging Face, Open LLM Leaderboard, and GPU database APIs — down to the physics engine that computes VRAM allocation and tokens/s:
 
