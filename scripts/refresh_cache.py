@@ -5,6 +5,7 @@ import re
 from datetime import datetime, timezone
 import os
 import sys
+import time
 
 def get_model_family(model_id):
     name = model_id.lower()
@@ -107,30 +108,75 @@ def refresh_cache():
     
     hf_models = []
     try:
-        with urllib.request.urlopen(req) as response:
+        with urllib.request.urlopen(req, timeout=120) as response:
             hf_models = json.loads(response.read().decode("utf-8"))
         print(f"[+] Found {len(hf_models)} GGUF models on Hugging Face.")
     except Exception as e:
         print(f"[-] Hugging Face GGUF query failed: {e}")
         return
 
-    # 2. Fetch Open LLM Leaderboard v2 Scores via datasets-server (ALL results!)
-    print("[*] Scraping Hugging Face Open LLM Leaderboard v2 benchmark averages...")
-    leaderboard_url = "https://datasets-server.huggingface.co/rows?dataset=open-llm-leaderboard%2Fcontents&config=default&split=train&limit=1000"
-    l_req = urllib.request.Request(leaderboard_url, headers={'User-Agent': 'Mozilla/5.0'})
-    
+    # 2. Fetch Open LLM Leaderboard v2 Scores via datasets-server (PAGINATED!)
+    # The API returns HTTP 500 for large limit values; we paginate in batches of 100.
+    print("[*] Scraping Hugging Face Open LLM Leaderboard v2 benchmark averages (paginated)...")
+    leaderboard_base = "https://datasets-server.huggingface.co/rows?dataset=open-llm-leaderboard%2Fcontents&config=default&split=train"
+    page_size = 100
+    offset = 0
     hf_leaderboard_map = {}
+    leaderboard_fetch_ok = False
+    
     try:
-        with urllib.request.urlopen(l_req) as l_response:
+        # First request to get total row count
+        first_url = f"{leaderboard_base}&limit={page_size}&offset=0"
+        l_req = urllib.request.Request(first_url, headers={'User-Agent': 'Mozilla/5.0'})
+        with urllib.request.urlopen(l_req, timeout=60) as l_response:
             l_data = json.loads(l_response.read().decode("utf-8"))
+            total_rows = l_data.get("num_rows_total", 0)
+            leaderboard_fetch_ok = True
+            
+            # Process first page
             for row_obj in l_data.get('rows', []):
                 row = row_obj.get('row', {})
                 fullname = row.get('fullname')
                 if fullname:
                     hf_leaderboard_map[fullname.lower().strip()] = row
+        
+        print(f"[+] Total leaderboard rows: {total_rows}. Paginating in batches of {page_size}...")
+        offset += page_size
+        
+        # Fetch remaining pages with retry logic
+        max_retries = 3
+        while offset < total_rows:
+            page_url = f"{leaderboard_base}&limit={page_size}&offset={offset}"
+            fetched = False
+            
+            for attempt in range(1, max_retries + 1):
+                try:
+                    p_req = urllib.request.Request(page_url, headers={'User-Agent': 'Mozilla/5.0'})
+                    with urllib.request.urlopen(p_req, timeout=60) as p_response:
+                        p_data = json.loads(p_response.read().decode("utf-8"))
+                        for row_obj in p_data.get('rows', []):
+                            row = row_obj.get('row', {})
+                            fullname = row.get('fullname')
+                            if fullname:
+                                hf_leaderboard_map[fullname.lower().strip()] = row
+                    fetched = True
+                    break
+                except Exception as page_err:
+                    if attempt < max_retries:
+                        print(f"[-] Page offset={offset} attempt {attempt} failed: {page_err}. Retrying in 5s...")
+                        time.sleep(5)
+                    else:
+                        print(f"[-] Page offset={offset} failed after {max_retries} attempts: {page_err}. Skipping.")
+            
+            if fetched:
+                if offset % 500 == 0:
+                    print(f"    ... fetched {len(hf_leaderboard_map)} leaderboard entries so far (offset {offset}/{total_rows})")
+            offset += page_size
+        
         print(f"[+] Successfully loaded {len(hf_leaderboard_map)} scientific leaderboard entries.")
     except Exception as le:
         print(f"[-] Leaderboard API not responding: {le}. Proceeding with benchmark mapping.")
+        leaderboard_fetch_ok = False
 
     # 3. Fetch BenchLM.ai REST API categories (ALL results!)
     print("[*] Querying BenchLM.ai REST API for multi-dimensional rankings...")
@@ -138,7 +184,7 @@ def refresh_cache():
     benchlm_models = []
     try:
         b_req = urllib.request.Request(benchlm_url, headers={'User-Agent': 'Mozilla/5.0'})
-        with urllib.request.urlopen(b_req) as b_res:
+        with urllib.request.urlopen(b_req, timeout=60) as b_res:
             benchlm_data = json.loads(b_res.read().decode("utf-8"))
             benchlm_models = benchlm_data.get("models", [])
         print(f"[+] Loaded {len(benchlm_models)} BenchLM.ai categorical model scores.")
@@ -552,7 +598,7 @@ def refresh_cache():
         print(f"[*] Querying TechPowerUp {brand} GPU database...")
         req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0'})
         try:
-            with urllib.request.urlopen(req) as response:
+            with urllib.request.urlopen(req, timeout=120) as response:
                 brand_data = json.loads(response.read().decode("utf-8"))
             
             print(f"[+] Loaded {len(brand_data)} raw entries for {brand}.")
@@ -619,7 +665,7 @@ def refresh_cache():
             "huggingface_leaderboard": {
                 "name": "Hugging Face Open LLM Leaderboard v2",
                 "url": "https://huggingface.co/datasets/open-llm-leaderboard/contents",
-                "status": "success" if hf_leaderboard_map else "failed",
+                "status": "success" if leaderboard_fetch_ok else "failed",
                 "last_updated": datetime.now(timezone.utc).isoformat(),
                 "row_count": len(hf_leaderboard_map)
             },

@@ -12,6 +12,7 @@ jobs:
   refresh:
     name: Nightly Refresh
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -27,10 +28,36 @@ jobs:
       - name: Run cache refresh
         run: python scripts/refresh_cache.py
 
+      - name: Validate cache.json
+        run: |
+          python -c "
+          import json, sys
+          with open('data/cache.json') as f:
+              d = json.load(f)
+          sources = d.get('sources', {})
+          models = d.get('models', [])
+          gpus = d.get('gpus', [])
+          leaderboard_ok = sources.get('huggingface_leaderboard', {}).get('status') == 'success'
+          models_ok = len(models) > 0
+          print(f'Models: {len(models)}, GPUs: {len(gpus)}')
+          print(f'Leaderboard: {sources.get(\"huggingface_leaderboard\", {}).get(\"status\")} ({sources.get(\"huggingface_leaderboard\", {}).get(\"row_count\", 0)} rows)')
+          for k, v in sources.items():
+              print(f'  {k}: {v.get(\"status\")} ({v.get(\"row_count\", 0)} rows)')
+          if not models_ok:
+              print('ERROR: No models in cache!')
+              sys.exit(1)
+          if not leaderboard_ok:
+              print('WARNING: Leaderboard fetch failed — benchmarks will use fallback estimates')
+          else:
+              # Count benchmark coverage
+              measured = sum(1 for m in models if m.get('benchmarks', {}).get('status') in ('measured', 'derived'))
+              print(f'Benchmark coverage: {measured}/{len(models)} models have measured/derived scores')
+          "
+
       - name: Commit and push updated cache
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git add data/cache.json
-          git diff --staged --quiet || git commit -m "Nightly refresh: update model & GPU cache database"
+          git diff --staged --quiet || git commit -m "Nightly refresh: update model & GPU cache database [skip ci]"
           git push
