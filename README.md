@@ -6,34 +6,38 @@ The entire system is powered by **dynamic, live external APIs** to build the har
 
 ---
 
-## 🏗️ System Architecture & Data Flow
+## 🏗 System Architecture & Data Flow
 
-```mermaid
-graph TD
-    subgraph Browser Client (http://localhost:8000/)
-        UI[Interactive Glassmorphic UI]
-        State[Active Application State]
-        Calc[Physical Simulator Engine]
-        LS[Local Storage Sync]
-    end
+```dot
+digraph Architecture {
+    node [style=filled, fontname="Arial", fontsize=10]
+    Browser [label="Browser Client\nhttp://localhost:8000/", fillcolor="#6366f1", fontcolor=white]
+    HF [label="Hugging Face\nHub APIs", fillcolor="#da552f", fontcolor=white]
+    OLL [label="Open LLM\nLeaderboard API", fillcolor="#3b82f6", fontcolor=white]
+    GPU [label="Wikipedia\nGPU API", fillcolor="#10b981", fontcolor=white]
 
-    subgraph Hugging Face Hub APIs
-        HF_Search[HF Models API] -->|Search Keywords| UI
-        HF_Meta[HF Model Meta API] -->|Model details & Safetensors| State
-        HF_Config[HF Resolve CDN] -->|config.json layers/heads/hidden| Calc
-    end
+    UI [label="UI\n[Glassmorphic UI]", shape=box, fillcolor="#f8fafc", color=black]
+    State [label="State\n[Active State]", shape=box, fillcolor="#f8fafc", color=black]
+    Calc [label="Calc\n[Physics Engine]", shape=box, fillcolor="#f8fafc", color=black]
+    LS [label="LS\n[LocalSync]", shape=box, fillcolor="#f8fafc", color=black]
 
-    subgraph Open LLM Leaderboard API
-        HF_Dataset[HF Datasets Server] -->|Open LLM Leaderboard contents| State
-    end
+    HF_Search [label="HF Models\nAPI Search", shape=ellipse, fillcolor="#fef3c7"]
+    HF_Meta [label="HF Model\nMeta API", shape=ellipse, fillcolor="#fef3c7"]
+    HF_Config [label="HF Resolve\nCDN config.json", shape=ellipse, fillcolor="#fef3c7"]
+    HF_Dataset [label="HF Datasets\nLeaderboard", shape=ellipse, fillcolor="#fef3c7"]
+    Wiki_GPU [label="voidful\nGPU CDN", shape=ellipse, fillcolor="#fef3c7"]
 
-    subgraph Wikipedia GPU API
-        Wiki_GPU[voidful Raw CDN] -->|994 GPU specification array| UI
-    end
-
-    State -->|Math formulas| Calc
-    LS <-->|Offline Persistence| State
-    Calc -->|Interactive Tables & Canvas Charts| UI
+    Browser -> UI [label="render"]
+    Browser -> State [label="persist"]
+    Browser -> LS [label="read/write"]
+    HF -> HF_Search -> UI [label="keywords"]
+    HF -> HF_Meta -> State [label="metadata"]
+    HF -> HF_Config -> Calc [label="config.json"]
+    OLL -> HF_Dataset -> State [label="benchmarks"]
+    GPU -> Wiki_GPU -> UI [label="specs"]
+    State -> Calc [label="formulas"]
+    Calc -> UI [label="charts"]
+}
 ```
 
 ---
@@ -109,7 +113,7 @@ graph TD
   * Intel: `https://raw.githubusercontent.com/RightNow-AI/RightNow-GPU-Database/main/data/intel/all.json`
 * **HTTP Method:** `GET`
 * **Usage:** A comprehensive open-source database containing technical specifications (transistor count, VRAM in GB, memory bandwidth in GB/s, bus width, TDP, and release dates) for over **2,750+ hardware entries** scraped from TechPowerUp.
-* **Filter/Compilation**: The build compiler (`refresh_cache.py`) filters and builds a local dynamic cache database of **812 modern GPUs** with dedicated VRAM $\ge$ 4.0GB, ensuring extremely fast offline-ready lookups and searches in the frontend.
+* **Filter/Compilation**: The build compiler (`refresh_cache.py`) filters and builds a local dynamic cache database of **812 modern GPUs** with dedicated VRAM ≥ 4.0 GB, ensuring extremely fast offline-ready lookups and searches in the frontend.
 
 ---
 
@@ -180,16 +184,24 @@ jobs:
 Memory and speed allocations are compiled using verified GQA-aware formulas:
 
 1. **Quantized Model Size (Weights VRAM):**
-   $$\text{VRAM}_{\text{Weights}} = \frac{\text{Parameters (B)} \times \text{BytesPerWeight (Quant)}}{10^9}$$
+   ```math
+     \text{VRAM}_{\text{Weights}} = \frac{\text{Parameters (B)} \times \text{BytesPerWeight (Quant)}}{10^9}
+   ```
 
 2. **GQA-Aware KV Cache Overhead:**
-   $$\text{VRAM}_{\text{KV Cache}} = \frac{2 \times \text{layers} \times \text{context\_length} \times \text{hidden\_size} \times \left( \frac{\text{num\_kv\_heads}}{\text{num\_attn\_heads}} \right) \times 2 \text{ [bytes/fp16]}}{10^9}$$
+   ```math
+     \text{VRAM}_{\text{KV Cache}} = \frac{2 \times \text{layers} \times \text{context\_length} \times \text{hidden\_size} \times \left( \frac{\text{num\_kv\_heads}}{\text{num\_attn\_heads}} \right) \times 2 \text{ [bytes/fp16]}}{10^9}
+   ```
 
 3. **Throughput Compilation (Tokens/s):**
    * If VRAM fits entirely within the GPU:
-     $$\text{TPS} = \frac{\text{Memory Bandwidth (GB/s)}}{\text{Model Weights Size (GB)}} \times \text{Efficiency Bonus (35\% for GPU)}$$
+     ```math
+       \text{TPS} = \frac{\text{Memory Bandwidth (GB/s)}}{\text{Model Weights Size (GB)}} \times \text{Efficiency Bonus (35\% for GPU)}
+     ```
    * If memory limits require offloading to system RAM:
-     $$\text{TPS} = \frac{\text{System Bus Bandwidth (GB/s)}}{\text{Model Weights Size (GB)}} \times \text{Efficiency (22\% for CPU)}$$
+     ```math
+       \text{TPS} = \frac{\text{System Bus Bandwidth (GB/s)}}{\text{Model Weights Size (GB)}} \times \text{Efficiency (22\% for CPU)}
+     ```
 
 ---
 
