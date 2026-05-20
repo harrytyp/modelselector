@@ -6,39 +6,11 @@ The entire system is powered by **dynamic, live external APIs** to build the har
 
 ---
 
-## 🏗 System Architecture & Data Flow
+### System Architecture & Data Flow
 
-```dot
-digraph Architecture {
-    node [style=filled, fontname="Arial", fontsize=10]
-    Browser [label="Browser Client\nhttp://localhost:8000/", fillcolor="#6366f1", fontcolor=white]
-    HF [label="Hugging Face\nHub APIs", fillcolor="#da552f", fontcolor=white]
-    OLL [label="Open LLM\nLeaderboard API", fillcolor="#3b82f6", fontcolor=white]
-    GPU [label="Wikipedia\nGPU API", fillcolor="#10b981", fontcolor=white]
+This diagram illustrates the full data pipeline — from browser-side simulation through live Hugging Face, Open LLM Leaderboard, and GPU database APIs — down to the physics engine that computes VRAM allocation and tokens/s:
 
-    UI [label="UI\n[Glassmorphic UI]", shape=box, fillcolor="#f8fafc", color=black]
-    State [label="State\n[Active State]", shape=box, fillcolor="#f8fafc", color=black]
-    Calc [label="Calc\n[Physics Engine]", shape=box, fillcolor="#f8fafc", color=black]
-    LS [label="LS\n[LocalSync]", shape=box, fillcolor="#f8fafc", color=black]
-
-    HF_Search [label="HF Models\nAPI Search", shape=ellipse, fillcolor="#fef3c7"]
-    HF_Meta [label="HF Model\nMeta API", shape=ellipse, fillcolor="#fef3c7"]
-    HF_Config [label="HF Resolve\nCDN config.json", shape=ellipse, fillcolor="#fef3c7"]
-    HF_Dataset [label="HF Datasets\nLeaderboard", shape=ellipse, fillcolor="#fef3c7"]
-    Wiki_GPU [label="voidful\nGPU CDN", shape=ellipse, fillcolor="#fef3c7"]
-
-    Browser -> UI [label="render"]
-    Browser -> State [label="persist"]
-    Browser -> LS [label="read/write"]
-    HF -> HF_Search -> UI [label="keywords"]
-    HF -> HF_Meta -> State [label="metadata"]
-    HF -> HF_Config -> Calc [label="config.json"]
-    OLL -> HF_Dataset -> State [label="benchmarks"]
-    GPU -> Wiki_GPU -> UI [label="specs"]
-    State -> Calc [label="formulas"]
-    Calc -> UI [label="charts"]
-}
-```
+![System Architecture](https://quickchart.io/graphviz?graph=digraph%20Architecture%20%7B%0A%20%20%20%20node%20%5Bstyle%3Dfilled%2C%20fontname%3D%22Helvetica%22%2C%20fontsize%3D9%5D%0A%20%20%20%20Browser%20%5Blabel%3D%22Browser%20Client%5Cnhttp%3A//localhost%3A8000/%22%2C%20fillcolor%3D%22%236366f1%22%2C%20fontcolor%3Dwhite%5D%0A%20%20%20%20HF%20%5Blabel%3D%22Hugging%20Face%5CnAPIs%22%2C%20fillcolor%3D%22%23da552f%22%2C%20fontcolor%3Dwhite%5D%0A%20%20%20%20OLL%20%5Blabel%3D%22Open%20LLM%5CnLeaderboard%22%2C%20fillcolor%3D%22%233b82f6%22%2C%20fontcolor%3Dwhite%5D%0A%20%20%20%20Wiki%20%5Blabel%3D%22Wikipedia%5CnGPU%20API%22%2C%20fillcolor%3D%22%2310b981%22%2C%20fontcolor%3Dwhite%5D%0A%0A%20%20%20%20UI%20%5Blabel%3D%22Glassmorphic%20UI%22%2C%20shape%3Dbox%2C%20fillcolor%3D%22%23f8fafc%22%2C%20color%3Dblack%5D%0A%20%20%20%20State%20%5Blabel%3D%22Active%20State%22%2C%20shape%3Dbox%2C%20fillcolor%3D%22%23f8fafc%22%2C%20color%3Dblack%5D%0A%20%20%20%20Calc%20%5Blabel%3D%22Physics%20Engine%22%2C%20shape%3Dbox%2C%20fillcolor%3D%22%23f8fafc%22%2C%20color%3Dblack%5D%0A%20%20%20%20LS%20%5Blabel%3D%22LocalSync%22%2C%20shape%3Dbox%2C%20fillcolor%3D%22%23f8fafc%22%2C%20color%3Dblack%5D%0A%0A%20%20%20%20HFS%20%5Blabel%3D%22HF%20Search%22%2C%20shape%3Dellipse%2C%20fillcolor%3D%22%23fef3c7%22%5D%0A%20%20%20%20HFM%20%5Blabel%3D%22HF%20Meta%22%2C%20shape%3Dellipse%2C%20fillcolor%3D%22%23fef3c7%22%5D%0A%20%20%20%20HFC%20%5Blabel%3D%22HF%20Config%22%2C%20shape%3Dellipse%2C%20fillcolor%3D%22%23fef3c7%22%5D%0A%20%20%20%20HFD%20%5Blabel%3D%22HF%20Leaderboard%22%2C%20shape%3Dellipse%2C%20fillcolor%3D%22%23fef3c7%22%5D%0A%0A%20%20%20%20WikiGPU%20%5Blabel%3D%22voidful%20CDN%22%2C%20shape%3Dellipse%2C%20fillcolor%3D%22%23fef3c7%22%5D%0A%0A%20%20%20%20Browser%20-%3E%20UI%20%5Blabel%3D%22render%22%5D%0A%20%20%20%20Browser%20-%3E%20State%20%5Blabel%3D%22persist%22%5D%0A%20%20%20%20Browser%20-%3E%20LS%20%5Blabel%3D%22read/write%22%5D%0A%20%20%20%20HF%20-%3E%20HFS%20-%3E%20UI%20%5Blabel%3D%22keywords%22%5D%0A%20%20%20%20HF%20-%3E%20HFM%20-%3E%20State%20%5Blabel%3D%22metadata%22%5D%0A%20%20%20%20HF%20-%3E%20HFC%20-%3E%20Calc%20%5Blabel%3D%22config.json%22%5D%0A%20%20%20%20OLL%20-%3E%20HFD%20-%3E%20State%20%5Blabel%3D%22benchmarks%22%5D%0A%20%20%20%20Wiki%20-%3E%20WikiGPU%20-%3E%20UI%20%5Blabel%3D%22specs%22%5D%0A%20%20%20%20State%20-%3E%20Calc%20%5Blabel%3D%22formulas%22%5D%0A%20%20%20%20Calc%20-%3E%20UI%20%5Blabel%3D%22charts%22%5D%0A%7D)
 
 ---
 
