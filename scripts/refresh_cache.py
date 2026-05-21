@@ -177,7 +177,29 @@ def refresh_cache():
             time.sleep(0.5)  # gentle pacing between pages
         return all_models[:max_total]
     hf_models = fetch_all_hf_gguf(max_total=2000)
-    print(f"[+] Retrieved {len(hf_models)} GGUF models from Hugging Face.")
+    # Deduplicate by model_id — HF API with full=true returns one entry per file within each repo
+    seen_ids = set()
+    deduped = []
+    for m in hf_models:
+        mid = m.get('id')
+        if mid and mid not in seen_ids:
+            seen_ids.add(mid)
+            deduped.append(m)
+    hf_models = deduped
+    # Further deduplicate: different orgs (unsloth, ggml-org, lmstudio-community) upload the same base model
+    seen_model = set()
+    deduped_by_base = []
+    for m in hf_models:
+        mid = m.get('id', '')
+        # Extract model name after the org prefix
+        parts = mid.split('/')
+        model_name = parts[-1] if len(parts) > 1 else mid
+        model_name = model_name.lower().replace('-gguf', '').replace('_gguf', '').replace('-', ' ').strip()
+        if model_name not in seen_model:
+            seen_model.add(model_name)
+            deduped_by_base.append(m)
+    hf_models = deduped_by_base
+    print(f"[+] Retrieved {len(hf_models)} unique GGUF models from Hugging Face.")
 
     # 2. Fetch Open LLM Leaderboard v2 Scores via datasets-server (PAGINATED!)
     # The API returns HTTP 500 for large limit values; we paginate in batches of 100.
