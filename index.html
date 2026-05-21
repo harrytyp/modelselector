@@ -3659,6 +3659,11 @@
             return;
           }
 
+          // Minimum target speed filter: skip quants that can't reach the user's target
+          if (activeMinTPS > 0 && sim.speedTPS < activeMinTPS) {
+            return;
+          }
+
           const score = calculateFitScore(model, sim, activeMinTPS);
           
           // We seek the quant key that delivers the highest score
