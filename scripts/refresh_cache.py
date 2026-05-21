@@ -545,12 +545,27 @@ def refresh_cache():
 
         # Base quality estimation formula in case completely missing
         quality_score = 50.0 + (params ** 0.5) * 3.6
-        
+
+        # Detect MoE active parameters (e.g. "30B-A3B" = 30B total, 3B active per token)
+        active_params = params
+        a_match = re.search(r'[aA](\d+(\.\d+)?)[bB]', model_id)
+        if not a_match:
+            a_match = re.search(r'[aA](\d+(\.\d+)?)[bB]', clean_name)
+        if a_match:
+            detected = float(a_match.group(1))
+            if detected < params and detected > 0:
+                active_params = detected
+
+        # For DeepSeek V4 Flash (158B MoE, ~37B active) and similar
+        if active_params == params and ('deepseek' in model_id.lower() or 'glm-5' in model_id.lower()):
+            active_params = round(params / 4.0, 1)  # estimate: MoE with ~25% active
+
         models_list.append({
             "model_id": model_id,
             "name": clean_name,
             "developer": author.title(),
             "parameters": params,
+            "active_parameters": active_params,
             "base_model_id": base_model_id,
             "quality_score": round(quality_score, 1),
             "description": f"HF GGUF repository. {downloads:,} active community downloads.",

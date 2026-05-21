@@ -3178,11 +3178,13 @@
     // Outputs detailed sizing, bandwidth and fit status
     function simulateInference(model, quantKey, contextLen) {
       const params = model.parameters;
+      const activeParams = model.active_parameters || model.parameters;
       const config = model.config;
 
       // 1. Weight Size (GB)
       const bytesPerWeight = BYTES_PER_QUANT[quantKey];
-      const weightsSize = (params * bytesPerWeight);
+      const weightsSize = (params * bytesPerWeight);       // total (for VRAM)
+      const activeWeights = (activeParams * bytesPerWeight); // active (for speed, MoE)
 
       // 2. KV Cache Sizing (Dynamic with Grouped Query Attention support)
       // KV cache = 2 * n_layers * n_heads * head_dim * seq_len * bytes_per_element
@@ -3222,7 +3224,7 @@
           
           // CPU Speed physics: Bounded entirely by System RAM bus limits
           const effectiveBandwidth = activeHardware.ram_bandwidth * CPU_EFFICIENCY;
-          genSpeedTPS = (effectiveBandwidth / weightsSize);
+          genSpeedTPS = (effectiveBandwidth / activeWeights);
         }
       } else if (activeHardware.type === "mac") {
         // Apple Silicon Unified Memory System
@@ -3235,14 +3237,14 @@
 
           // Apple Unified graphics efficiency is higher due to SoC bus unification
           const effectiveBandwidth = activeHardware.bandwidth * APPLE_SILICON_UNIFIED_BONUS;
-          genSpeedTPS = (effectiveBandwidth / weightsSize);
+          genSpeedTPS = (effectiveBandwidth / activeWeights);
         } else if (totalVramRequired <= deviceRam) {
           // Fallback to CPU portion if exceeding Unified VRAM allocation
           fitStatus = "RAM";
           gpuRatio = 0.0;
           actualCpuLayers = numLayers;
           const effectiveBandwidth = activeHardware.ram_bandwidth * CPU_EFFICIENCY;
-          genSpeedTPS = (effectiveBandwidth / weightsSize);
+          genSpeedTPS = (effectiveBandwidth / activeWeights);
         }
       } else {
         // Standard PC Dedicated GPU (NVIDIA CUDA etc.)
@@ -3254,7 +3256,7 @@
 
           // Bandwidth performance: weights are fully in ultra-fast VRAM
           const effectiveBandwidth = activeHardware.bandwidth * GPU_EFFICIENCY;
-          genSpeedTPS = (effectiveBandwidth / weightsSize);
+          genSpeedTPS = (effectiveBandwidth / activeWeights);
         } else {
           // Partial layer offloading (llama.cpp hybrid execution)
           // Compute how much weights fits into VRAM after accounting for active KV cache and runtime graphs
@@ -3281,7 +3283,7 @@
             gpuRatio = 0.0;
             actualCpuLayers = numLayers;
             const effectiveBandwidth = activeHardware.ram_bandwidth * CPU_EFFICIENCY;
-            genSpeedTPS = (effectiveBandwidth / weightsSize);
+            genSpeedTPS = (effectiveBandwidth / activeWeights);
           }
         }
       }
