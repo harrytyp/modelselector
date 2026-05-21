@@ -1185,31 +1185,16 @@
         
         <div id="advancedControlsBlock" style="display: none; margin-top: 0.75rem; flex-direction: column; gap: 1rem;">
 
-          <!-- Filtering options (Format & Quant) -->
+          <!-- Filtering options (Quant) -->
           <div>
             <h3 style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; font-weight: bold; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.3rem;">
-              📦 Format & Quant
+              📦 Quantization Formats
             </h3>
             <div class="checkbox-group">
               <label class="checkbox-label">
                 <input type="checkbox" class="format-checkbox" value="GGUF" checked>
                 <span class="checkbox-custom"></span>
                 GGUF (llama.cpp)
-              </label>
-              <label class="checkbox-label">
-                <input type="checkbox" class="format-checkbox" value="AWQ" checked>
-                <span class="checkbox-custom"></span>
-                AWQ (vLLM / TensorRT)
-              </label>
-              <label class="checkbox-label">
-                <input type="checkbox" class="format-checkbox" value="GPTQ" checked>
-                <span class="checkbox-custom"></span>
-                GPTQ (ExLlama / vLLM)
-              </label>
-              <label class="checkbox-label">
-                <input type="checkbox" class="format-checkbox" value="EXL2" checked>
-                <span class="checkbox-custom"></span>
-                EXL2 (ExLlamaV2)
               </label>
             </div>
           </div>
@@ -1286,7 +1271,7 @@
             <option value="speed">Generation Speed (tok/s)</option>
             <option value="vram">Memory Required (GB)</option>
             <option value="params">Parameter Size (B)</option>
-            <option value="context">Context Capacity Score</option>
+            <option value="context">GPU Load Ratio</option>
           </select>
         </div>
       </div>
@@ -3438,8 +3423,8 @@
         weightContext = profile.weight_context;
       }
       
-      // A. SPEED SCORE (0 to 1.5, target is 1.0)
-      const speedScore = Math.min(simulation.speedTPS / targetTPS, 1.5);
+      // A. SPEED SCORE (unbounded: faster models score higher naturally)
+      const speedScore = simulation.speedTPS / targetTPS;
 
       // B. QUALITY SCORE (0 to 1.0)
       const baseQuality = getDynamicUseCaseScore(model, selectedUsecase);
@@ -3464,8 +3449,8 @@
         (modelQuality * weightQuality) + 
         (contextScore * weightContext);
 
-      // Cap at 100%
-      return Math.round(Math.min(totalScoreFraction * 100, 100));
+      // Normalize to percentage (no cap — faster/better models score higher)
+      return Math.round(totalScoreFraction * 100);
     }
 
     // RENDER DATABASE SOURCES & API STATUS
@@ -3799,7 +3784,7 @@
           <td>
             <div class="score-container">
               <div class="score-bar-bg">
-                <div class="score-bar-fill" style="width: ${res.fitScore}%;"></div>
+                <div class="score-bar-fill" style="width: ${Math.min(res.fitScore, 100)}%;"></div>
               </div>
               <span class="score-percent">${res.fitScore}%</span>
             </div>
