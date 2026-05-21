@@ -3,11 +3,51 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ModelSelector - LLM Optimizer & Hardware Simulator</title>
-  <!-- Google Fonts: Outfit & JetBrains Mono -->
+  <title>ModelSelector — Find the Best Local LLM for Your Hardware</title>
+  <meta name="description" content="Smart LLM hardware simulator: match any open-source model + quantization to your GPU/CPU. Real VRAM, speed, and fit scores from live benchmarks.">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://harrytyp.github.io/modelselector/">
+  
+  <!-- Open Graph -->
+  <meta property="og:title" content="ModelSelector — Local LLM Optimizer & Hardware Simulator">
+  <meta property="og:description" content="Compare 700+ GGUF models against your exact hardware. VRAM-aware, MoE-aware, quant-by-quant speed estimates from real physics.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://harrytyp.github.io/modelselector/">
+  
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="ModelSelector — Find the Right Local LLM for Your Hardware">
+  <meta name="twitter:description" content="Real VRAM, real speed, real fit. Pick the best quant for your GPU in seconds.">
+  
+  <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Favicon -->
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>⚡</text></svg>">
+
+  <!-- JSON-LD Structured Data -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "ModelSelector",
+    "url": "https://harrytyp.github.io/modelselector/",
+    "description": "Hardware-aware LLM model selector. Computes VRAM, speed, and fit scores for any GGUF quant on your GPU/CPU.",
+    "applicationCategory": "Developer Tool",
+    "operatingSystem": "Browser-based",
+    "author": {
+      "@type": "Person",
+      "name": "Kolja Knodel"
+    },
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "USD"
+    }
+  }
+  </script>
   
   <style>
     :root {
@@ -1141,15 +1181,22 @@
     <!-- HEADER -->
     <header>
       <div class="brand">
-        <div class="brand-logo">LM</div>
+        <div class="brand-logo" style="background: linear-gradient(135deg, var(--accent-indigo), var(--accent-cyan)); border-radius: 12px; width: 42px; height: 42px; display: flex; align-items: center; justify-content: center; box-shadow: var(--glow-shadow); position: relative; overflow: hidden;">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="2" y="3" width="20" height="14" rx="2"/>
+            <line x1="8" y1="21" x2="16" y2="21"/>
+            <line x1="12" y1="17" x2="12" y2="21"/>
+            <path d="M7 7l4 4-4 4M17 7l-4 4 4 4" stroke-width="1.8"/>
+          </svg>
+        </div>
         <div>
           <h1 class="brand-title">ModelSelector</h1>
-          <p class="brand-subtitle">Physical Hardware Simulator & Local LLM Optimizer</p>
+          <p class="brand-subtitle">Hardware-Aware LLM Optimizer</p>
         </div>
       </div>
-      <div class="badge-cache-status" id="btnOpenStatusModal" title="Click to view Database Scraper Status and toggle Active APIs">
+      <div class="badge-cache-status" id="btnOpenStatusModal" title="Live data sources and benchmark status">
         <div class="cache-dot" id="cacheDot"></div>
-        <span id="cacheText">Scraper Status & API Controls</span>
+        <span id="cacheStatusText" style="font-weight: 600;">Database</span>
       </div>
     </header>
 
@@ -1161,8 +1208,8 @@
 
       <!-- Mode Toggle: Auto-Detect vs Manual Setup -->
       <div style="display: flex; gap: 0.25rem; background: rgba(0,0,0,0.25); padding: 0.25rem; border-radius: 8px; margin-bottom: 0.75rem; border: 1px solid var(--border-color);">
-        <button id="btnHwAuto" class="btn-toggle active" style="flex: 1; padding: 0.4rem 0.5rem; font-size: 0.75rem; font-weight: bold; border-radius: 6px; border: none; cursor: pointer;">⚡ Auto-Detect</button>
-        <button id="btnHwManual" class="btn-toggle" style="flex: 1; padding: 0.4rem 0.5rem; font-size: 0.75rem; font-weight: bold; border-radius: 6px; border: none; cursor: pointer;">⚙️ Manual Setup</button>
+        <button id="btnHwAuto" class="btn-toggle active" style="flex: 1; padding: 0.4rem 0.5rem; font-size: 0.75rem; font-weight: bold; border-radius: 6px; border: none; cursor: pointer;">⚡ Auto</button>
+        <button id="btnHwManual" class="btn-toggle" style="flex: 1; padding: 0.4rem 0.5rem; font-size: 0.75rem; font-weight: bold; border-radius: 6px; border: none; cursor: pointer;">⚙️ Manual</button>
       </div>
 
       <!-- Auto-Detect mode: the toggle button IS the action -->
@@ -1174,7 +1221,7 @@
 
         <div style="font-size: 0.72rem; text-align: right; margin-bottom: 0.5rem;">
           <a href="#" id="toggleGpuSearch" style="color: var(--accent-cyan); text-decoration: none; font-weight: 500; opacity: 0.85; transition: opacity 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.85'">
-            Can't find GPU? Search 2,800+ DB
+            Search 2,800+ GPU models
           </a>
         </div>
 
@@ -1223,7 +1270,7 @@
         <div style="display: flex; align-items: center; justify-content: space-between; gap: 0.75rem;">
           <div style="display: flex; align-items: center; gap: 0.5rem;">
             <span style="font-size: 0.9rem;">⚡</span>
-            <span style="font-size: 0.82rem; font-weight: 600; color: var(--text-primary);">GPU-Fully Loaded Only</span>
+  <span style="font-size:0.78rem;font-weight:600;">GPU-Only</span>
           </div>
           <label style="position: relative; display: inline-block; width: 44px; height: 24px; cursor: pointer; flex-shrink: 0;">
             <input type="checkbox" id="gpuOnlyCheckbox" style="opacity: 0; width: 0; height: 0;">
@@ -1238,7 +1285,7 @@
       </div>
 
       <!-- Inference parameters -->
-      <h2 class="section-title">Inference Settings</h2>
+      <h2 class="section-title">Inference</h2>
 
       <!-- Mode Selector -->
       <div style="display: flex; gap: 0.25rem; background: rgba(0,0,0,0.25); padding: 0.25rem; border-radius: 8px; margin-bottom: 1rem; border: 1px solid var(--border-color);">
@@ -1288,7 +1335,7 @@
 
         <!-- Custom weights normalizers -->
         <div style="border-top: 1px solid rgba(255,255,255,0.05); padding-top: 0.75rem; margin-top: 0.25rem; display: flex; flex-direction: column; gap: 0.75rem;">
-          <div style="font-size: 0.7rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;">🎛️ Recommendation Weights</div>
+          <div style="font-size: 0.7rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;">🎛️ Weight Adjustments</div>
           
           <div class="form-group" style="margin-bottom: 0;">
             <label class="form-label" for="weightSpeedRange" style="font-size: 0.75rem;">
@@ -1316,7 +1363,7 @@
       <!-- Advanced features toggle -->
       <div style="margin-top: 1rem; border-top: 1px solid var(--border-color); padding-top: 1rem;">
         <button id="btnToggleAdvanced" style="width: 100%; display: flex; align-items: center; justify-content: space-between; background: rgba(255, 255, 255, 0.02); border: 1px solid var(--border-color); color: var(--text-muted); font-size: 0.8rem; font-weight: 600; padding: 0.6rem 0.8rem; border-radius: 8px; cursor: pointer; transition: all 0.2s;">
-          <span style="display: flex; align-items: center; gap: 0.5rem;">🛠️ Advanced Features</span>
+          <span style="display: flex; align-items: center; gap: 0.5rem;">⚙️ Options</span>
           <span id="advancedIcon">▼</span>
         </button>
         
@@ -1339,7 +1386,7 @@
           <!-- License Filter -->
           <div style="border-top: 1px solid rgba(255, 255, 255, 0.03); padding-top: 0.75rem;">
             <h3 style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; font-weight: bold; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.3rem;">
-              📜 License Filter
+          📜 License
             </h3>
             <select id="licenseFilter" class="license-filter-select">
               <option value="all">All Licenses</option>
@@ -1366,7 +1413,7 @@
             </h3>
             <div class="form-group" style="position: relative; margin-bottom: 0.5rem;">
               <label class="form-label" for="hfModelIdInput" style="font-size: 0.7rem; color: var(--text-muted);">
-                Search Hugging Face / Enter ID
+              Hugging Face Import
               </label>
               <div style="display: flex; gap: 0.5rem; margin-top: 0.25rem;">
                 <input type="text" id="hfModelIdInput" placeholder="e.g. gemma-2-2b, meta-llama/Llama-3-8b" style="flex: 1; padding: 0.5rem 0.75rem; font-size: 0.8rem; border-radius: 8px; background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); color: #fff;">
@@ -1388,24 +1435,24 @@
       <!-- Stats Overview Row -->
       <div class="stats-overview">
         <div class="stat-card">
-          <span class="stat-title">Active VRAM Pool</span>
+          <span class="stat-title">GPU VRAM</span>
           <span class="stat-value highlight-indigo" id="poolVram">24.0 GB</span>
           <span class="stat-desc" id="poolVramDesc">NVIDIA RTX 4090</span>
         </div>
         <div class="stat-card">
-          <span class="stat-title">System RAM Pool</span>
+          <span class="stat-title">System RAM</span>
           <span class="stat-value highlight-cyan" id="poolRam">64.0 GB</span>
           <span class="stat-desc" id="poolRamDesc">DDR4 Dual-Channel</span>
         </div>
         <div class="stat-card">
-          <span class="stat-title">Max Memory Bus</span>
+          <span class="stat-title">Memory Bus</span>
           <span class="stat-value" id="poolBandwidth">1,008 GB/s</span>
-          <span class="stat-desc">Peak physical throughput</span>
+          <span class="stat-desc">Peak throughput (theoretical)</span>
         </div>
         <div class="stat-card">
-          <span class="stat-title">Use Case Profile</span>
-          <span class="stat-value" id="profileTitle" style="font-size: 1.35rem; font-weight: 700; margin-top: 0.75rem;">💬 Chat-Focused</span>
-          <span class="stat-desc" id="profileWeights">60% Speed / 40% Quality</span>
+          <span class="stat-title">Use Case</span>
+          <span class="stat-value" id="profileTitle" style="font-size: 1.35rem; font-weight: 700; margin-top: 0.75rem;">💬 Chat</span>
+          <span class="stat-desc" id="profileWeights">60% Speed · 40% Quality</span>
         </div>
       </div>
 
@@ -1417,7 +1464,7 @@
           <!-- Custom-styled premium search wrapper -->
           <div class="search-wrapper" style="position: relative; flex: 1; max-width: 420px;">
             <span class="search-icon" style="position: absolute; left: 0.95rem; top: 50%; transform: translateY(-50%); color: var(--accent-cyan); opacity: 0.9; font-size: 0.95rem; pointer-events: none; transition: all 0.2s;">🔍</span>
-            <input type="text" id="searchInput" class="search-input" placeholder="Search models, tags, developers..." style="width: 100%; padding: 0.65rem 1rem 0.65rem 2.6rem; font-size: 0.85rem; border-radius: 12px; background: rgba(0, 0, 0, 0.3); border: 1px solid var(--border-color); color: #fff; outline: none; transition: all 0.25s; box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);" onfocus="this.style.borderColor='var(--accent-cyan)'; this.style.boxShadow='0 0 12px rgba(6, 182, 212, 0.2), inset 0 2px 4px rgba(0,0,0,0.2)'; this.previousElementSibling.style.opacity='1'; this.previousElementSibling.style.color='var(--accent-cyan)';" onblur="this.style.borderColor='var(--border-color)'; this.style.boxShadow='inset 0 2px 4px rgba(0,0,0,0.2)'; this.previousElementSibling.style.opacity='0.9'; this.previousElementSibling.style.color='var(--accent-cyan)';">
+            <input type="text" id="searchInput" class="search-input" placeholder="Search by model, tag, developer... (e.g. gemma, 70B, coding)" style="width: 100%; padding: 0.65rem 1rem 0.65rem 2.6rem; font-size: 0.85rem; border-radius: 12px; background: rgba(0, 0, 0, 0.3); border: 1px solid var(--border-color); color: #fff; outline: none; transition: all 0.25s; box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);" onfocus="this.style.borderColor='var(--accent-cyan)'; this.style.boxShadow='0 0 12px rgba(6, 182, 212, 0.2), inset 0 2px 4px rgba(0,0,0,0.2)'; this.previousElementSibling.style.opacity='1'; this.previousElementSibling.style.color='var(--accent-cyan)';" onblur="this.style.borderColor='var(--border-color)'; this.style.boxShadow='inset 0 2px 4px rgba(0,0,0,0.2)'; this.previousElementSibling.style.opacity='0.9'; this.previousElementSibling.style.color='var(--accent-cyan)';">
           </div>
           
           <!-- GPU-Fully Loaded Toggle next to Search in the main list bar -->
@@ -1437,11 +1484,11 @@
 
           <span style="font-size: 0.75rem; color: var(--text-muted); font-weight: 600;">Sort:</span>
           <select id="sortSelect" class="sort-select" style="background: rgba(0,0,0,0.25); border: 1px solid var(--border-color); border-radius: 12px; padding: 0.55rem 2rem 0.55rem 0.75rem; color: #fff; font-size: 0.825rem; font-weight: 600; cursor: pointer; outline: none; transition: all 0.2s; -webkit-appearance: none; -moz-appearance: none; appearance: none; background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23ffffff%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E'); background-repeat: no-repeat; background-position: right%200.75rem%20center; background-size: 0.65rem%20auto; min-width: 180px;">
-            <option value="score" selected>Overall Fit Score</option>
-            <option value="quality">Model Intelligence (General)</option>
-            <option value="speed">Generation Speed (tok/s)</option>
-            <option value="vram">Memory Required (GB)</option>
-            <option value="params">Parameter Size (B)</option>
+            <option value="score" selected>Overall Fit</option>
+            <option value="quality">Intelligence</option>
+            <option value="speed">Speed (tok/s)</option>
+            <option value="vram">VRAM (GB)</option>
+            <option value="params">Parameters (B)</option>
             <option value="context">GPU Load Ratio</option>
           </select>
         </div>
@@ -1460,10 +1507,10 @@
             <thead>
               <tr>
                 <th class="checkbox-col"><input type="checkbox" id="selectAllCheckbox" class="compare-checkbox" title="Select all for comparison"></th>
-                <th data-sort="score" style="cursor:pointer;">Model Name & Description</th>
-                <th data-sort="vram" style="cursor:pointer;">Best Fitting Quant</th>
-                <th data-sort="vram" style="cursor:pointer;">Hardware Allocation</th>
-                <th data-sort="speed" style="cursor:pointer;">Est. Gen Speed</th>
+                <th data-sort="score" style="cursor:pointer;">Model</th>
+                <th data-sort="vram" style="cursor:pointer;">Best Quant</th>
+                <th data-sort="vram" style="cursor:pointer;">GPU Fit</th>
+                <th data-sort="speed" style="cursor:pointer;">Speed</th>
                 <th data-sort="quality" style="cursor:pointer;">
                   <div style="display: flex; align-items: center; gap: 0.4rem;">
                     <span>Intelligence</span>
@@ -1483,8 +1530,8 @@
       <!-- Scatter Plot View (hidden by default) -->
       <div id="scatterView" class="scatter-container" style="display: none;">
         <div class="scatter-controls">
-          <span class="title">📊 Speed vs Quality — Model Landscape</span>
-          <span style="font-size:0.7rem; color:var(--text-muted);">X: Intelligence Score · Y: Generation Speed (tok/s) · Color: Quant Type</span>
+        <span class="title">Speed vs Intelligence — Model Landscape</span>
+          <span style="font-size:0.7rem; color:var(--text-muted);">X: Quality Score · Y: Speed (tok/s) · Color: Quant</span>
         </div>
         <canvas id="scatterCanvas"></canvas>
         <div id="scatterLegend" class="scatter-legend"></div>
@@ -1530,8 +1577,8 @@
       
       <div class="modal-header">
         <div class="modal-header-info">
-          <h2 id="modalModelName">Llama 3.1 8B Instruct</h2>
-          <p id="modalModelId">meta-llama/Meta-Llama-3.1-8B-Instruct</p>
+          <h2 id="modalModelName">Model Details</h2>
+          <p id="modalModelId">Full specs, benchmarks, and quant comparison</p>
         </div>
         <button class="btn-close" id="modalClose">✕</button>
       </div>
@@ -2154,7 +2201,7 @@
 
     // DOM ELEMENTS
     const cacheDot = document.getElementById("cacheDot");
-    const cacheText = document.getElementById("cacheText");
+    const cacheText = document.getElementById("cacheStatusText");
     const gpuSelect = document.getElementById("gpuSelect");
     const customHardwareBlock = document.getElementById("customHardwareBlock");
     const customVramRange = document.getElementById("customVramRange");
@@ -2217,7 +2264,7 @@
           appDb = await response.json();
           cacheDot.style.backgroundColor = "var(--fit-green)";
           cacheDot.style.boxShadow = "0 0 8px var(--fit-green)";
-          cacheText.textContent = "Database: Synced";
+          cacheText.textContent = "Synced";
         } else {
           throw new Error("Local cache file missing");
         }
@@ -2225,7 +2272,7 @@
         console.warn("CORS/Fetch restriction detected. Loading internal fallback database...", err);
         cacheDot.style.backgroundColor = "var(--fit-amber)";
         cacheDot.style.boxShadow = "0 0 8px var(--fit-amber)";
-        cacheText.textContent = "Offline Fallback Loaded";
+        cacheText.textContent = "Offline Mode";
       }
 
       loadLocalModels();
@@ -2558,7 +2605,7 @@
           e.preventDefault();
           const isHidden = gpuSearchBlock.style.display === "none";
           gpuSearchBlock.style.display = isHidden ? "block" : "none";
-          toggleGpuSearch.textContent = isHidden ? "Hide GPU Search Panel" : "Can't find GPU? Search 2,800+ DB";
+          toggleGpuSearch.textContent = isHidden ? "Hide Search" : "Search 2,800+ GPU models";
         });
       }
 
@@ -2608,6 +2655,16 @@
       const btnOpenStatusModal = document.getElementById("btnOpenStatusModal");
       const statusModal = document.getElementById("statusModal");
       const statusModalClose = document.getElementById("statusModalClose");
+      const btnShowPrivacy = document.getElementById("btnShowPrivacy");
+      const privacyModal = document.getElementById("privacyModal");
+      const privacyModalClose = document.getElementById("privacyModalClose");
+
+      // Privacy modal
+      if (btnShowPrivacy && privacyModal && privacyModalClose) {
+        btnShowPrivacy.addEventListener("click", () => { privacyModal.style.display = "flex"; });
+        privacyModalClose.addEventListener("click", () => { privacyModal.style.display = "none"; });
+        window.addEventListener("click", (e) => { if (e.target === privacyModal) privacyModal.style.display = "none"; });
+      }
 
       if (btnOpenStatusModal && statusModal && statusModalClose) {
         btnOpenStatusModal.addEventListener("click", () => {
@@ -4897,8 +4954,8 @@
       
       <div class="modal-header">
         <div class="modal-header-info">
-          <h2>📡 Database & API Sources Status</h2>
-          <p>Real-time transparency into live scientific evaluation data sources</p>
+          <h2>📡 Data Sources & Status</h2>
+          <p>Live benchmark databases powering quality scores</p>
         </div>
         <button class="btn-close" id="statusModalClose">✕</button>
       </div>
@@ -4906,7 +4963,7 @@
       <div class="modal-content" style="display: flex; flex-direction: column; gap: 1.25rem;">
         
         <div style="background: rgba(255,255,255,0.02); border: 1px solid var(--border-color); border-radius: 12px; padding: 1rem; font-size: 0.85rem; line-height: 1.5; color: var(--text-secondary);">
-          💡 <strong>How it works:</strong> The ModelSelector Optimizer pulls raw metrics from verified scientific LLM databases. Below you can view the retrieval status, dynamic record counts, and last scraper update timestamps. You can toggle each provider <strong>On/Off</strong> to see how dynamic use-case fit scores automatically adapt and normalize in real time!
+          💡 <strong>How it works:</strong> ModelSelector pulls live metrics from public LLM benchmark databases. Below you can see each source's status, record count, and last sync. Toggle sources <strong>On/Off</strong> to see how the quality score adapts.
         </div>
 
         <div id="cacheTimestamp" style="background: rgba(255,255,255,0.02); border: 1px solid var(--border-color); border-radius: 12px; padding: 0.8rem 1rem; font-size: 0.8rem; line-height: 1.5; color: var(--text-secondary); display: flex; align-items: center; gap: 0.5rem;">
@@ -4920,6 +4977,55 @@
 
       </div>
 
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer style="grid-column: 1 / -1; margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid var(--border-color); display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 1rem;">
+    <div style="display: flex; flex-wrap: wrap; gap: 1.5rem; font-size: 0.75rem; color: var(--text-muted);">
+      <span>ModelSelector v1.0 — made by <a href="https://github.com/harrytyp" target="_blank" rel="noopener" style="color: var(--accent-indigo); text-decoration: none;">Kolja Knodel</a></span>
+      <span>Data sourced from <a href="https://huggingface.co/" target="_blank" rel="noopener" style="color: var(--text-secondary); text-decoration: none;">Hugging Face</a>, <a href="https://livebench.ai/" target="_blank" rel="noopener" style="color: var(--text-secondary); text-decoration: none;">LiveBench</a>, <a href="https://evalplus.github.io/" target="_blank" rel="noopener" style="color: var(--text-secondary); text-decoration: none;">EvalPlus</a>, <a href="https://benchlm.ai/" target="_blank" rel="noopener" style="color: var(--text-secondary); text-decoration: none;">BenchLM</a></span>
+    </div>
+    <div style="display: flex; flex-wrap: wrap; gap: 1rem; font-size: 0.7rem; color: var(--text-muted); align-items: center;">
+      <button id="btnShowPrivacy" style="background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 0.7rem; text-decoration: underline; text-underline-offset: 2px;">Privacy</button>
+      <span>·</span>
+      <span>All data processed locally · No tracking · No cookies · <a href="https://github.com/harrytyp/modelselector" target="_blank" rel="noopener" style="color: var(--text-secondary); text-decoration: none;">Source</a></span>
+    </div>
+  </footer>
+
+  <!-- PRIVACY MODAL -->
+  <div class="modal-overlay" id="privacyModal">
+    <div class="modal-container" style="max-width: 600px;">
+      <div class="modal-header">
+        <div class="modal-header-info">
+          <h2>🔒 Privacy & Legal</h2>
+          <p>ModelSelector is a static client-side application</p>
+        </div>
+        <button class="btn-close" id="privacyModalClose">✕</button>
+      </div>
+      <div class="modal-content" style="display: flex; flex-direction: column; gap: 1rem; padding: 1.5rem;">
+        
+        <div style="background: rgba(255,255,255,0.02); border: 1px solid var(--border-color); border-radius: 12px; padding: 1rem; font-size: 0.85rem; line-height: 1.6; color: var(--text-secondary);">
+          <p><strong>No Data Collection.</strong> ModelSelector runs entirely in your browser. No cookies, no tracking scripts, no analytics, no telemetry. All data processing — VRAM calculations, speed simulation, benchmark comparison — happens locally on your machine.</p>
+        </div>
+
+        <div style="background: rgba(255,255,255,0.02); border: 1px solid var(--border-color); border-radius: 12px; padding: 1rem; font-size: 0.85rem; line-height: 1.6; color: var(--text-secondary);">
+          <p><strong>External Requests.</strong> When you use the "Import from Hugging Face" feature, a request is sent directly to the Hugging Face API to search for models. No data about you or your hardware is transmitted.</p>
+        </div>
+
+        <div style="background: rgba(255,255,255,0.02); border: 1px solid var(--border-color); border-radius: 12px; padding: 1rem; font-size: 0.85rem; line-height: 1.6; color: var(--text-secondary);">
+          <p><strong>Model Data.</strong> All model specifications, benchmark scores, and GPU hardware data are fetched from public APIs (Hugging Face, LiveBench, EvalPlus, BenchLM, TechPowerUp) and cached in a local JSON file. No user data is ever sent to any third party.</p>
+        </div>
+
+        <div style="background: rgba(255,255,255,0.02); border: 1px solid var(--border-color); border-radius: 12px; padding: 1rem; font-size: 0.85rem; line-height: 1.6; color: var(--text-secondary);">
+          <p><strong>License.</strong> ModelSelector is open-source under the MIT License. See <a href="https://github.com/harrytyp/modelselector" target="_blank" rel="noopener" style="color: var(--accent-indigo); text-decoration: none;">github.com/harrytyp/modelselector</a> for details.</p>
+        </div>
+
+        <div style="background: rgba(255,255,255,0.02); border: 1px solid var(--border-color); border-radius: 12px; padding: 1rem; font-size: 0.85rem; line-height: 1.6; color: var(--text-secondary);">
+          <p><strong>Disclaimer.</strong> Speed estimates are physics-based approximations. Actual performance depends on your specific hardware configuration, driver version, cooling, system load, and software implementation. Use these estimates as a guide, not a guarantee.</p>
+        </div>
+
+      </div>
     </div>
   </div>
 
