@@ -511,7 +511,11 @@
       border-radius: 20px;
       backdrop-filter: blur(16px);
       box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-      overflow: hidden;
+      overflow-x: auto;
+    }
+    
+    .models-table-container.benchmarks-expanded .models-table {
+      min-width: 1400px;
     }
 
     table.models-table {
@@ -1419,19 +1423,19 @@
           <!-- GPU-Fully Loaded Toggle next to Search in the main list bar -->
           </div>
 
-        <div class="sort-wrapper" style="display: flex; align-items: center; gap: 0.75rem;">
-          <!-- View Toggle -->
-          <div class="view-toggle-group">
-            <button class="view-toggle-btn active" data-view="table">📋 Table</button>
-            <button class="view-toggle-btn" data-view="scatter">📊 Scatter</button>
+        <div class="sort-wrapper" style="display: flex; align-items: center; gap: 0.5rem;">
+          <!-- View Toggle (compact) -->
+          <div class="view-toggle-group" style="display:flex;gap:2px;background:rgba(0,0,0,0.25);border-radius:10px;padding:2px;border:1px solid var(--border-color);">
+            <button class="view-toggle-btn active" data-view="table" title="Table view">📋</button>
+            <button class="view-toggle-btn" data-view="scatter" title="Scatter plot">📊</button>
           </div>
           
-          <!-- Compare Button -->
-          <button id="btnCompare" class="btn-compare">
-            🔄 Compare (<span id="compareCount">0</span>)
+          <!-- Compare Button (compact, hidden if nothing selected) -->
+          <button id="btnCompare" class="btn-compare" style="display:none;">
+            🔄 <span id="compareCount">0</span>
           </button>
 
-          <span style="font-size: 0.8rem; color: var(--text-muted); font-weight: 600;">Sort By:</span>
+          <span style="font-size: 0.75rem; color: var(--text-muted); font-weight: 600;">Sort:</span>
           <select id="sortSelect" class="sort-select" style="background: rgba(0,0,0,0.25); border: 1px solid var(--border-color); border-radius: 12px; padding: 0.55rem 2rem 0.55rem 0.75rem; color: #fff; font-size: 0.825rem; font-weight: 600; cursor: pointer; outline: none; transition: all 0.2s; -webkit-appearance: none; -moz-appearance: none; appearance: none; background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23ffffff%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E'); background-repeat: no-repeat; background-position: right%200.75rem%20center; background-size: 0.65rem%20auto; min-width: 180px;">
             <option value="score" selected>Overall Fit Score</option>
             <option value="quality">Model Intelligence (General)</option>
@@ -1444,6 +1448,12 @@
       </div>
 
       <!-- Models List Container -->
+      <div id="activeFilters" class="active-filters-bar" style="display: none; margin-top: 0.5rem; padding: 0.5rem 1rem; border-radius: 12px; background: rgba(0,0,0,0.15); border: 1px solid var(--border-color); gap: 0.5rem; flex-wrap: wrap; align-items: center; font-size: 0.8rem;">
+        <span style="color: var(--text-muted); font-weight: 600; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.03em;">Filters:</span>
+        <div id="filterBadges" style="display: flex; gap: 0.4rem; flex-wrap: wrap; align-items: center;"></div>
+        <button id="clearAllFilters" class="filter-badge clear-btn" style="margin-left: auto; background: rgba(239,68,68,0.15); color: #ef4444; border: 1px solid rgba(239,68,68,0.2); border-radius: 8px; padding: 0.25rem 0.6rem; font-size: 0.7rem; cursor: pointer; font-weight: 600; display: none;">✕ Clear all</button>
+      </div>
+
       <div id="tableView">
         <div class="models-table-container">
           <table class="models-table">
@@ -2676,6 +2686,8 @@
       btnExpandBench.addEventListener("click", (e) => {
         e.stopPropagation();
         benchmarksExpanded = !benchmarksExpanded;
+        const container = document.querySelector(".models-table-container");
+        if (container) container.classList.toggle("benchmarks-expanded", benchmarksExpanded);
         updateBenchmarkColumns();
         renderDashboard();
       });
@@ -4017,6 +4029,7 @@
       const colCount = benchmarksExpanded ? 7 + BENCHMARK_KEYS.length : 7;
       if (computedResults.length === 0) {
         modelsTableBody.innerHTML = `<tr><td colspan="${colCount}" style="text-align: center; color: var(--text-muted); padding: 3rem;">No models matched your active filters or query. Try adjusting VRAM limits or format settings.</td></tr>`;
+        updateFilterBadges();
         return;
       }
 
@@ -4145,6 +4158,7 @@
 
         modelsTableBody.appendChild(tr);
       });
+      updateFilterBadges();
     }
 
     // OPEN DETAILED COMPARISON DIALOG
@@ -4509,10 +4523,70 @@
       }
     }
 
+    // UPDATE FILTER BADGES
+    function updateFilterBadges() {
+      const badges = [];
+      const searchVal = searchInput ? searchInput.value.trim() : "";
+      if (searchVal) {
+        badges.push({ label: `Search: "${searchVal}"`, key: "search" });
+      }
+      const licVal = licenseFilter ? licenseFilter.value : "all";
+      if (licVal !== "all") {
+        badges.push({ label: `License: ${licVal.replace(/-/g, " ")}`, key: "license", value: "all" });
+      }
+      const gpuOnly = document.getElementById("gpuOnlyToggle");
+      if (gpuOnly && gpuOnly.checked) {
+        badges.push({ label: "GPU-Only", key: "gpuOnly", value: false });
+      }
+      const minTps = document.getElementById("minTargetSpeed");
+      if (minTps && parseFloat(minTps.value) > 0) {
+        badges.push({ label: `Min ${parseFloat(minTps.value).toFixed(0)} tok/s`, key: "minTps", value: "0" });
+      }
+
+      const container = document.getElementById("activeFilters");
+      const badgeContainer = document.getElementById("filterBadges");
+      const clearBtn = document.getElementById("clearAllFilters");
+      if (!container || !badgeContainer) return;
+
+      if (badges.length === 0) {
+        container.style.display = "none";
+        return;
+      }
+      container.style.display = "flex";
+      badgeContainer.innerHTML = badges.map(b => `
+        <span class="filter-badge" data-key="${b.key}" style="display:inline-flex;align-items:center;gap:0.3rem;background:rgba(99,102,241,0.15);color:var(--accent-indigo);border:1px solid rgba(99,102,241,0.2);border-radius:8px;padding:0.25rem 0.6rem;font-size:0.75rem;font-weight:500;">
+          ${b.label}
+          <span class="filter-remove" data-key="${b.key}" style="cursor:pointer;opacity:0.6;font-size:0.7rem;margin-left:0.15rem;">✕</span>
+        </span>
+      `).join("");
+      clearBtn.style.display = badges.length > 1 ? "inline-flex" : "none";
+
+      // Click handlers for individual badge removal
+      badgeContainer.querySelectorAll(".filter-remove").forEach(el => {
+        el.addEventListener("click", (e) => {
+          const key = e.target.dataset.key;
+          if (key === "search") { searchInput.value = ""; }
+          else if (key === "license") { licenseFilter.value = "all"; }
+          else if (key === "gpuOnly") { document.getElementById("gpuOnlyToggle").checked = false; }
+          else if (key === "minTps") { document.getElementById("minTargetSpeed").value = "0"; }
+          renderDashboard();
+        });
+      });
+
+      clearBtn.onclick = () => {
+        searchInput.value = "";
+        licenseFilter.value = "all";
+        if (document.getElementById("gpuOnlyToggle")) document.getElementById("gpuOnlyToggle").checked = false;
+        if (document.getElementById("minTargetSpeed")) document.getElementById("minTargetSpeed").value = "0";
+        renderDashboard();
+      };
+    }
+
     // UPDATE COMPARE BUTTON STATE
     function updateCompareButton() {
       const count = selectedModels.length;
       compareCount.textContent = count;
+      btnCompare.style.display = count >= 2 ? "inline-flex" : "none";
       if (count >= 2) {
         btnCompare.classList.add("active");
       } else {
@@ -4787,10 +4861,29 @@
         }
       }
       
+      // Store point data for click interaction
+      canvas._scatterPoints = pointData;
+
       canvas.onmousemove = handleScatterMove;
       canvas.onmouseleave = () => {
         tooltip.style.display = "none";
         canvas.style.cursor = "crosshair";
+      };
+      
+      // Click handler — open detail modal for closest point
+      canvas.onclick = (e) => {
+        const rect3 = canvas.getBoundingClientRect();
+        const mx = e.clientX - rect3.left;
+        const my = e.clientY - rect3.top;
+        let closest = null;
+        let minDist = 20;
+        canvas._scatterPoints.forEach(p => {
+          const dist = Math.sqrt((mx - p.px) ** 2 + (my - p.py) ** 2);
+          if (dist < minDist) { minDist = dist; closest = p; }
+        });
+        if (closest && closest.model) {
+          openDetailModal(closest.model);
+        }
       };
     }
 
