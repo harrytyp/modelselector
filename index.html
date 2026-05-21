@@ -1028,14 +1028,8 @@
         <button id="btnHwManual" class="btn-toggle" style="flex: 1; padding: 0.4rem 0.5rem; font-size: 0.75rem; font-weight: bold; border-radius: 6px; border: none; cursor: pointer;">⚙️ Manual Setup</button>
       </div>
 
-      <!-- Auto-Detect Block (default visible) -->
-      <div id="hwAutoBlock">
-        <div class="form-group" style="margin-bottom: 0;">
-          <button id="btnScanHardware" style="width: 100%; border: 1px solid var(--accent-cyan); font-weight: bold; background: linear-gradient(135deg, rgba(6, 182, 212, 0.15), rgba(99, 102, 241, 0.15)); color: #fff; padding: 0.6rem; border-radius: 8px; font-size: 0.8rem; cursor: pointer; transition: all 0.2s; box-shadow: 0 0 12px rgba(6,182,212,0.1);">
-            ⚡ One-Click System Auto-Detect
-          </button>
-        </div>
-      </div>
+      <!-- Auto-Detect mode: the toggle button IS the action -->
+      <div id="hwAutoBlock"></div>
 
       <!-- Manual Setup Block (hidden by default) -->
       <div id="hwManualBlock" style="display: none;">
@@ -2243,6 +2237,13 @@
           currentHwMode = "auto";
           localStorage.setItem("currentHwMode", "auto");
           updateHardwareModeUI();
+          if (typeof detectLocalHardware === "function") {
+            btnHwAuto.innerHTML = "⚡ Scanning...";
+            detectLocalHardware();
+            setTimeout(() => {
+              btnHwAuto.innerHTML = "⚡ Auto-Detect";
+            }, 3000);
+          }
         });
         btnHwManual.addEventListener("click", () => {
           currentHwMode = "manual";
@@ -2666,14 +2667,7 @@
         }
       });
 
-      // Scan hardware click listener
-      const btnScanHardware = document.getElementById("btnScanHardware");
-      if (btnScanHardware) {
-        btnScanHardware.addEventListener("click", () => {
-          detectLocalHardware();
-        });
-      }
-
+      // Scan hardware triggered from Auto-Detect toggle button
       function showImportStatus(msg, type) {
         importStatus.style.display = "block";
         importStatus.textContent = msg;
