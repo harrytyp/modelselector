@@ -104,10 +104,10 @@
     .container {
       max-width: 1440px;
       margin: 0 auto;
-      padding: 2rem;
+      padding: 1.5rem;
       display: grid;
-      grid-template-columns: 340px 1fr;
-      gap: 2rem;
+      grid-template-columns: 280px 1fr;
+      gap: 1.5rem;
     }
 
     /* Header */
@@ -199,21 +199,21 @@
     .sidebar {
       background: var(--bg-card);
       border: 1px solid var(--border-color);
-      border-radius: 20px;
-      padding: 1.75rem;
+      border-radius: 16px;
+      padding: 1.25rem;
       backdrop-filter: blur(16px);
       height: fit-content;
       position: sticky;
-      top: 2rem;
+      top: 1.5rem;
     }
 
     .section-title {
-      font-size: 0.875rem;
+      font-size: 0.75rem;
       font-weight: 700;
       text-transform: uppercase;
-      letter-spacing: 1px;
+      letter-spacing: 0.08em;
       color: var(--accent-indigo);
-      margin-bottom: 1.25rem;
+      margin-bottom: 0.75rem;
       display: flex;
       align-items: center;
       gap: 0.5rem;
@@ -227,7 +227,7 @@
     }
 
     .form-group {
-      margin-bottom: 1.5rem;
+      margin-bottom: 0.75rem;
     }
 
     .form-label {
@@ -4171,8 +4171,8 @@
         let benchCellsHtml = "";
         if (benchmarksExpanded) {
           const metrics = (res.model.benchmarks && res.model.benchmarks.metrics) || {};
-          BENCHMARK_KEYS.forEach(key => {
-            const val = metrics[key];
+          BENCHMARK_KEYS.forEach(bk => {
+            const val = metrics[bk.key];
             let colorClass = "score-mid";
             if (val !== undefined && val !== null) {
               if (val >= 60) colorClass = "score-good";
