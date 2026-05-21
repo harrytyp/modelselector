@@ -375,6 +375,26 @@ def refresh_cache():
                 if params is None:
                     continue
 
+        # Skip models that aren't text-generation LLMs (embedding, TTS, reranker, etc.)
+        model_tags = m.get('tags', [])
+        non_llm_tags = ['feature-extraction', 'sentence-similarity', 'text-embedding',
+                        'text-to-speech', 'text-to-audio', 'image-to-text',
+                        'sentence-transformers', 'mask-generation', 'object-detection',
+                        'image-classification', 'audio-generation', 'voice-activity-detection']
+        if not any(t in model_tags for t in ['text-generation', 'text2text-generation', 'image-text-to-text']):
+            if any(t in model_tags for t in non_llm_tags):
+                continue
+        # Skip clearly non-LLM models by name (regardless of tags)
+        skip_keywords = ['reranker', 'tts', 'music', 'sentence-bert',
+                       'minilm', 'jina-embed', 'nomic-embed', 'granite-embed',
+                       'flx', 'tinygemma', 'tiny-llamas', 'tinyllamas']
+        if any(k in model_id.lower() for k in skip_keywords):
+            continue
+        # Skip models under 0.5B that aren't text-generation (tiny educational/demo models)
+        if params is not None and params < 0.5:
+            if not any(t in model_tags for t in ['text-generation', 'text2text-generation']):
+                continue
+
         # Extract base model ID from tags
         base_model_id = None
         for tag in m.get('tags', []):

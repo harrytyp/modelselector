@@ -3168,8 +3168,8 @@
 
       // 1. Weight Size (GB)
       const bytesPerWeight = BYTES_PER_QUANT[quantKey];
-      const weightsSize = (params * bytesPerWeight);       // total (for VRAM)
-      const activeWeights = (activeParams * bytesPerWeight); // active (for speed, MoE)
+      const weightsSize = Math.max(0.01, params * bytesPerWeight);       // total (for VRAM)
+      const activeWeights = Math.max(0.01, activeParams * bytesPerWeight); // active (for speed, MoE)
 
       // 2. KV Cache Sizing (Dynamic with Grouped Query Attention support)
       // KV cache = 2 * n_layers * n_heads * head_dim * seq_len * bytes_per_element
@@ -3423,8 +3423,9 @@
         weightContext = profile.weight_context;
       }
       
-      // A. SPEED SCORE (unbounded: faster models score higher naturally)
-      const speedScore = simulation.speedTPS / targetTPS;
+      // A. SPEED SCORE (logarithmic: each 2x speed adds ~1 point, capped at 3x target feel)
+      const speedRatio = simulation.speedTPS / targetTPS;
+      const speedScore = Math.min(Math.log2(1 + speedRatio), 3.0);
 
       // B. QUALITY SCORE (0 to 1.0)
       const baseQuality = getDynamicUseCaseScore(model, selectedUsecase);
