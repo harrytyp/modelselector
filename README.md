@@ -18,6 +18,22 @@ This diagram illustrates the full data pipeline, from browser-side simulation th
 
 ## Dynamic API Endpoints Directory
 
+### 0. Data Sources & Live Status
+
+All benchmark data is fetched nightly by the GitHub Actions workflow and cached in `data/cache.json`. Every value in the app shows where it came from. The cache payload includes a `sources` block with per-source status, URL, row count, and last-updated timestamp.
+
+| Source | URL | Status | Refreshes |
+|---|---|---|---|
+| GGUF Model Catalog | `huggingface.co/api/models?filter=gguf` | ✅ Live | Daily 00:00 UTC |
+| Open LLM Leaderboard v2 | `datasets-server.huggingface.co/rows` (dataset: open-llm-leaderboard/contents) | ✅ Live | Daily 00:00 UTC |
+| BenchLM.ai | `benchlm.ai/api/data/leaderboard` | ✅ Live | Daily 00:00 UTC |
+| LiveBench | `livebench.ai/table_YYYY_MM_DD.csv` | ✅ Live | Daily 00:00 UTC |
+| EvalPlus | `evalplus.github.io/results.json` | ✅ Live | Daily 00:00 UTC |
+| Quantization Constants | GGUF specification + llama.cpp community data | ✅ Fixed | On change |
+| GPU Database (TechPowerUp) | RightNow-AI GitHub | ✅ Live | Daily 00:00 UTC |
+| **Physical Speed Formula (fallback)** | bandwidth × efficiency ÷ weight-size | ⚡ Real-time | On every search |
+| **Quantization Loss (fallback)** | PPL community averages (llama.cpp) | 📊 Fallback | On every search |
+
 ### 1. Hugging Face Models API (Live Keyword Search)
 * **Endpoint:** `https://huggingface.co/api/models`
 * **HTTP Method:** `GET`
@@ -125,8 +141,10 @@ A GitHub Actions workflow runs every night at 00:00 UTC to refresh the model cat
 1. Fetches the latest GGUF models from Hugging Face Hub
 2. Paginates the full Open LLM Leaderboard v2 dataset (4,500+ entries)
 3. Queries BenchLM.ai for multi-dimensional rankings
-4. Rebuilds the GPU catalog from the TechPowerUp database
-5. Commits the updated `data/cache.json` and triggers a Pages redeploy
+4. Fetches LiveBench scores from the latest CSV release
+5. Fetches EvalPlus coding benchmark scores from their live JSON
+6. Rebuilds the GPU catalog from the TechPowerUp database
+7. Commits the updated `data/cache.json` and triggers a Pages redeploy
 
 See `.github/workflows/refresh_cache.yml` for the full workflow definition.
 
