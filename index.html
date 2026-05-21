@@ -1866,10 +1866,10 @@
 
     // Physical simulator constants
     const RUNTIME_OVERHEAD_GB = 0.8;
-    const GPU_EFFICIENCY = 0.35; // Accounting for launch latencies, thread sync, tensor operations
-    const CPU_EFFICIENCY = 0.22; // System RAM bus overhead and context switches
-    const APPLE_SILICON_UNIFIED_BONUS = 0.75; // Apple unified memory matches memory bus bandwidth closer
-    const MAX_PHYSICAL_TPS = 180; // High limit constraint for realistic rendering
+    let GPU_EFFICIENCY = 0.35; // Accounting for launch latencies, thread sync, tensor operations
+    let CPU_EFFICIENCY = 0.22; // System RAM bus overhead and context switches
+    let APPLE_SILICON_UNIFIED_BONUS = 0.75; // Apple unified memory matches memory bus bandwidth closer
+    let MAX_PHYSICAL_TPS = 180; // High limit constraint for realistic rendering
 
     // Dynamic Weights per Use Case Profile (Optimized to reflect highly realistic engineering benchmarks)
     const USE_CASE_PROFILES = {
