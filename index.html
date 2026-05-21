@@ -1156,6 +1156,20 @@
       background: rgba(0,0,0,0.2); padding: 0.2rem; border-radius: 6px;
       border: 1px solid var(--border-color);
     }
+    .page-btn {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--border-color);
+      color: var(--text-secondary);
+      padding: 0.3rem 0.6rem;
+      border-radius: 6px;
+      font-size: 0.72rem;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.15s;
+    }
+    .page-btn:hover { background: rgba(99,102,241,0.15); color: #fff; }
+    .page-btn.active { background: var(--accent-indigo); color: #fff; border-color: var(--accent-indigo); }
+    .page-btn[disabled] { opacity: 0.35; cursor: default; }
     .view-toggle-btn {
       padding: 0.35rem 0.65rem; font-size: 0.72rem; font-weight: 700;
       border: none; border-radius: 4px; cursor: pointer;
@@ -1540,17 +1554,25 @@
 
     </main>
 
-    <!-- FOOTER -->
-    <footer>
-      ModelSelector - Open Source Prototype based on HF Open LLM & LocalScore Benchmarks.
-      Designed with premium aesthetics and physical hardware formulas. 
-      <br>
-      <span style="opacity: 0.6; margin-top: 0.4rem; display: block;">Made for offline execution. All calculations are performed in your browser in real time.</span>
-    </footer>
+    <!-- Pagination & Legal compact bar -->
+    <div style="margin-top: 0.75rem;">
+      <div id="paginationControls" class="pagination-bar" style="display: none; padding: 0.6rem 1rem; border-radius: 12px; background: var(--bg-card); border: 1px solid var(--border-color); align-items: center; justify-content: center; gap: 0.25rem; flex-wrap: wrap;"></div>
+      <div style="margin-top: 0.5rem; padding: 0.45rem 1rem; border-radius: 8px; background: rgba(0,0,0,0.12); border: 1px solid var(--border-color); display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 0.5rem; font-size: 0.68rem; color: var(--text-muted);">
+        <span>
+          <a href="https://github.com/harrytyp/modelselector" target="_blank" rel="noopener" style="color: var(--text-secondary); text-decoration: none;">MIT License</a>
+          <span style="margin:0 0.4rem;">·</span>
+          <a href="https://github.com/harrytyp" target="_blank" rel="noopener" style="color: var(--text-secondary); text-decoration: none;">Kolja Knodel</a>
+          <span style="margin:0 0.4rem;">·</span>
+          <button id="btnShowPrivacy" style="background: none; border: none; color: var(--accent-indigo); cursor: pointer; font-size: 0.68rem; text-decoration: underline; text-underline-offset: 2px; padding: 0;">Privacy</button>
+        </span>
+        <span>No tracking · All local · Data via <a href="https://huggingface.co/" target="_blank" rel="noopener" style="color: var(--text-secondary); text-decoration: none;">HF</a> · <a href="https://livebench.ai/" target="_blank" rel="noopener" style="color: var(--text-secondary); text-decoration: none;">LiveBench</a> · <a href="https://evalplus.github.io/" target="_blank" rel="noopener" style="color: var(--text-secondary); text-decoration: none;">EvalPlus</a></span>
+      </div>
+    </div>
 
   </div>
+</div>
 
-  <!-- COMPARISON MODAL -->
+<!-- COMPARISON MODAL -->
   <div class="modal-overlay" id="compareModal" style="z-index: 1000;">
     <div class="modal-container" style="max-width: 1100px;">
       
@@ -2177,6 +2199,8 @@
     let selectedModels = [];
     let benchmarksExpanded = false;
     let viewMode = "table";
+    let pageSize = 50;
+    let currentPage = 1;
 
     // Persistent evaluation provider switches
     let enabledHfLeaderboard = localStorage.getItem("enabledHfLeaderboard") !== "false";
@@ -2592,6 +2616,7 @@
         gpuOnlyCheckbox.addEventListener("change", (e) => {
           enabledGpuOnly = e.target.checked;
           localStorage.setItem("enabledGpuOnly", enabledGpuOnly);
+          currentPage = 1;
           updateGpuOnlyVisual();
           renderDashboard();
         });
@@ -2631,8 +2656,8 @@
       });
 
       // Search & Sorting controls
-      searchInput.addEventListener("input", () => renderDashboard());
-      sortSelect.addEventListener("change", () => renderDashboard());
+      searchInput.addEventListener("input", () => { currentPage = 1; renderDashboard(); });
+      sortSelect.addEventListener("change", () => { currentPage = 1; renderDashboard(); });
 
       // Click-to-sort on table headers
       document.querySelectorAll("th[data-sort]").forEach(th => {
@@ -2751,6 +2776,7 @@
 
       // License filter
       licenseFilter.addEventListener("change", () => {
+        currentPage = 1;
         renderDashboard();
       });
 
@@ -4087,10 +4113,23 @@
       if (computedResults.length === 0) {
         modelsTableBody.innerHTML = `<tr><td colspan="${colCount}" style="text-align: center; color: var(--text-muted); padding: 3rem;">No models matched your active filters or query. Try adjusting VRAM limits or format settings.</td></tr>`;
         updateFilterBadges();
+        renderPagination(1, 0);
         return;
       }
-
-      computedResults.forEach(res => {
+      
+      updateFilterBadges();
+      
+      // PAGINATION: slice results
+      const totalPages = Math.max(1, Math.ceil(computedResults.length / pageSize));
+      if (currentPage > totalPages) currentPage = totalPages;
+      const pageStart = (currentPage - 1) * pageSize;
+      const pageResults = computedResults.slice(pageStart, pageStart + pageSize);
+      
+      // Render pagination controls
+      renderPagination(totalPages, computedResults.length);
+      
+      // Render only current page
+      pageResults.forEach(res => {
         const tr = document.createElement("tr");
         
         // Fit status class
@@ -4559,17 +4598,24 @@
       const header = table.querySelector("thead tr");
       if (!header) return;
       
-      // Remove existing expanded benchmark headers
-      header.querySelectorAll(".benchmark-col-header").forEach(el => el.remove());
+      // Remove existing expanded benchmark th elements by marker
+      header.querySelectorAll("th[data-benchmark]").forEach(el => el.remove());
       
       if (benchmarksExpanded) {
-        const qualityTh = header.querySelector("th:nth-child(6)");
+        // Find where to insert: after the 6th th (Intelligence column)
+        const refTh = header.querySelector("th:nth-child(6)");
         BENCHMARK_KEYS.forEach(bk => {
           const th = document.createElement("th");
+          th.setAttribute("data-benchmark", "1");
           th.style.cursor = "pointer";
-          th.innerHTML = `<div class="benchmark-col-header"><span class="short">${bk.short}</span><span class="full">${bk.full}</span></div>`;
-          if (qualityTh && qualityTh.nextSibling) {
-            header.insertBefore(th, qualityTh.nextSibling);
+          th.style.fontSize = "0.7rem";
+          th.style.textAlign = "center";
+          th.style.minWidth = "60px";
+          th.title = bk.full;
+          th.textContent = bk.short;
+          // Insert right after refTh's current nextSibling (first iteration inserts after col 6)
+          if (refTh && refTh.parentNode) {
+            refTh.parentNode.insertBefore(th, refTh.nextSibling);
           } else {
             header.appendChild(th);
           }
@@ -4578,6 +4624,49 @@
       } else {
         btnExpandBench.textContent = "🔬 Benchmarks";
       }
+    }
+
+    // RENDER PAGINATION CONTROLS
+    function renderPagination(totalPages, totalItems) {
+      const container = document.getElementById("paginationControls");
+      if (!container) return;
+      if (totalItems === 0 || totalPages <= 1) {
+        container.style.display = "none";
+        return;
+      }
+      container.style.display = "flex";
+      
+      let html = `<span style="font-size:0.75rem;color:var(--text-muted);margin-right:0.5rem;">${totalItems} models</span>`;
+      
+      // Prev
+      html += `<button class="page-btn" data-page="${currentPage - 1}" ${currentPage <= 1 ? 'disabled' : ''}>‹ Prev</button>`;
+      
+      // Page numbers (show up to 7, with ellipsis)
+      const startPage = Math.max(1, Math.min(currentPage - 3, totalPages - 6));
+      const endPage = Math.min(totalPages, startPage + 6);
+      if (startPage > 1) html += `<button class="page-btn" data-page="1">1</button>${startPage > 2 ? '<span style="color:var(--text-muted);padding:0 0.25rem;">…</span>' : ''}`;
+      for (let p = startPage; p <= endPage; p++) {
+        html += `<button class="page-btn${p === currentPage ? ' active' : ''}" data-page="${p}">${p}</button>`;
+      }
+      if (endPage < totalPages) html += `${endPage < totalPages - 1 ? '<span style="color:var(--text-muted);padding:0 0.25rem;">…</span>' : ''}<button class="page-btn" data-page="${totalPages}">${totalPages}</button>`;
+      
+      // Next
+      html += `<button class="page-btn" data-page="${currentPage + 1}" ${currentPage >= totalPages ? 'disabled' : ''}>Next ›</button>`;
+      
+      container.innerHTML = html;
+      
+      // Click handlers
+      container.querySelectorAll(".page-btn:not([disabled])").forEach(btn => {
+        btn.addEventListener("click", () => {
+          const page = parseInt(btn.dataset.page);
+          if (page && page !== currentPage && page >= 1 && page <= totalPages) {
+            currentPage = page;
+            renderDashboard();
+            // Scroll to top of table
+            document.querySelector(".models-table-container")?.scrollIntoView({ behavior: "smooth", block: "start" });
+          }
+        });
+      });
     }
 
     // UPDATE FILTER BADGES
@@ -4979,19 +5068,6 @@
 
     </div>
   </div>
-
-  <!-- FOOTER -->
-  <footer style="grid-column: 1 / -1; margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid var(--border-color); display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 1rem;">
-    <div style="display: flex; flex-wrap: wrap; gap: 1.5rem; font-size: 0.75rem; color: var(--text-muted);">
-      <span>ModelSelector v1.0 — made by <a href="https://github.com/harrytyp" target="_blank" rel="noopener" style="color: var(--accent-indigo); text-decoration: none;">Kolja Knodel</a></span>
-      <span>Data sourced from <a href="https://huggingface.co/" target="_blank" rel="noopener" style="color: var(--text-secondary); text-decoration: none;">Hugging Face</a>, <a href="https://livebench.ai/" target="_blank" rel="noopener" style="color: var(--text-secondary); text-decoration: none;">LiveBench</a>, <a href="https://evalplus.github.io/" target="_blank" rel="noopener" style="color: var(--text-secondary); text-decoration: none;">EvalPlus</a>, <a href="https://benchlm.ai/" target="_blank" rel="noopener" style="color: var(--text-secondary); text-decoration: none;">BenchLM</a></span>
-    </div>
-    <div style="display: flex; flex-wrap: wrap; gap: 1rem; font-size: 0.7rem; color: var(--text-muted); align-items: center;">
-      <button id="btnShowPrivacy" style="background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 0.7rem; text-decoration: underline; text-underline-offset: 2px;">Privacy</button>
-      <span>·</span>
-      <span>All data processed locally · No tracking · No cookies · <a href="https://github.com/harrytyp/modelselector" target="_blank" rel="noopener" style="color: var(--text-secondary); text-decoration: none;">Source</a></span>
-    </div>
-  </footer>
 
   <!-- PRIVACY MODAL -->
   <div class="modal-overlay" id="privacyModal">
