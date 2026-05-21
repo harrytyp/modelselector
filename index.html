@@ -1821,7 +1821,7 @@
       ]
     };
 
-    // PHYSICAL INFERENCE SCHEME CONSTANTS
+    // PHYSICAL INFERENCE SCHEME CONSTANTS (fallback defaults — overridden by cache on load)
     const BYTES_PER_QUANT = {
       "Q2_K": 0.325, 
       "Q3_K_M": 0.438, 
@@ -1844,7 +1844,7 @@
       "fp16": "GGUF"
     };
 
-    // Loss percentages compared to fp16 baseline
+    // Loss percentages compared to fp16 baseline (fallback — overridden by cache on load)
     const QUANT_QUALITY_LOSS = {
       "Q2_K": 12.5,
       "Q3_K_M": 4.5,
@@ -1987,6 +1987,15 @@
       }
 
       loadLocalModels();
+
+      // Override quantization constants with cache data if available
+      if (appDb.quant_bytes) {
+        Object.keys(appDb.quant_bytes).forEach(k => { BYTES_PER_QUANT[k] = appDb.quant_bytes[k]; });
+      }
+      if (appDb.quant_loss) {
+        Object.keys(appDb.quant_loss).forEach(k => { QUANT_QUALITY_LOSS[k] = appDb.quant_loss[k]; });
+      }
+
       populateGpuDropdown();
       setupEventListeners();
       updateHardwareState();

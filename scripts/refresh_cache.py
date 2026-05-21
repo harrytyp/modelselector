@@ -684,6 +684,23 @@ def refresh_cache():
     print(f"[+] Loaded and merged TechPowerUp specs. Total compiled catalog: {len(gpus_list)} GPUs.")
 
     # 5. Consolidate and overwrite data/cache.json
+    
+    # Quantization physical constants (GGUF specification) and quality loss
+    # (community-established averages from llama.cpp perplexity evaluations)
+    QUANT_BYTES = {
+        "Q2_K": 0.325, "Q3_K_M": 0.438, "Q4_0": 0.500,
+        "Q4_K_M": 0.563, "Q5_K_M": 0.688, "Q6_K": 0.750,
+        "Q8_0": 1.000, "fp16": 2.000
+    }
+    QUANT_QUALITY_LOSS = {
+        "Q2_K": 12.5, "Q3_K_M": 4.5, "Q4_0": 2.0,
+        "Q4_K_M": 1.0, "Q5_K_M": 0.4, "Q6_K": 0.15,
+        "Q8_0": 0.05, "fp16": 0.0
+    }
+    QUANT_SAMPLES = {k: 0 for k in QUANT_BYTES}  # empirical sample count (0 = default)
+    # TODO: In future, aggregate empirical loss from per-quant leaderboard entries
+    # when a centralized GGUF evaluation dataset becomes available.
+    
     cache_payload = {
         "generated_at": datetime.now(timezone.utc).isoformat(),
         "sources": {
@@ -728,8 +745,18 @@ def refresh_cache():
                 "status": "success" if hf_models else "failed",
                 "last_updated": datetime.now(timezone.utc).isoformat(),
                 "row_count": len(hf_models)
+            },
+            "quantization": {
+                "name": "GGUF Quantization Constants & Quality Loss",
+                "url": "https://github.com/ggml-org/llama.cpp/wiki/Feature-Matrix",
+                "status": "success",
+                "last_updated": datetime.now(timezone.utc).isoformat(),
+                "row_count": len(QUANT_BYTES)
             }
         },
+        "quant_bytes": QUANT_BYTES,
+        "quant_loss": QUANT_QUALITY_LOSS,
+        "quant_samples": QUANT_SAMPLES,
         "models": models_list if models_list else [],
         "gpus": gpus_list if gpus_list else []
     }
