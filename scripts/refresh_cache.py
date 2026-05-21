@@ -339,7 +339,62 @@ def refresh_cache():
             if is_text_gen or "it" in raw_name.lower() or "instruct" in raw_name.lower():
                 params = 7.0
             else:
-                continue
+                # Last resort: try to get params from the base model API
+                base_tag = None
+                for tag in m.get('tags', []):
+                    if tag.startswith('base_model:') and '/' in tag:
+                        bt = tag.split(':', 1)[1]
+                        # Skip quantized/GGUF base_model references (they point to other quants, not the real model)
+                        if not any(x in bt.lower() for x in ['gguf', 'q8_0', 'q4', 'q5', 'q6', 'q2', 'q3', 'fp16', 'fp8']):
+                            base_tag = bt
+                            break
+                if not base_tag:
+                    # Try searching for the model name in HF API to find the real model
+                    raw_parts = raw_name.lower().replace('-gguf', '').replace('_gguf', '').split('-')
+                    search_name = '-'.join([p for p in raw_parts if p and p not in ('gguf', 'abliterated', 'uncensored', 'lora', 'fp16', 'fp8')])
+                    if search_name:
+                        try:
+                            search_url = f"https://huggingface.co/api/models?search={urllib.parse.quote(search_name)}&sort=downloads&direction=-1&limit=5"
+                            s_req = urllib.request.Request(search_url, headers={'User-Agent': 'Mozilla/5.0'})
+                            with urllib.request.urlopen(s_req, timeout=15) as s_resp:
+                                search_results = json.loads(s_resp.read().decode('utf-8'))
+                            # Try each result until one has safetensors data
+                            for sr in search_results:
+                                sr_id = sr.get('id', '')
+                                if sr_id and 'gguf' not in sr_id.lower():
+                                    try:
+                                        sr_url = f"https://huggingface.co/api/models/{sr_id}"
+                                        sr_req = urllib.request.Request(sr_url, headers={'User-Agent': 'Mozilla/5.0'})
+                                        with urllib.request.urlopen(sr_req, timeout=15) as sr_resp:
+                                            sr_data = json.loads(sr_resp.read().decode('utf-8'))
+                                        st = sr_data.get('safetensors', {})
+                                        total_params = st.get('total', 0) if isinstance(st, dict) else 0
+                                        if total_params:
+                                            params = round(total_params / 1e9, 1)
+                                            break
+                                    except Exception:
+                                        continue
+                        except Exception:
+                            pass
+                if base_tag:
+                    try:
+                        base_url = f"https://huggingface.co/api/models/{base_tag}"
+                        b_req = urllib.request.Request(base_url, headers={'User-Agent': 'Mozilla/5.0'})
+                        with urllib.request.urlopen(b_req, timeout=15) as b_resp:
+                            base_data = json.loads(b_resp.read().decode('utf-8'))
+                        st = base_data.get('safetensors', {})
+                        total_params = st.get('total', 0) if isinstance(st, dict) else 0
+                        if total_params:
+                            params = round(total_params / 1e9, 1)
+                        if not params:
+                            m_id = base_data.get('id', '')
+                            m_match = re.search(r'(\d+(\.\d+)?)[bB]', m_id)
+                            if m_match:
+                                params = float(m_match.group(1))
+                    except Exception:
+                        pass
+                if params is None:
+                    continue
 
         # Extract base model ID from tags
         base_model_id = None
