@@ -1023,12 +1023,8 @@
       <h2 class="section-title">Hardware Profile</h2>
       
       <div class="form-group">
-        <label class="form-label" for="gpuSelect">
-          Select Target Device
-        </label>
-<!-- Target Device dropdown removed – auto-detect used. Manual GPU filtering via sliders remains. -->
-            <!-- Populated by JS -->
-          </select>
+        <!-- Target Device dropdown removed – auto-detect used. Manual GPU filtering via sliders remains. -->
+<select id="gpuSelect" style="display:none;"></select>
           <button id="btnScanHardware" style="width: 100%; border: 1px solid var(--accent-cyan); font-weight: bold; background: linear-gradient(135deg, rgba(6, 182, 212, 0.15), rgba(99, 102, 241, 0.15)); color: #fff; padding: 0.6rem; border-radius: 8px; font-size: 0.8rem; cursor: pointer; transition: all 0.2s; box-shadow: 0 0 12px rgba(6,182,212,0.1); margin-top: 0.25rem;">
             ⚡ One-Click System Auto-Detect
           </button>
@@ -1038,7 +1034,6 @@
             </a>
           </div>
         </div>
-      </div>
 
       <!-- Collapsible GPU search panel -->
       <div id="gpuSearchBlock" class="hardware-custom-card" style="display: none; margin-bottom: 0.75rem; border-color: rgba(99, 102, 241, 0.25);">
@@ -1290,12 +1285,12 @@
         <table class="models-table">
           <thead>
             <tr>
-              <th>Model Name & Description</th>
-              <th>Best Fitting Quant</th>
-              <th>Hardware Allocation</th>
-              <th>Est. Gen Speed</th>
-              <th>Intelligence</th>
-              <th style="width: 160px;">Overall Fit</th>
+              <th data-sort="score" style="cursor:pointer;">Model Name & Description</th>
+              <th data-sort="vram" style="cursor:pointer;">Best Fitting Quant</th>
+              <th data-sort="vram" style="cursor:pointer;">Hardware Allocation</th>
+              <th data-sort="speed" style="cursor:pointer;">Est. Gen Speed</th>
+              <th data-sort="quality" style="cursor:pointer;">Intelligence</th>
+              <th data-sort="score" style="width: 160px; cursor:pointer;">Overall Fit</th>
             </tr>
           </thead>
           <tbody id="modelsTableBody">
@@ -2258,6 +2253,17 @@
       // Search & Sorting controls
       searchInput.addEventListener("input", () => renderDashboard());
       sortSelect.addEventListener("change", () => renderDashboard());
+
+      // Click-to-sort on table headers
+      document.querySelectorAll("th[data-sort]").forEach(th => {
+        th.addEventListener("click", () => {
+          const sortVal = th.dataset.sort;
+          if (sortVal) {
+            sortSelect.value = sortVal;
+            renderDashboard();
+          }
+        });
+      });
 
       // Modal close click
       modalClose.addEventListener("click", () => {
