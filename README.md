@@ -33,7 +33,6 @@ All benchmark data is fetched nightly by the GitHub Actions workflow and cached 
 | GPU Database (TechPowerUp) | RightNow-AI GitHub | ✅ Live | Daily 00:00 UTC |
 | Speed Estimation Engine (per-quant scaling) | llama.cpp community benchmarks + GGUF spec | ⚡ Real-time | On every search |
 | Quantization Loss (fallback) | PPL community averages (llama.cpp) | 📊 Fallback | On every search |
-| Community Speed Benchmarks (Measured) | *awaiting community API* | ⏳ Pending | TBD |
 
 ### 1. Hugging Face Models API (Live Keyword Search)
 * **Endpoint:** `https://huggingface.co/api/models`
@@ -139,13 +138,14 @@ Because ModelSelector is **100% static** (composed exclusively of `index.html` a
 
 ### Automated Nightly Refresh (GitHub Actions):
 A GitHub Actions workflow runs every night at 00:00 UTC to refresh the model catalog and benchmark scores:
-1. Fetches the latest GGUF models from Hugging Face Hub
+1. Fetches the latest GGUF models from Hugging Face Hub (paginated, with rate-limit handling)
 2. Paginates the full Open LLM Leaderboard v2 dataset (4,500+ entries)
 3. Queries BenchLM.ai for multi-dimensional rankings
 4. Fetches LiveBench scores from the latest CSV release
 5. Fetches EvalPlus coding benchmark scores from their live JSON
 6. Rebuilds the GPU catalog from the TechPowerUp database
-7. Commits the updated `data/cache.json` and triggers a Pages redeploy
+7. Stores quantization constants, quality loss factors, and per-quant speed scaling in cache
+8. Commits the updated `data/cache.json` and triggers a Pages redeploy
 
 See `.github/workflows/refresh_cache.yml` for the full workflow definition.
 
@@ -168,12 +168,13 @@ Memory and speed allocations are compiled using verified GQA-aware formulas:
 3. **Throughput Compilation (Tokens/s):**
    * If VRAM fits entirely within the GPU:
      ```math
-       \text{TPS} = \frac{\text{Memory Bandwidth (GB/s)}}{\text{Model Weights Size (GB)}} \times \text{Efficiency Bonus (35\% for GPU)}
+       \text{TPS} = \frac{\text{Memory Bandwidth (GB/s)}}{\text{Model Weights Size (GB)}} \times \text{Efficiency Bonus (35\% for GPU)} \times \text{Quant Scaling Factor}
      ```
    * If memory limits require offloading to system RAM:
      ```math
-       \text{TPS} = \frac{\text{System Bus Bandwidth (GB/s)}}{\text{Model Weights Size (GB)}} \times \text{Efficiency (22\% for CPU)}
+       \text{TPS} = \frac{\text{System Bus Bandwidth (GB/s)}}{\text{Model Weights Size (GB)}} \times \text{Efficiency (22\% for CPU)} \times \text{Quant Scaling Factor}
      ```
+   * **Per-quant speed scaling** — quantization type affects throughput: Q2\_K (1.10x), Q4\_K\_M (1.00x baseline), Q8\_0 (0.78x), fp16 (0.65x). These factors are stored in the nightly cache and override JS fallbacks.
 
 ---
 

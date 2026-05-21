@@ -853,13 +853,6 @@ def refresh_cache():
                 "status": "success",
                 "last_updated": datetime.now(timezone.utc).isoformat(),
                 "row_count": len(SPEED_SCALING)
-            },
-            "speed_benchmarks": {
-                "name": "Community Speed Benchmarks (Measured)",
-                "url": "https://github.com/ggml-org/llama.cpp/wiki/Benchmark",
-                "status": "unavailable",
-                "last_updated": datetime.now(timezone.utc).isoformat(),
-                "row_count": 0
             }
         },
         "quant_bytes": QUANT_BYTES,
@@ -867,7 +860,6 @@ def refresh_cache():
         "quant_samples": QUANT_SAMPLES,
         "speed_scaling": SPEED_SCALING,
         "physical_constants": PHYSICAL_CONSTANTS,
-        "speed_benchmarks": {},  # Will be populated when a community speed API becomes available
         "models": models_list if models_list else [],
         "gpus": gpus_list if gpus_list else []
     }
