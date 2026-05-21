@@ -1081,6 +1081,19 @@
         </div>
       </div>
 
+      <!-- GPU-Fully Loaded Toggle (moved from controls bar to sidebar) -->
+      <div style="background: rgba(255,255,255,0.02); border: 1px solid var(--border-color); border-radius: 12px; padding: 0.75rem 1rem; display: flex; align-items: center; justify-content: space-between; gap: 0.75rem; margin-bottom: 1.25rem;">
+        <div style="display: flex; align-items: center; gap: 0.5rem;">
+          <span style="font-size: 0.9rem;">⚡</span>
+          <span style="font-size: 0.82rem; font-weight: 600; color: var(--text-primary);">Only GPU-Fully Loaded</span>
+        </div>
+        <label style="position: relative; display: inline-block; width: 44px; height: 24px; cursor: pointer;">
+          <input type="checkbox" id="gpuOnlyCheckbox" style="opacity: 0; width: 0; height: 0;">
+          <span id="gpuOnlySlider" style="position: absolute; inset: 0; background-color: rgba(255,255,255,0.12); border-radius: 9999px; transition: all 0.25s; box-shadow: inset 0 1px 3px rgba(0,0,0,0.3);"></span>
+          <span id="gpuOnlyKnob" style="position: absolute; left: 2px; bottom: 2px; width: 20px; height: 20px; background-color: #fff; border-radius: 50%; transition: all 0.25s; box-shadow: 0 1px 4px rgba(0,0,0,0.3);"></span>
+        </label>
+      </div>
+
       <!-- Inference parameters -->
       <h2 class="section-title">Inference Settings</h2>
 
@@ -1257,11 +1270,7 @@
           </div>
           
           <!-- GPU-Fully Loaded Toggle next to Search in the main list bar -->
-          <label class="checkbox-label" style="display: inline-flex; align-items: center; gap: 0.5rem; cursor: pointer; font-size: 0.76rem; color: #fff; font-weight: 700; background: rgba(99, 102, 241, 0.08); border: 1px solid rgba(99, 102, 241, 0.25); padding: 0.55rem 0.95rem; border-radius: 12px; transition: all 0.2s; user-select: none; margin: 0; box-shadow: 0 4px 12px rgba(0,0,0,0.15);" onmouseover="this.style.background='rgba(99, 102, 241, 0.15)'; this.style.borderColor='rgba(99, 102, 241, 0.4)';" onmouseout="this.style.background='rgba(99, 102, 241, 0.08)'; this.style.borderColor='rgba(99, 102, 241, 0.25)';">
-            <input type="checkbox" id="gpuOnlyCheckbox" style="margin: 0; cursor: pointer; width: 14px; height: 14px; accent-color: var(--accent-indigo);">
-            <span style="display: flex; align-items: center; gap: 0.25rem;">⚡ Only GPU-Fully Loaded</span>
-          </label>
-        </div>
+          </div>
 
         <div class="sort-wrapper" style="display: flex; align-items: center; gap: 0.75rem;">
           <span style="font-size: 0.8rem; color: var(--text-muted); font-weight: 600;">Sort By:</span>
@@ -2282,11 +2291,29 @@
 
       // GPU Only checkbox registration
       const gpuOnlyCheckbox = document.getElementById("gpuOnlyCheckbox");
+      const gpuOnlySlider = document.getElementById("gpuOnlySlider");
+      const gpuOnlyKnob = document.getElementById("gpuOnlyKnob");
+      function updateGpuOnlyVisual() {
+        if (!gpuOnlySlider || !gpuOnlyKnob) return;
+        if (enabledGpuOnly) {
+          gpuOnlySlider.style.backgroundColor = "var(--accent-indigo)";
+          gpuOnlySlider.style.boxShadow = "inset 0 1px 3px rgba(0,0,0,0.3), 0 0 8px rgba(99,102,241,0.4)";
+          gpuOnlyKnob.style.transform = "translateX(20px)";
+          gpuOnlyKnob.style.backgroundColor = "#fff";
+        } else {
+          gpuOnlySlider.style.backgroundColor = "rgba(255,255,255,0.12)";
+          gpuOnlySlider.style.boxShadow = "inset 0 1px 3px rgba(0,0,0,0.3)";
+          gpuOnlyKnob.style.transform = "translateX(0)";
+          gpuOnlyKnob.style.backgroundColor = "#fff";
+        }
+      }
       if (gpuOnlyCheckbox) {
         gpuOnlyCheckbox.checked = enabledGpuOnly;
+        updateGpuOnlyVisual();
         gpuOnlyCheckbox.addEventListener("change", (e) => {
           enabledGpuOnly = e.target.checked;
           localStorage.setItem("enabledGpuOnly", enabledGpuOnly);
+          updateGpuOnlyVisual();
           renderDashboard();
         });
       }
