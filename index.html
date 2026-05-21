@@ -3689,6 +3689,18 @@
         }
       });
 
+      // Update search placeholder with filtered count
+      const searchInput = document.getElementById("searchInput");
+      if (searchInput) {
+        const totalModels = appDb.models ? appDb.models.length : 0;
+        const visibleCount = computedResults.length;
+        if (visibleCount < totalModels) {
+          searchInput.placeholder = `Search ${visibleCount} of ${totalModels} models, tags, developers...`;
+        } else {
+          searchInput.placeholder = `Search ${totalModels}+ models, tags, developers...`;
+        }
+      }
+
       // SORTING LOGIC
       computedResults.sort((a, b) => {
         if (sortBy === "score") {
