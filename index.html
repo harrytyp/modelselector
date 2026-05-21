@@ -554,10 +554,6 @@
       box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
       overflow-x: auto;
     }
-    
-    .models-table-container.benchmarks-expanded .models-table {
-      min-width: 1400px;
-    }
 
     table.models-table {
       width: 100%;
@@ -726,6 +722,29 @@
       font-size: 1.1rem;
       color: #fff;
     }
+    
+    /* Benchmark drill-down inside Intelligence cell */
+    .bench-drill {
+      margin-top: 0.4rem;
+      padding-top: 0.35rem;
+      border-top: 1px solid rgba(255,255,255,0.06);
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.1rem 0.45rem;
+    }
+    .bench-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.2rem;
+      font-size: 0.6rem;
+      font-family: var(--font-mono);
+      white-space: nowrap;
+    }
+    .bench-label { color: var(--text-muted); font-weight: 600; }
+    .bench-val { font-weight: 700; }
+    .bench-item.good .bench-val { color: var(--fit-green); }
+    .bench-item.mid .bench-val { color: var(--fit-amber); }
+    .bench-item.bad .bench-val { color: var(--fit-red); }
 
     /* Overall score progress bar */
     .score-container {
@@ -2769,8 +2788,6 @@
       btnExpandBench.addEventListener("click", (e) => {
         e.stopPropagation();
         benchmarksExpanded = !benchmarksExpanded;
-        const container = document.querySelector(".models-table-container");
-        if (container) container.classList.toggle("benchmarks-expanded", benchmarksExpanded);
         updateBenchmarkColumns();
         renderDashboard();
       });
@@ -4110,7 +4127,7 @@
       // RENDER ROWS TO BODY
       modelsTableBody.innerHTML = "";
       
-      const colCount = benchmarksExpanded ? 7 + BENCHMARK_KEYS.length : 7;
+      const colCount = 7;
       if (computedResults.length === 0) {
         modelsTableBody.innerHTML = `<tr><td colspan="${colCount}" style="text-align: center; color: var(--text-muted); padding: 3rem;">No models matched your active filters or query. Try adjusting VRAM limits or format settings.</td></tr>`;
         updateFilterBadges();
@@ -4168,20 +4185,22 @@
         const licClass = "license-" + lic.replace(/[.]/g, "\\.").toLowerCase();
         const licDisplay = lic.replace(/-/g, " ").replace(/\d+\.\d+/, '').trim() || lic;
 
-        // Build benchmark columns if expanded
-        let benchCellsHtml = "";
+        // Build benchmark drill-down if expanded
+        let benchDrillHtml = "";
         if (benchmarksExpanded) {
           const metrics = (res.model.benchmarks && res.model.benchmarks.metrics) || {};
+          benchDrillHtml = `<div class="bench-drill">`;
           BENCHMARK_KEYS.forEach(bk => {
             const val = metrics[bk.key];
-            let colorClass = "score-mid";
+            let colorClass = "mid";
             if (val !== undefined && val !== null) {
-              if (val >= 60) colorClass = "score-good";
-              else if (val < 30) colorClass = "score-bad";
+              if (val >= 60) colorClass = "good";
+              else if (val < 30) colorClass = "bad";
             }
             const displayVal = val !== undefined && val !== null ? val.toFixed(1) : "—";
-            benchCellsHtml += `<td class="benchmark-cell ${colorClass}">${displayVal}</td>`;
+            benchDrillHtml += `<span class="bench-item ${colorClass}"><span class="bench-label">${bk.short}</span><span class="bench-val">${displayVal}</span></span>`;
           });
+          benchDrillHtml += `</div>`;
         }
 
         tr.innerHTML = `
@@ -4220,8 +4239,8 @@
               <span class="quality-number">${finalIntelligence}</span>
               ${lossPercent > 0 ? `<span class="quality-loss-tag">-${lossPercent.toFixed(1)}%</span>` : ''}
             </div>
+            ${benchDrillHtml}
           </td>
-          ${benchCellsHtml}
           <td>
             <div class="score-container">
               <div class="score-bar-bg">
@@ -4596,31 +4615,8 @@
     function updateBenchmarkColumns() {
       const table = document.querySelector(".models-table");
       if (!table) return;
-      const header = table.querySelector("thead tr");
-      if (!header) return;
-      
-      // Remove existing expanded benchmark th elements by marker
-      header.querySelectorAll("th[data-benchmark]").forEach(el => el.remove());
       
       if (benchmarksExpanded) {
-        // Find where to insert: after the 6th th (Intelligence column)
-        const refTh = header.querySelector("th:nth-child(6)");
-        BENCHMARK_KEYS.forEach(bk => {
-          const th = document.createElement("th");
-          th.setAttribute("data-benchmark", "1");
-          th.style.cursor = "pointer";
-          th.style.fontSize = "0.7rem";
-          th.style.textAlign = "center";
-          th.style.minWidth = "60px";
-          th.title = bk.full;
-          th.textContent = bk.short;
-          // Insert right after refTh's current nextSibling (first iteration inserts after col 6)
-          if (refTh && refTh.parentNode) {
-            refTh.parentNode.insertBefore(th, refTh.nextSibling);
-          } else {
-            header.appendChild(th);
-          }
-        });
         btnExpandBench.textContent = "🔬 Collapse";
       } else {
         btnExpandBench.textContent = "🔬 Benchmarks";
