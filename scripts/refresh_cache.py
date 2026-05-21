@@ -143,41 +143,20 @@ def refresh_cache():
     
     # 1. Fetch All GGUF Models from Hugging Face Hub API (paginated)
     print("[*] Querying Hugging Face Hub API for all GGUF repositories (paginated)...")
-    def fetch_all_hf_gguf(limit_per_page=100, max_total=5000):
+    def fetch_all_hf_gguf(max_total=1000):
         all_models = []
-        offset = 0
-        total = None
-        while True:
-            if len(all_models) >= max_total:
-                print(f"[+] Reached max total models limit ({max_total}). Stopping fetch.")
-                break
-            models_url = f"https://huggingface.co/api/models?filter=gguf&sort=downloads&direction=-1&limit={limit_per_page}&offset={offset}&full=true"
-            req = urllib.request.Request(models_url, headers={'User-Agent': 'Mozilla/5.0'})
-            attempt = 0
-            while True:
-                attempt += 1
-                try:
-                    with urllib.request.urlopen(req, timeout=120) as response:
-                        page_data = json.loads(response.read().decode("utf-8"))
-                        all_models.extend(page_data)
-                        if total is None:
-                            total_header = response.headers.get('X-Total-Count')
-                            total = int(total_header) if total_header else None
-                    break
-                except urllib.error.HTTPError as e:
-                    if e.code == 429 and attempt <= 5:
-                        print(f"[-] Rate limit hit, retrying after {attempt*2}s (attempt {attempt})")
-                        time.sleep(attempt * 2)
-                        continue
-                    else:
-                        raise
-            if total is not None and offset + limit_per_page >= total:
-                break
-            offset += limit_per_page
-            time.sleep(0.5)  # gentle pacing between pages
-        return all_models[:max_total]
-    hf_models = fetch_all_hf_gguf(max_total=2000)
-    # Deduplicate by model_id — HF API with full=true returns one entry per file within each repo
+        url = f"https://huggingface.co/api/models?filter=gguf&sort=downloads&direction=-1&limit={max_total}"
+        req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0'})
+        try:
+            with urllib.request.urlopen(req, timeout=120) as response:
+                all_models = json.loads(response.read().decode("utf-8"))
+        except urllib.error.HTTPError as e:
+            print(f"[-] HF API error: {e}")
+            return []
+        print(f"[+] Received {len(all_models)} GGUF models from Hugging Face.")
+        return all_models
+    hf_models = fetch_all_hf_gguf(max_total=1000)
+    # Remove duplicate model_ids (safety, shouldn't occur without full=true)
     seen_ids = set()
     deduped = []
     for m in hf_models:
