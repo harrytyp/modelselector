@@ -425,6 +425,34 @@ def refresh_cache():
             elif params < 3:
                 layers, hidden, kv_heads, attn_heads = 26, 2048, 8, 8
 
+        # Extract license from HF tags (e.g. license:apache-2.0, license:mit, license:llama3.2)
+        license_value = "unknown"
+        for tag in m.get('tags', []):
+            if tag.startswith('license:'):
+                license_value = tag.split(':', 1)[1]
+                break
+        # Common license mappings for known families
+        if license_value == "unknown":
+            lower_mid = model_id.lower()
+            if 'llama' in lower_mid:
+                license_value = "llama3.2"
+            elif 'gemma' in lower_mid:
+                license_value = "gemma"
+            elif 'qwen' in lower_mid:
+                license_value = "qwen"
+            elif 'mistral' in lower_mid or 'mixtral' in lower_mid:
+                license_value = "apache-2.0"
+            elif 'phi' in lower_mid:
+                license_value = "mit"
+            elif 'deepseek' in lower_mid:
+                license_value = "deepseek"
+            elif 'falcon' in lower_mid:
+                license_value = "apache-2.0"
+            elif 'dbrx' in lower_mid:
+                license_value = "cc-by-nc-4.0"
+            else:
+                license_value = "other"
+
         tags = ["api-imported"]
         lower_id = model_id.lower()
         if "chat" in lower_id or "instruct" in lower_id or "-it" in lower_id:
@@ -588,6 +616,7 @@ def refresh_cache():
             "active_parameters": active_params,
             "base_model_id": base_model_id,
             "quality_score": round(quality_score, 1),
+            "license": license_value,
             "description": f"HF GGUF repository. {downloads:,} active community downloads.",
             "config": {
                 "num_layers": layers,
