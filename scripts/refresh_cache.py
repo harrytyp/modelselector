@@ -848,7 +848,7 @@ def refresh_cache():
         "gpu_efficiency": 0.35,
         "cpu_efficiency": 0.22,
         "apple_silicon_bonus": 0.75,
-        "max_physical_tps": 180
+        "max_physical_tps": 2000
     }
     
     cache_payload = {

@@ -1880,7 +1880,7 @@
     let GPU_EFFICIENCY = 0.35; // Accounting for launch latencies, thread sync, tensor operations
     let CPU_EFFICIENCY = 0.22; // System RAM bus overhead and context switches
     let APPLE_SILICON_UNIFIED_BONUS = 0.75; // Apple unified memory matches memory bus bandwidth closer
-    let MAX_PHYSICAL_TPS = 180; // High limit constraint for realistic rendering
+    let MAX_PHYSICAL_TPS = 2000; // High limit constraint for realistic rendering
 
     // Dynamic Weights per Use Case Profile (Optimized to reflect highly realistic engineering benchmarks)
     const USE_CASE_PROFILES = {
