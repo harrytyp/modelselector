@@ -1,46 +1,46 @@
 {
-  "generated_at": "2026-05-20T14:48:48.169453+00:00",
+  "generated_at": "2026-05-21T01:53:09.439397+00:00",
   "sources": {
     "huggingface_leaderboard": {
       "name": "Hugging Face Open LLM Leaderboard v2",
       "url": "https://huggingface.co/datasets/open-llm-leaderboard/contents",
       "status": "success",
-      "last_updated": "2026-05-20T14:48:48.169453+00:00",
+      "last_updated": "2026-05-21T01:53:09.439421+00:00",
       "row_count": 4495
     },
     "benchlm": {
       "name": "BenchLM.ai Scientific API",
       "url": "https://benchlm.ai/api/data/leaderboard",
       "status": "success",
-      "last_updated": "2026-05-20T14:48:48.169453+00:00",
+      "last_updated": "2026-05-21T01:53:09.439425+00:00",
       "row_count": 117
     },
     "livebench": {
       "name": "LiveBench LLM Benchmark",
       "url": "https://raw.githubusercontent.com/LiveBench/LiveBench/main/livebench/data/live_bench/leaderboard.json",
       "status": "fallback",
-      "last_updated": "2026-05-20T14:48:48.169453+00:00",
+      "last_updated": "2026-05-21T01:53:09.439427+00:00",
       "row_count": 14
     },
     "evalplus": {
       "name": "EvalPlus Code Benchmark (HumanEval+ & MBPP+)",
       "url": "https://evalplus.github.io/results/humaneval.json",
       "status": "fallback",
-      "last_updated": "2026-05-20T14:48:48.169453+00:00",
+      "last_updated": "2026-05-21T01:53:09.439429+00:00",
       "row_count": 14
     },
     "techpowerup": {
       "name": "TechPowerUp GPU Database",
       "url": "https://raw.githubusercontent.com/RightNow-AI/RightNow-GPU-Database/main/data/",
       "status": "success",
-      "last_updated": "2026-05-20T14:48:48.169453+00:00",
+      "last_updated": "2026-05-21T01:53:09.439431+00:00",
       "row_count": 801
     },
     "huggingface_models": {
       "name": "Hugging Face GGUF Catalog API",
       "url": "https://huggingface.co/api/models",
       "status": "success",
-      "last_updated": "2026-05-20T14:48:48.169453+00:00",
+      "last_updated": "2026-05-21T01:53:09.439433+00:00",
       "row_count": 2000
     }
   },
