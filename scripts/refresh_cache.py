@@ -777,6 +777,23 @@ def refresh_cache():
     QUANT_SAMPLES = {k: 0 for k in QUANT_BYTES}  # empirical sample count (0 = default)
     # TODO: In future, aggregate empirical loss from per-quant leaderboard entries
     # when a centralized GGUF evaluation dataset becomes available.
+
+    SPEED_SCALING = {
+        "Q2_K": 1.10,   # Less data to move = faster per byte
+        "Q3_K_M": 1.05,
+        "Q4_0": 1.02,
+        "Q4_K_M": 1.00, # Baseline - sweet spot
+        "Q5_K_M": 0.92, # More data to move, slightly slower
+        "Q6_K": 0.85,
+        "Q8_0": 0.78,
+        "fp16": 0.65    # Much more data, significantly slower
+    }
+    PHYSICAL_CONSTANTS = {
+        "gpu_efficiency": 0.35,
+        "cpu_efficiency": 0.22,
+        "apple_silicon_bonus": 0.75,
+        "max_physical_tps": 180
+    }
     
     cache_payload = {
         "generated_at": datetime.now(timezone.utc).isoformat(),
@@ -829,11 +846,28 @@ def refresh_cache():
                 "status": "success",
                 "last_updated": datetime.now(timezone.utc).isoformat(),
                 "row_count": len(QUANT_BYTES)
+            },
+            "speed_estimation": {
+                "name": "Speed Estimation Engine",
+                "url": "https://github.com/ggml-org/llama.cpp/wiki/Feature-Matrix",
+                "status": "success",
+                "last_updated": datetime.now(timezone.utc).isoformat(),
+                "row_count": len(SPEED_SCALING)
+            },
+            "speed_benchmarks": {
+                "name": "Community Speed Benchmarks (Measured)",
+                "url": "https://github.com/ggml-org/llama.cpp/wiki/Benchmark",
+                "status": "unavailable",
+                "last_updated": datetime.now(timezone.utc).isoformat(),
+                "row_count": 0
             }
         },
         "quant_bytes": QUANT_BYTES,
         "quant_loss": QUANT_QUALITY_LOSS,
         "quant_samples": QUANT_SAMPLES,
+        "speed_scaling": SPEED_SCALING,
+        "physical_constants": PHYSICAL_CONSTANTS,
+        "speed_benchmarks": {},  # Will be populated when a community speed API becomes available
         "models": models_list if models_list else [],
         "gpus": gpus_list if gpus_list else []
     }

@@ -31,8 +31,9 @@ All benchmark data is fetched nightly by the GitHub Actions workflow and cached 
 | EvalPlus | `evalplus.github.io/results.json` | ✅ Live | Daily 00:00 UTC |
 | Quantization Constants | GGUF specification + llama.cpp community data | ✅ Fixed | On change |
 | GPU Database (TechPowerUp) | RightNow-AI GitHub | ✅ Live | Daily 00:00 UTC |
-| **Physical Speed Formula (fallback)** | bandwidth × efficiency ÷ weight-size | ⚡ Real-time | On every search |
-| **Quantization Loss (fallback)** | PPL community averages (llama.cpp) | 📊 Fallback | On every search |
+| Speed Estimation Engine (per-quant scaling) | llama.cpp community benchmarks + GGUF spec | ⚡ Real-time | On every search |
+| Quantization Loss (fallback) | PPL community averages (llama.cpp) | 📊 Fallback | On every search |
+| Community Speed Benchmarks (Measured) | *awaiting community API* | ⏳ Pending | TBD |
 
 ### 1. Hugging Face Models API (Live Keyword Search)
 * **Endpoint:** `https://huggingface.co/api/models`
