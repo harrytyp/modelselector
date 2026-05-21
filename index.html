@@ -3376,6 +3376,23 @@
       const apiStatusRows = document.getElementById("apiStatusRows");
       if (!apiStatusRows) return;
 
+      // Display overall cache generated_at timestamp
+      const cacheTimestampValue = document.getElementById("cacheTimestampValue");
+      if (cacheTimestampValue) {
+        const ts = appDb && appDb.generated_at;
+        if (ts) {
+          const formatted = new Date(ts).toLocaleString("en-US", {
+            year: 'numeric', month: 'short', day: 'numeric',
+            hour: '2-digit', minute: '2-digit', second: '2-digit',
+            timeZoneName: 'short'
+          });
+          cacheTimestampValue.textContent = formatted;
+        } else {
+          cacheTimestampValue.textContent = "Fallback (offline defaults)";
+          cacheTimestampValue.style.color = "var(--accent-cyan)";
+        }
+      }
+
       apiStatusRows.innerHTML = "";
 
       // Fallback in case sources isn't populated yet
@@ -3421,6 +3438,13 @@
           "status": "success",
           "last_updated": new Date().toISOString(),
           "row_count": 864
+        },
+        "quantization": {
+          "name": "GGUF Quantization Constants & Quality Loss",
+          "url": "https://github.com/ggml-org/llama.cpp/wiki/Feature-Matrix",
+          "status": "fallback",
+          "last_updated": new Date().toISOString(),
+          "row_count": 8
         }
       };
       
@@ -4012,6 +4036,11 @@
         
         <div style="background: rgba(255,255,255,0.02); border: 1px solid var(--border-color); border-radius: 12px; padding: 1rem; font-size: 0.85rem; line-height: 1.5; color: var(--text-secondary);">
           💡 <strong>How it works:</strong> The ModelSelector Optimizer pulls raw metrics from verified scientific LLM databases. Below you can view the retrieval status, dynamic record counts, and last scraper update timestamps. You can toggle each provider <strong>On/Off</strong> to see how dynamic use-case fit scores automatically adapt and normalize in real time!
+        </div>
+
+        <div id="cacheTimestamp" style="background: rgba(255,255,255,0.02); border: 1px solid var(--border-color); border-radius: 12px; padding: 0.8rem 1rem; font-size: 0.8rem; line-height: 1.5; color: var(--text-secondary); display: flex; align-items: center; gap: 0.5rem;">
+          <span style="opacity:0.6;">📦 Cache generated:</span>
+          <span id="cacheTimestampValue" style="color: #fff; font-family: var(--font-mono); font-size: 0.75rem;">—</span>
         </div>
 
         <div style="display: flex; flex-direction: column; gap: 0.75rem;" id="apiStatusRows">
