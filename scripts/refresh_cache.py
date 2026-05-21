@@ -38,43 +38,82 @@ def get_model_family(model_id):
         return "deepseek"
     return "generic"
 
-def get_livebench_fallback_map():
-    # Pre-compiled high-fidelity LiveBench averages for 40+ LLMs
-    return {
-        "gemma-4": {"score": 68.2},
-        "gemma-3": {"score": 62.5},
-        "gemma-2": {"score": 58.4},
-        "gemma-1": {"score": 42.1},
-        "qwen3": {"score": 70.5},
-        "qwen3-coder": {"score": 72.8},
-        "qwen-coder": {"score": 65.4},
-        "qwen": {"score": 60.1},
-        "llama-3": {"score": 69.8},
-        "llama-2": {"score": 45.2},
-        "deepseek": {"score": 72.4},
-        "phi": {"score": 62.5},
-        "mistral": {"score": 55.4},
-        "generic": {"score": 50.0}
-    }
+def fetch_livebench_scores():
+    """Fetch LiveBench scores from the latest CSV + categories JSON."""
+    # Try to get the latest available table date
+    livebench_base = "https://livebench.ai"
+    table_dates = []
+    try:
+        # Fetch known dates list from recent data
+        known_dates = [
+            "2026_01_08", "2025_12_23", "2025_11_25", "2025_05_30",
+            "2025_04_25", "2025_04_02", "2024_11_25", "2024_08_31",
+            "2024_07_26", "2024_06_24"
+        ]
+        # Try each date until one works
+        categories_map = {}
+        csv_rows = []
+        for date_str in known_dates:
+            cat_url = f"{livebench_base}/categories_{date_str}.json"
+            csv_url = f"{livebench_base}/table_{date_str}.csv"
+            try:
+                cat_req = urllib.request.Request(cat_url, headers={'User-Agent': 'Mozilla/5.0'})
+                with urllib.request.urlopen(cat_req, timeout=30) as cat_res:
+                    categories_map = json.loads(cat_res.read().decode("utf-8"))
+                csv_req = urllib.request.Request(csv_url, headers={'User-Agent': 'Mozilla/5.0'})
+                with urllib.request.urlopen(csv_req, timeout=30) as csv_res:
+                    csv_text = csv_res.read().decode("utf-8")
+                csv_rows = csv_text.strip().split("\n")
+                print(f"[+] LiveBench: loaded {date_str} ({len(csv_rows)-1} models)")
+                break
+            except Exception:
+                continue
+        if not csv_rows:
+            return {}, "No LiveBench data available"
+        # Parse header to find subcategory columns
+        header = csv_rows[0].strip().split(",")
+        model_col_idx = 0  # first column is model name
+        subcat_cols = header[1:]  # remaining columns are subcategory scores
+        # Average all subcategory scores per model for an overall score
+        scores = {}
+        for row in csv_rows[1:]:
+            cols = row.strip().split(",")
+            if len(cols) < 2:
+                continue
+            model_name = cols[0].strip().lower()
+            vals = []
+            for v in cols[1:]:
+                try:
+                    vals.append(float(v))
+                except ValueError:
+                    pass
+            if vals:
+                scores[model_name] = {"score": round(sum(vals) / len(vals), 1), "samples": len(vals)}
+        return scores, "success"
+    except Exception as e:
+        return {}, f"failed: {e}"
 
-def get_evalplus_fallback_map():
-    # Pre-compiled high-fidelity HumanEval+ and MBPP+ scores
-    return {
-        "gemma-4": {"humaneval": 85.4, "mbpp": 88.2},
-        "gemma-3": {"humaneval": 80.2, "mbpp": 81.5},
-        "gemma-2": {"humaneval": 74.8, "mbpp": 76.5},
-        "gemma-1": {"humaneval": 52.4, "mbpp": 56.7},
-        "qwen3": {"humaneval": 87.2, "mbpp": 88.9},
-        "qwen3-coder": {"humaneval": 91.5, "mbpp": 92.4},
-        "qwen-coder": {"humaneval": 85.1, "mbpp": 86.8},
-        "qwen": {"humaneval": 78.4, "mbpp": 80.2},
-        "llama-3": {"humaneval": 86.1, "mbpp": 87.5},
-        "llama-2": {"humaneval": 52.4, "mbpp": 55.1},
-        "deepseek": {"humaneval": 89.5, "mbpp": 90.1},
-        "phi": {"humaneval": 82.1, "mbpp": 83.6},
-        "mistral": {"humaneval": 65.4, "mbpp": 68.2},
-        "generic": {"humaneval": 50.0, "mbpp": 50.0}
-    }
+def fetch_evalplus_scores():
+    """Fetch EvalPlus coding benchmark scores from the live JSON endpoint."""
+    try:
+        url = "https://evalplus.github.io/results.json"
+        req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0'})
+        with urllib.request.urlopen(req, timeout=30) as resp:
+            data = json.loads(resp.read().decode("utf-8"))
+        scores = {}
+        for model_name, entry in data.items():
+            pass1 = entry.get("pass@1", {})
+            humaneval = pass1.get("humaneval+")
+            mbpp = pass1.get("mbpp+")
+            if humaneval is not None and mbpp is not None:
+                scores[model_name.lower().replace("-", " ").replace("_", " ")] = {
+                    "humaneval": round(float(humaneval) * 100, 1),
+                    "mbpp": round(float(mbpp) * 100, 1)
+                }
+        print(f"[+] EvalPlus: loaded {len(scores)} models from live API")
+        return scores, "success"
+    except Exception as e:
+        return {}, f"failed: {e}"
 
 def find_benchlm_match(hf_id, benchlm_models):
     hf_id_lower = hf_id.lower()
@@ -216,17 +255,21 @@ def refresh_cache():
     except Exception as be:
         print(f"[-] BenchLM.ai API failed: {be}.")
 
-    # 3.5 LiveBench - upstream no longer serves a static leaderboard.json
-    # (now requires running their Python harness). High-fidelity family-level fallback used.
+    # 3.5 LiveBench - fetch from live CSV endpoint
     print("[*] Loading LiveBench scores...")
-    livebench_map = get_livebench_fallback_map()
-    lb_status = "fallback"
+    livebench_scores, lb_status = fetch_livebench_scores()
+    if lb_status == "success":
+        print(f"[+] LiveBench API: loaded {len(livebench_scores)} model entries.")
+    else:
+        print(f"[-] LiveBench API: {lb_status}")
 
-    # 3.6 EvalPlus - upstream no longer serves a static humaneval.json / mbpp.json.
-    # (now requires running their Python eval harness). High-fidelity family-level fallback used.
+    # 3.6 EvalPlus - fetch from live JSON endpoint
     print("[*] Loading EvalPlus scores...")
-    evalplus_map = get_evalplus_fallback_map()
-    ep_status = "fallback"
+    evalplus_scores, ep_status = fetch_evalplus_scores()
+    if ep_status == "success":
+        print(f"[+] EvalPlus API: loaded {len(evalplus_scores)} model entries.")
+    else:
+        print(f"[-] EvalPlus API: {ep_status}")
 
     # Process models & resolve exact/derived benchmarks
     models_list = []
@@ -368,31 +411,65 @@ def refresh_cache():
             if cat.get("multilingual") is not None:
                 bench_scores["benchlm_multilingual"] = cat.get("multilingual")
 
-        # 3.7 Resolve LiveBench & EvalPlus with high-fidelity scraper/fallback maps
+        # 3.7 Resolve LiveBench & EvalPlus from live API data
         fam = get_model_family(model_id)
+        model_key = model_id.lower().replace("-", " ").replace("_", " ")
         livebench_score = None
-        if fam in livebench_map:
-            livebench_score = livebench_map[fam].get("score")
-        else:
-            for k, val in livebench_map.items():
-                if k in model_id.lower():
-                    livebench_score = val.get("score")
-                    break
+        
+        # Try exact model name match first
+        if model_key in livebench_scores:
+            livebench_score = livebench_scores[model_key].get("score")
+        # Try base model name
+        if livebench_score is None:
+            base_key = base_model_id.lower().replace("-", " ").replace("_", " ")
+            if base_key in livebench_scores:
+                livebench_score = livebench_scores[base_key].get("score")
+        # Try family-level grouping from live data
+        if livebench_score is None:
+            fam_scores = []
+            for lk, lv in livebench_scores.items():
+                if get_model_family(lk.replace(" ", "-")) == fam or fam in lk:
+                    if lv.get("score") is not None:
+                        fam_scores.append(lv["score"])
+            if fam_scores:
+                fam_scores.sort()
+                n = len(fam_scores)
+                livebench_score = fam_scores[n // 2] if n % 2 else (fam_scores[n//2-1] + fam_scores[n//2]) / 2.0
+        # Last resort: parameter-scaling formula
         if livebench_score is None:
             livebench_score = 50.0 + (params ** 0.5) * 2.2
         bench_scores["livebench"] = round(min(98.0, livebench_score), 1)
 
         he_score = None
         mbpp_score = None
-        if fam in evalplus_map:
-            he_score = evalplus_map[fam].get("humaneval")
-            mbpp_score = evalplus_map[fam].get("mbpp")
-        else:
-            for k, val in evalplus_map.items():
-                if k in model_id.lower():
-                    he_score = val.get("humaneval")
-                    mbpp_score = val.get("mbpp")
-                    break
+        # Try exact model name match first
+        if model_key in evalplus_scores:
+            he_score = evalplus_scores[model_key].get("humaneval")
+            mbpp_score = evalplus_scores[model_key].get("mbpp")
+        # Try base model name
+        if he_score is None:
+            base_key = base_model_id.lower().replace("-", " ").replace("_", " ")
+            if base_key in evalplus_scores:
+                he_score = evalplus_scores[base_key].get("humaneval")
+                mbpp_score = evalplus_scores[base_key].get("mbpp")
+        # Try family-level grouping from live data
+        if he_score is None:
+            fam_he, fam_mbpp = [], []
+            for ek, ev in evalplus_scores.items():
+                if get_model_family(ek.replace(" ", "-")) == fam or fam in ek:
+                    if ev.get("humaneval") is not None:
+                        fam_he.append(ev["humaneval"])
+                    if ev.get("mbpp") is not None:
+                        fam_mbpp.append(ev["mbpp"])
+            if fam_he:
+                fam_he.sort()
+                n = len(fam_he)
+                he_score = fam_he[n // 2] if n % 2 else (fam_he[n//2-1] + fam_he[n//2]) / 2.0
+            if fam_mbpp:
+                fam_mbpp.sort()
+                n = len(fam_mbpp)
+                mbpp_score = fam_mbpp[n // 2] if n % 2 else (fam_mbpp[n//2-1] + fam_mbpp[n//2]) / 2.0
+        # Last resort: parameter-scaling formula
         if he_score is None:
             he_score = 55.0 + (params ** 0.5) * 3.5
         if mbpp_score is None:
@@ -718,19 +795,19 @@ def refresh_cache():
                 "last_updated": datetime.now(timezone.utc).isoformat(),
                 "row_count": len(benchlm_models)
             },
-            "livebench": {
-                "name": "LiveBench LLM Benchmark",
-                "url": "https://raw.githubusercontent.com/LiveBench/LiveBench/main/livebench/data/live_bench/leaderboard.json",
-                "status": lb_status,
-                "last_updated": datetime.now(timezone.utc).isoformat(),
-                "row_count": len(livebench_map)
+            'livebench': {
+                'name': 'LiveBench LLM Benchmark',
+                'url': 'https://livebench.ai/',
+                'status': lb_status,
+                'last_updated': datetime.now(timezone.utc).isoformat(),
+                'row_count': len(livebench_scores)
             },
-            "evalplus": {
-                "name": "EvalPlus Code Benchmark (HumanEval+ & MBPP+)",
-                "url": "https://evalplus.github.io/results/humaneval.json",
-                "status": ep_status,
-                "last_updated": datetime.now(timezone.utc).isoformat(),
-                "row_count": len(evalplus_map)
+            'evalplus': {
+                'name': 'EvalPlus Code Benchmark (HumanEval+ & MBPP+)',
+                'url': 'https://evalplus.github.io/results.json',
+                'status': ep_status,
+                'last_updated': datetime.now(timezone.utc).isoformat(),
+                'row_count': len(evalplus_scores)
             },
             "techpowerup": {
                 "name": "TechPowerUp GPU Database",
