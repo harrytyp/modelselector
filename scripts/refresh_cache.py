@@ -845,10 +845,9 @@ def refresh_cache():
         "fp16": 0.65    # Much more data, significantly slower
     }
     PHYSICAL_CONSTANTS = {
-        "gpu_efficiency": 0.35,
-        "cpu_efficiency": 0.22,
-        "apple_silicon_bonus": 0.75,
-        "max_physical_tps": 2000
+        "gpu_efficiency": 0.44,
+        "cpu_efficiency": 0.30,
+        "apple_silicon_bonus": 0.80
     }
     
     cache_payload = {

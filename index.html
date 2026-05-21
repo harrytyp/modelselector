@@ -1877,10 +1877,11 @@
 
     // Physical simulator constants
     const RUNTIME_OVERHEAD_GB = 0.8;
-    let GPU_EFFICIENCY = 0.35; // Accounting for launch latencies, thread sync, tensor operations
-    let CPU_EFFICIENCY = 0.22; // System RAM bus overhead and context switches
-    let APPLE_SILICON_UNIFIED_BONUS = 0.75; // Apple unified memory matches memory bus bandwidth closer
-    let MAX_PHYSICAL_TPS = 2000; // High limit constraint for realistic rendering
+    let GPU_EFFICIENCY = 0.44; // Real-world llama.cpp BW utilization (RTX 4090 achieves ~44%)
+    let CPU_EFFICIENCY = 0.30; // System RAM bus utilization
+    let APPLE_SILICON_UNIFIED_BONUS = 0.80; // Apple unified memory utilizes bandwidth closer to theoretical
+
+    // Generation speed cap removed — physics formula determines the limit naturally
 
     // Dynamic Weights per Use Case Profile (Optimized to reflect highly realistic engineering benchmarks)
     const USE_CASE_PROFILES = {
@@ -2024,7 +2025,6 @@
         if (pc.gpu_efficiency) GPU_EFFICIENCY = pc.gpu_efficiency;
         if (pc.cpu_efficiency) CPU_EFFICIENCY = pc.cpu_efficiency;
         if (pc.apple_silicon_bonus) APPLE_SILICON_UNIFIED_BONUS = pc.apple_silicon_bonus;
-        if (pc.max_physical_tps) MAX_PHYSICAL_TPS = pc.max_physical_tps;
       }
 
       // Update search placeholder with actual model count
@@ -3289,10 +3289,7 @@
       // Safe speed thresholds
       // Apply per-quant speed scaling (different quants have different throughput)
       genSpeedTPS *= (SPEED_SCALING[quantKey] || 1.0);
-      
-      if (genSpeedTPS > MAX_PHYSICAL_TPS) {
-        genSpeedTPS = MAX_PHYSICAL_TPS;
-      }
+      // Safe speed thresholds
       if (fitStatus === "OOM") {
         genSpeedTPS = 0.0;
       }
