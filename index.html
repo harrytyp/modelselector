@@ -2517,7 +2517,7 @@
           appDb = await response.json();
           cacheDot.style.backgroundColor = "var(--color-fit-green)";
           cacheDot.style.boxShadow = "0 0 8px var(--color-fit-green)";
-          cacheText.textContent = "Synced";
+          cacheText.textContent = appDb.models ? `${appDb.models.length} models` : "Synced";
         } else {
           throw new Error("Local cache file missing");
         }
