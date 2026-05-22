@@ -1519,6 +1519,20 @@
         </div>
       </div>
 
+      <!-- License Filter (in sidebar for desktop, synced with header dropdown) -->
+      <div style="margin-top: 1rem; padding-top: 0.75rem; border-top: 1px solid var(--color-rule);">
+        <div style="font-size:0.68rem;color:var(--color-neutral);font-weight:600;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:0.35rem;">License</div>
+        <select id="licenseFilter" style="width:100%;padding:0.4rem 0.5rem;font-size:0.72rem;background:rgba(0,0,0,0.2);border:1px solid var(--color-rule);border-radius:6px;color:#fff;outline:none;">
+          <option value="all">All Licenses</option>
+          <option value="apache-2.0">Apache 2.0</option>
+          <option value="mit">MIT</option>
+          <option value="gemma">Gemma</option>
+          <option value="qwen">Qwen</option>
+          <option value="llama3.2">Llama 3.2</option>
+          <option value="other">Other</option>
+        </select>
+      </div>
+
     </aside>
 
     <!-- DASHBOARD MAIN CONTENT -->
@@ -2717,12 +2731,22 @@
         });
       }
       
-      // Header license filter
+      // License filter (sidebar + header sync)
       const headerLicenseFilter = document.getElementById("headerLicenseFilter");
+      const sidebarLicenseFilter = document.getElementById("licenseFilter");
+      function syncLicenseFilters(src, dst) {
+        if (src && dst && src.value !== dst.value) {
+          dst.value = src.value;
+          currentPage = 1;
+          renderDashboard();
+        }
+      }
       if (headerLicenseFilter) {
-        headerLicenseFilter.addEventListener("change", () => {
-          const sidebarLicense = document.getElementById("licenseFilter");
-          if (sidebarLicense) sidebarLicense.value = headerLicenseFilter.value;
+        headerLicenseFilter.addEventListener("change", () => syncLicenseFilters(headerLicenseFilter, sidebarLicenseFilter));
+      }
+      if (sidebarLicenseFilter) {
+        sidebarLicenseFilter.addEventListener("change", () => {
+          if (headerLicenseFilter) headerLicenseFilter.value = sidebarLicenseFilter.value;
           currentPage = 1;
           renderDashboard();
         });
@@ -2862,12 +2886,6 @@
         e.stopPropagation();
         benchmarksExpanded = !benchmarksExpanded;
         updateBenchmarkColumns();
-        renderDashboard();
-      });
-
-      // License filter
-      licenseFilter.addEventListener("change", () => {
-        currentPage = 1;
         renderDashboard();
       });
 
