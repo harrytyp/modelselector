@@ -1757,9 +1757,7 @@
 
   </div>
   
-  <!-- Privacy Modal -->
-  <div id="privacyModal" class="modal-overlay" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 1000; align-items: center; justify-content: center; padding: 1.5rem; overflow-y: auto;">`
-<!-- COMPARISON MODAL -->
+  <!-- COMPARISON MODAL -->
   <div class="modal-overlay" id="compareModal" style="z-index: 1000;">
     <div class="modal-container" style="max-width: 1100px;">
       
@@ -5285,39 +5283,173 @@
 
   <!-- PRIVACY MODAL -->
   <div class="modal-overlay" id="privacyModal">
-    <div class="modal-container" style="max-width: 600px;">
+    <div class="modal-container" style="max-width: 640px;">
       <div class="modal-header">
         <div class="modal-header-info">
-          <h2>🔒 Privacy & Legal</h2>
-          <p>ModelSelector is a static client-side application</p>
+          <h2>🔒 Privacy & Data Statement</h2>
+          <p>GDPR-compliant · EU Standard · Last updated June 2026</p>
         </div>
         <button class="btn-close" id="privacyModalClose">✕</button>
       </div>
-      <div class="modal-content" style="display: flex; flex-direction: column; gap: 1rem; padding: 1.5rem;">
-        
-        <div style="background: rgba(255,255,255,0.02); border: 1px solid var(--color-rule); border-radius: 12px; padding: 1rem; font-size: 0.85rem; line-height: 1.6; color: var(--color-muted);">
-          <p><strong>No Data Collection.</strong> ModelSelector runs entirely in your browser. No cookies, no tracking scripts, no analytics, no telemetry. All data processing — VRAM calculations, speed simulation, benchmark comparison — happens locally on your machine.</p>
+      <div class="modal-content" style="display: flex; flex-direction: column; gap: 0.75rem; padding: 1.5rem; max-height: 70vh; overflow-y: auto;">
+
+        <!-- Summary badge -->
+        <div style="background: linear-gradient(135deg, rgba(99,102,241,0.12), rgba(6,182,212,0.08)); border: 1px solid rgba(99,102,241,0.25); border-radius: 12px; padding: 1rem; text-align: center;">
+          <div style="font-size: 2rem; margin-bottom: 0.3rem;">🛡️</div>
+          <div style="font-size: 0.95rem; font-weight: 700; color: #fff; margin-bottom: 0.25rem;">This site collects nothing.</div>
+          <div style="font-size: 0.78rem; color: var(--color-muted); line-height: 1.5;">Zero cookies. Zero tracking. Zero servers. All computation happens in your browser. The GitHub Pages infrastructure may log standard HTTP request metadata (IP, timestamps) per their <a href="https://docs.github.com/en/site-policy/privacy-policies/github-privacy-statement" target="_blank" rel="noopener" style="color: var(--color-accent);">privacy policy</a> — we have no access to that data.</div>
         </div>
 
-        <div style="background: rgba(255,255,255,0.02); border: 1px solid var(--color-rule); border-radius: 12px; padding: 1rem; font-size: 0.85rem; line-height: 1.6; color: var(--color-muted);">
-          <p><strong>External Requests.</strong> When you use the "Import from Hugging Face" feature, a request is sent directly to the Hugging Face API to search for models. No data about you or your hardware is transmitted.</p>
+        <!-- Section 1: What the server saves -->
+        <div class="privacy-card" style="opacity: 0; animation: privacyFadeIn 0.4s ease 0.1s forwards;">
+          <div style="display: flex; gap: 0.75rem; align-items: flex-start;">
+            <span style="font-size: 1.5rem; flex-shrink: 0;">☁️</span>
+            <div>
+              <div style="font-size: 0.85rem; font-weight: 700; color: #fff; margin-bottom: 0.3rem;">What the server saves</div>
+              <div style="font-size: 0.78rem; color: var(--color-muted); line-height: 1.6;">
+                <strong style="color: #ef4444;">Nothing.</strong> ModelSelector is a static site hosted on GitHub Pages. There is no backend server, no database, no form processing, no login system, no comment box, and no analytics endpoint. The <code style="background: rgba(0,0,0,0.2); padding: 0.1rem 0.3rem; border-radius: 4px; font-size: 0.72rem;">data/cache.json</code> file in the repository is pre-built model/GPU data — it is <strong style="color: #fff;">not</strong> user-generated content. When you visit the site, GitHub Pages serves these static files and nothing more.
+              </div>
+            </div>
+          </div>
         </div>
 
-        <div style="background: rgba(255,255,255,0.02); border: 1px solid var(--color-rule); border-radius: 12px; padding: 1rem; font-size: 0.85rem; line-height: 1.6; color: var(--color-muted);">
-          <p><strong>Model Data.</strong> All model specifications, benchmark scores, and GPU hardware data are fetched from public APIs (Hugging Face, LiveBench, EvalPlus, BenchLM, TechPowerUp) and cached in a local JSON file. No user data is ever sent to any third party.</p>
+        <!-- Section 2: What your browser does -->
+        <div class="privacy-card" style="opacity: 0; animation: privacyFadeIn 0.4s ease 0.2s forwards;">
+          <div style="display: flex; gap: 0.75rem; align-items: flex-start;">
+            <span style="font-size: 1.5rem; flex-shrink: 0;">🖥️</span>
+            <div>
+              <div style="font-size: 0.85rem; font-weight: 700; color: #fff; margin-bottom: 0.3rem;">What your browser does (client-side only)</div>
+              <div style="font-size: 0.78rem; color: var(--color-muted); line-height: 1.6;">
+                Every calculation — VRAM budgeting, speed simulation, fit scores, benchmark comparison — runs locally in your browser's JavaScript engine. No data leaves your machine unless you explicitly trigger a feature below. The application stores two preferences in your browser's <code style="background: rgba(0,0,0,0.2); padding: 0.1rem 0.3rem; border-radius: 4px; font-size: 0.72rem;">localStorage</code>:
+              </div>
+              <ul style="font-size: 0.75rem; color: var(--color-neutral); line-height: 1.6; margin: 0.4rem 0 0 0; padding-left: 1.2rem;">
+                <li><code>currentHwMode</code> — your hardware profile mode (auto/manual)</li>
+                <li><code>enabledGpuOnly</code> — GPU-only filter toggle state</li>
+              </ul>
+              <div style="font-size: 0.72rem; color: var(--color-neutral); margin-top: 0.3rem;">These are local-only, never transmitted, and deletable via your browser settings at any time.</div>
+            </div>
+          </div>
         </div>
 
-        <div style="background: rgba(255,255,255,0.02); border: 1px solid var(--color-rule); border-radius: 12px; padding: 1rem; font-size: 0.85rem; line-height: 1.6; color: var(--color-muted);">
-          <p><strong>License.</strong> ModelSelector is open-source under the MIT License. See <a href="https://github.com/harrytyp/modelselector" target="_blank" rel="noopener" style="color: var(--color-accent); text-decoration: none;">github.com/harrytyp/modelselector</a> for details.</p>
+        <!-- Section 3: External requests -->
+        <div class="privacy-card" style="opacity: 0; animation: privacyFadeIn 0.4s ease 0.3s forwards;">
+          <div style="display: flex; gap: 0.75rem; align-items: flex-start;">
+            <span style="font-size: 1.5rem; flex-shrink: 0;">🌐</span>
+            <div>
+              <div style="font-size: 0.85rem; font-weight: 700; color: #fff; margin-bottom: 0.3rem;">External requests (opt-in only)</div>
+              <div style="font-size: 0.78rem; color: var(--color-muted); line-height: 1.6;">
+                ModelSelector makes outgoing HTTP requests only when you explicitly ask it to. These are never automatic:
+              </div>
+              <div style="display: grid; grid-template-columns: auto 1fr; gap: 0.3rem 0.6rem; font-size: 0.75rem; color: var(--color-neutral); margin-top: 0.4rem; align-items: start;">
+                <span style="font-weight: 600; color: var(--color-muted);">Hugging Face Import</span>
+                <span>— triggered when you type a model ID and click "Find". Sends a <code style="background: rgba(0,0,0,0.2);padding:0.1rem 0.25rem;border-radius:3px;font-size:0.7rem;">GET</code> to <code style="background: rgba(0,0,0,0.2);padding:0.1rem 0.25rem;border-radius:3px;font-size:0.7rem;">huggingface.co/api/models/…</code>. The HF API receives your IP, user agent, and the model ID you searched for. <strong style="color: #fff;">No hardware info, no preferences, no session data.</strong></span>
+                <span style="font-weight: 600; color: var(--color-muted);">LiveBench / EvalPlus</span>
+                <span>— data is pre-cached in the repository. Online fetching is a fallback for cache miss and sends standard HTTP headers only.</span>
+              </div>
+            </div>
+          </div>
         </div>
 
-        <div style="background: rgba(255,255,255,0.02); border: 1px solid var(--color-rule); border-radius: 12px; padding: 1rem; font-size: 0.85rem; line-height: 1.6; color: var(--color-muted);">
-          <p><strong>Disclaimer.</strong> Speed estimates are physics-based approximations. Actual performance depends on your specific hardware configuration, driver version, cooling, system load, and software implementation. Use these estimates as a guide, not a guarantee.</p>
+        <!-- Section 4: Third-party data sources -->
+        <div class="privacy-card" style="opacity: 0; animation: privacyFadeIn 0.4s ease 0.4s forwards;">
+          <div style="display: flex; gap: 0.75rem; align-items: flex-start;">
+            <span style="font-size: 1.5rem; flex-shrink: 0;">📊</span>
+            <div>
+              <div style="font-size: 0.85rem; font-weight: 700; color: #fff; margin-bottom: 0.3rem;">Third-party data sources (pre-cached, no live tracking)</div>
+              <div style="font-size: 0.78rem; color: var(--color-muted); line-height: 1.6;">
+                Model data, benchmark scores, GPU specifications are fetched from public APIs during the nightly <code style="background: rgba(0,0,0,0.2); padding: 0.1rem 0.3rem; border-radius: 4px; font-size: 0.72rem;">refresh_cache.py</code> build pipeline, compiled into <code style="background: rgba(0,0,0,0.2); padding: 0.1rem 0.3rem; border-radius: 4px; font-size: 0.72rem;">data/cache.json</code>, and served as a static file. Sources: <a href="https://huggingface.co/" target="_blank" rel="noopener" style="color: var(--color-accent);">Hugging Face</a>, <a href="https://livebench.ai/" target="_blank" rel="noopener" style="color: var(--color-accent);">LiveBench</a>, <a href="https://evalplus.github.io/" target="_blank" rel="noopener" style="color: var(--color-accent);">EvalPlus</a>. When you view the site, no requests are made to these APIs unless you use the Hugging Face Import feature.
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Section 5: GDPR compliance -->
+        <div class="privacy-card" style="opacity: 0; animation: privacyFadeIn 0.4s ease 0.5s forwards;">
+          <div style="display: flex; gap: 0.75rem; align-items: flex-start;">
+            <span style="font-size: 1.5rem; flex-shrink: 0;">⚖️</span>
+            <div>
+              <div style="font-size: 0.85rem; font-weight: 700; color: #fff; margin-bottom: 0.3rem;">GDPR compliance (EU Regulation 2016/679)</div>
+              <div style="font-size: 0.78rem; color: var(--color-muted); line-height: 1.6;">
+                This page serves as our <strong style="color: #fff;">Art. 13 Information Obligation</strong>. Because we process no personal data, the following articles are satisfied by design:
+              </div>
+              <div style="display: grid; grid-template-columns: auto 1fr; gap: 0.25rem 0.5rem; font-size: 0.72rem; color: var(--color-neutral); margin-top: 0.4rem;">
+                <span style="color: var(--color-muted);">Art. 5(1)(c)</span><span>Data minimisation — we collect nothing</span>
+                <span style="color: var(--color-muted);">Art. 13</span><span>Right to be informed — you are reading it</span>
+                <span style="color: var(--color-muted);">Art. 17</span><span>Right to erasure — there is nothing to erase</span>
+                <span style="color: var(--color-muted);">Art. 25</span><span>Data protection by design — runs entirely client-side</span>
+                <span style="color: var(--color-muted);">Art. 32</span><span>Security of processing — no data to secure</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Section 6: Honest disclosure -->
+        <div class="privacy-card" style="opacity: 0; animation: privacyFadeIn 0.4s ease 0.6s forwards; border-color: rgba(239,68,68,0.25); background: rgba(239,68,68,0.04);">
+          <div style="display: flex; gap: 0.75rem; align-items: flex-start;">
+            <span style="font-size: 1.5rem; flex-shrink: 0;">⚠️</span>
+            <div>
+              <div style="font-size: 0.85rem; font-weight: 700; color: #fff; margin-bottom: 0.3rem;">Honest disclosure: what we cannot control</div>
+              <div style="font-size: 0.78rem; color: var(--color-muted); line-height: 1.6;">
+                While ModelSelector itself is zero-tracking, the following infrastructure is outside our control:
+              </div>
+              <ul style="font-size: 0.75rem; color: var(--color-neutral); line-height: 1.6; margin: 0.4rem 0 0 0; padding-left: 1.2rem;">
+                <li><strong>GitHub Pages</strong> may log standard HTTP request metadata (IP address, User-Agent, request timing) for operational purposes. This is covered by <a href="https://docs.github.com/en/site-policy/privacy-policies/github-privacy-statement" target="_blank" rel="noopener" style="color: var(--color-accent);">GitHub's Privacy Statement</a>. We do not receive, store, or have any access to this data.</li>
+                <li><strong>Your ISP / network</strong> can see that you visited <code>harrytyp.github.io</code>. They cannot see what pages you viewed within the site (all assets are served from the same origin).</li>
+                <li><strong>Browser extensions</strong> you have installed may read page content. This includes ad blockers, password managers, and AI assistants. That is between you and your extensions.</li>
+                <li><strong>Hugging Face API</strong> (if you use the Import feature) receives your IP and the model ID you searched. See <a href="https://huggingface.co/privacy" target="_blank" rel="noopener" style="color: var(--color-accent);">HF Privacy Policy</a>.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- Section 7: License -->
+        <div class="privacy-card" style="opacity: 0; animation: privacyFadeIn 0.4s ease 0.7s forwards;">
+          <div style="display: flex; gap: 0.75rem; align-items: flex-start;">
+            <span style="font-size: 1.5rem; flex-shrink: 0;">📄</span>
+            <div>
+              <div style="font-size: 0.85rem; font-weight: 700; color: #fff; margin-bottom: 0.3rem;">License & attribution</div>
+              <div style="font-size: 0.78rem; color: var(--color-muted); line-height: 1.6;">
+                ModelSelector is open-source under the <a href="https://github.com/harrytyp/modelselector/blob/main/LICENSE" target="_blank" rel="noopener" style="color: var(--color-accent);">MIT License</a>. Built by <a href="https://github.com/harrytyp" target="_blank" rel="noopener" style="color: var(--color-accent);">Kolja Knodel</a>. Model data sourced from Hugging Face Hub. Benchmark data sourced from LiveBench and EvalPlus. GPU hardware specs sourced from TechPowerUp.
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Disclaimer -->
+        <div class="privacy-card" style="opacity: 0; animation: privacyFadeIn 0.4s ease 0.8s forwards; border-color: rgba(234,179,8,0.2); background: rgba(234,179,8,0.04);">
+          <div style="display: flex; gap: 0.75rem; align-items: flex-start;">
+            <span style="font-size: 1.5rem; flex-shrink: 0;">⚡</span>
+            <div>
+              <div style="font-size: 0.85rem; font-weight: 700; color: #fff; margin-bottom: 0.3rem;">Performance disclaimer</div>
+              <div style="font-size: 0.78rem; color: var(--color-muted); line-height: 1.6;">
+                Speed estimates are physics-based approximations using memory-bandwidth-bound models. Real-world performance depends on your specific hardware configuration, driver version, thermal throttling, system load, quantization implementation, prompt length, and inference engine. Use these estimates as directional guidance, not guarantees.
+              </div>
+            </div>
+          </div>
         </div>
 
       </div>
     </div>
   </div>
+
+  <!-- Animation keyframes -->
+  <style>
+    @keyframes privacyFadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .privacy-card {
+      background: rgba(255,255,255,0.02);
+      border: 1px solid var(--color-rule);
+      border-radius: 12px;
+      padding: 1rem;
+    }
+    .privacy-card:hover {
+      border-color: var(--color-accent);
+      background: rgba(99,102,241,0.04);
+      transition: all 0.2s ease;
+    }
+  </style>
 
 </body>
 </html>
