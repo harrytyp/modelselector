@@ -153,6 +153,20 @@
       font-family: 'JetBrains Mono', monospace;
     }
 
+    .ascii-title {
+      font-family: 'JetBrains Mono', 'Courier New', monospace;
+      font-size: 0.55rem;
+      line-height: 1.2;
+      margin: 0;
+      padding: 0;
+      color: var(--color-muted);
+      letter-spacing: normal;
+      white-space: pre;
+      text-shadow: 0 0 4px rgba(99,102,241,0.15);
+    }
+    .ascii-title .c1 { color: #22d3ee; }
+    .ascii-title .c2 { color: #a78bfa; }
+
     .header-actions {
       display: flex;
       align-items: center;
@@ -1293,10 +1307,10 @@
       html { font-size: 14px; }
       .container { grid-template-columns: 1fr; padding: 0.5rem; gap: 0.4rem; }
       header { gap: 0.3rem; flex-wrap: nowrap; }
+      .ascii-title { font-size: 0.3rem; line-height: 1.15; }
       .brand-subtitle { display: none; }
       .brand-logo { width: 24px; height: 24px; flex-shrink: 0; margin-top: 1px; }
       .brand-logo svg { width: 14px; height: 14px; }
-      .brand img { height: 24px !important; }
       .data-badge { padding: 0.15rem 0.35rem; font-size: 0.5rem; gap: 0.15rem; white-space: nowrap; }
       .data-badge .dot { width: 4px; height: 4px; }
       .header-dropdown-content { right: -5px; width: 200px; }
@@ -1427,7 +1441,12 @@
           </svg>
         </div>
         <div>
-          <img src="assets/logo.svg" alt="ModelSelector" style="height: 44px; width: auto; display: block;">
+          <pre class="ascii-title" aria-label="ModelSelector"><span class="c1"> __  __           _      _  _____      _           _            </span>
+<span class="c2">|  \/  |         | |    | |/ ____|    | |         | |           </span>
+<span class="c1">| \  / | ___   __| | ___| | (___   ___| | ___  ___| |_ ___  _ __</span>
+<span class="c2">| |\/| |/ _ \ / _` |/ _ \ |\___ \ / _ \ |/ _ \/ __| __/ _ \| '__|</span>
+<span class="c1">| |  | | (_) | (_| |  __/ |____) |  __/ |  __/ (__| || (_) | |  </span>
+<span class="c2">|_|  |_|\___/ \__,_|\___|_|_____/ \___|_|\___|\___|\__\___/|_|  </span></pre>
           <p class="brand-subtitle">// find the right LLM for your hardware</p>
         </div>
       </div>
