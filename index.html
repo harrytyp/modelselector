@@ -2959,13 +2959,14 @@
         }
       });
 
-      // HF Live API Import Event Listeners
+      // HF Live API Import Event Listeners (guarded — only if elements exist in DOM)
       const btnImportHf = document.getElementById("btnImportHf");
       const hfModelIdInput = document.getElementById("hfModelIdInput");
       const importStatus = document.getElementById("importStatus");
       const hfSearchResults = document.getElementById("hfSearchResults");
 
-      btnImportHf.addEventListener("click", async () => {
+      if (btnImportHf && hfModelIdInput && importStatus && hfSearchResults) {
+        btnImportHf.addEventListener("click", async () => {
         const query = hfModelIdInput.value.trim();
         if (!query) {
           showImportStatus("Please enter a Model ID or search query", "error");
@@ -3182,6 +3183,7 @@
           btnImportHf.disabled = false;
         }
       });
+      }
 
       // Scan hardware triggered from Auto-Detect toggle button
       function showImportStatus(msg, type) {
