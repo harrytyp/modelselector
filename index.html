@@ -1270,7 +1270,8 @@
 
     /* Mobile: small screens */
     @media (max-width: 48rem) {
-      html { font-size: 15px; }
+      html { overflow-x: hidden; font-size: 14px; }
+      *, *::before, *::after { box-sizing: border-box; }
       .container {
         grid-template-columns: 1fr;
         padding: 0.5rem;
@@ -1321,6 +1322,7 @@
         padding: 0.4rem 0.5rem !important;
       }
       .search-wrapper { max-width: 100% !important; }
+      .search-wrapper input { font-size: 0.7rem !important; padding: 0.4rem 0.5rem 0.4rem 2rem !important; }
       .sort-wrapper { flex-wrap: wrap; justify-content: flex-start; }
       .sort-select { min-width: 100px !important; font-size: 0.6rem !important; padding: 0.35rem 1.5rem 0.35rem 0.5rem !important; }
       .view-toggle-group { display: none; }
@@ -1343,8 +1345,8 @@
       }
 
       /* Table: scrollable horizontally */
-      .models-table-container { overflow-x: auto; -webkit-overflow-scrolling: touch; }
-      .models-table { min-width: 480px; }
+      #tableView, .models-table-container { max-width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+      .models-table { width: 100%; }
       .models-table th, .models-table td { padding: 0.25rem 0.15rem; font-size: 0.55rem; }
       .models-table th { font-size: 0.45rem; letter-spacing: 0.05px; white-space: nowrap; }
       .model-desc-row, .tags-container, .dev-badge, .license-badge { display: none; }
@@ -1650,7 +1652,7 @@
 
       <!-- Table Controls Bar -->
       <div class="controls-bar" style="display: flex; flex-wrap: wrap; gap: 1rem; align-items: center; justify-content: space-between; padding: 0.85rem 1.25rem; border-radius: 16px; background: var(--color-paper-3); border: 1px solid var(--color-rule); backdrop-filter: blur(20px);">
-        <div style="display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; flex: 1; min-width: 320px;">
+        <div style="display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; flex: 1; min-width: 280px; max-width: 100%;">
           <!-- Custom-styled premium search wrapper -->
           <div class="search-wrapper" style="position: relative; flex: 1; max-width: 420px;">
             <span class="search-icon" style="position: absolute; left: 0.95rem; top: 50%; transform: translateY(-50%); color: var(--color-accent); opacity: 0.9; font-size: 0.95rem; pointer-events: none; transition: all 0.2s;">🔍</span>
@@ -1736,26 +1738,26 @@
         <div id="scatterTooltip" class="scatter-tooltip"></div>
       </div>
 
+      <!-- Bottom pagination bar -->
+      <div style="margin-top: 0.75rem;">
+        <div id="paginationControls" class="pagination-bar" style="display: none; padding: 0.5rem 0.75rem; border-radius: 10px; background: var(--color-paper-3); border: 1px solid var(--color-rule); align-items: center; justify-content: center; gap: 0.2rem; flex-wrap: wrap;"></div>
+        <div style="margin-top: 0.4rem; padding: 0.35rem 0.75rem; border-radius: 6px; background: rgba(0,0,0,0.12); border: 1px solid var(--color-rule); display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 0.4rem; font-size: 0.6rem; color: var(--color-neutral);">
+          <span>
+            <a href="https://github.com/harrytyp/modelselector" target="_blank" rel="noopener" style="color: var(--color-muted); text-decoration: none;">MIT License</a>
+            <span style="margin:0 0.35rem;">·</span>
+            <a href="https://github.com/harrytyp" target="_blank" rel="noopener" style="color: var(--color-muted); text-decoration: none;">Kolja Knodel</a>
+            <span style="margin:0 0.35rem;">·</span>
+            <button id="btnShowPrivacy" style="background: none; border: none; color: var(--color-accent); cursor: pointer; font-size: 0.6rem; text-decoration: underline; text-underline-offset: 2px; padding: 0;">Privacy</button>
+          </span>
+          <span>No tracking · All local · Data via <a href="https://huggingface.co/" target="_blank" rel="noopener" style="color: var(--color-muted); text-decoration: none;">HF</a> · <a href="https://livebench.ai/" target="_blank" rel="noopener" style="color: var(--color-muted); text-decoration: none;">LiveBench</a> · <a href="https://evalplus.github.io/" target="_blank" rel="noopener" style="color: var(--color-muted); text-decoration: none;">EvalPlus</a></span>
+        </div>
+      </div>
     </main>
 
-    <!-- Pagination & Legal compact bar -->
-    <div style="margin-top: 0.75rem;">
-      <div id="paginationControls" class="pagination-bar" style="display: none; padding: 0.6rem 1rem; border-radius: 12px; background: var(--color-paper-3); border: 1px solid var(--color-rule); align-items: center; justify-content: center; gap: 0.25rem; flex-wrap: wrap;"></div>
-      <div style="margin-top: 0.5rem; padding: 0.45rem 1rem; border-radius: 8px; background: rgba(0,0,0,0.12); border: 1px solid var(--color-rule); display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 0.5rem; font-size: 0.68rem; color: var(--color-neutral);">
-        <span>
-          <a href="https://github.com/harrytyp/modelselector" target="_blank" rel="noopener" style="color: var(--color-muted); text-decoration: none;">MIT License</a>
-          <span style="margin:0 0.4rem;">·</span>
-          <a href="https://github.com/harrytyp" target="_blank" rel="noopener" style="color: var(--color-muted); text-decoration: none;">Kolja Knodel</a>
-          <span style="margin:0 0.4rem;">·</span>
-          <button id="btnShowPrivacy" style="background: none; border: none; color: var(--color-accent); cursor: pointer; font-size: 0.68rem; text-decoration: underline; text-underline-offset: 2px; padding: 0;">Privacy</button>
-        </span>
-        <span>No tracking · All local · Data via <a href="https://huggingface.co/" target="_blank" rel="noopener" style="color: var(--color-muted); text-decoration: none;">HF</a> · <a href="https://livebench.ai/" target="_blank" rel="noopener" style="color: var(--color-muted); text-decoration: none;">LiveBench</a> · <a href="https://evalplus.github.io/" target="_blank" rel="noopener" style="color: var(--color-muted); text-decoration: none;">EvalPlus</a></span>
-      </div>
-    </div>
-
   </div>
-</div>
-
+  
+  <!-- Privacy Modal -->
+  <div id="privacyModal" class="modal-overlay" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 1000; align-items: center; justify-content: center; padding: 1.5rem; overflow-y: auto;">`
 <!-- COMPARISON MODAL -->
   <div class="modal-overlay" id="compareModal" style="z-index: 1000;">
     <div class="modal-container" style="max-width: 1100px;">
