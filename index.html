@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ModelSelector — Find the Best Local LLM for Your Hardware</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect x='2' y='2' width='28' height='28' rx='4' fill='%230a0a14' stroke='%236366f1' stroke-width='1.5'/%3E%3Crect x='5' y='6' width='4' height='20' rx='1' fill='%2322d3ee' opacity='0.9'/%3E%3Crect x='5' y='6' width='10' height='4' rx='1' fill='%2322d3ee' opacity='0.9'/%3E%3Crect x='11' y='13' width='4' height='4' rx='1' fill='%2322d3ee' opacity='0.7'/%3E%3Crect x='5' y='22' width='10' height='4' rx='1' fill='%2322d3ee' opacity='0.9'/%3E%3Crect x='17' y='6' width='10' height='4' rx='1' fill='%23a78bfa' opacity='0.9'/%3E%3Crect x='17' y='6' width='4' height='9' rx='1' fill='%23a78bfa' opacity='0.9'/%3E%3Crect x='17' y='13' width='10' height='4' rx='1' fill='%23a78bfa' opacity='0.9'/%3E%3Crect x='23' y='17' width='4' height='10' rx='1' fill='%23a78bfa' opacity='0.9'/%3E%3Crect x='17' y='22' width='10' height='4' rx='1' fill='%23a78bfa' opacity='0.9'/%3E%3Ccircle cx='2' cy='2' r='1.5' fill='%2322d3ee' opacity='0.6'/%3E%3Ccircle cx='30' cy='2' r='1.5' fill='%2322d3ee' opacity='0.6'/%3E%3Ccircle cx='2' cy='30' r='1.5' fill='%2322d3ee' opacity='0.6'/%3E%3Ccircle cx='30' cy='30' r='1.5' fill='%2322d3ee' opacity='0.6'/%3E%3C/svg%3E">
   <meta name="description" content="Smart LLM hardware simulator: match any open-source model + quantization to your GPU/CPU. Real VRAM, speed, and fit scores from live benchmarks.">
   <meta name="robots" content="index, follow">
   <link rel="canonical" href="https://harrytyp.github.io/modelselector/">
@@ -24,9 +25,6 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   
-  <!-- Favicon -->
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>⚡</text></svg>">
-
   <!-- JSON-LD Structured Data -->
   <script type="application/ld+json">
   {
@@ -1411,32 +1409,31 @@
     <header>
       <div class="brand">
         <div class="brand-logo">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round">
-            <!-- Outer core frame -->
-            <rect x="2" y="2" width="20" height="20" rx="4" stroke="var(--color-accent)" stroke-width="1.3" opacity="0.9"/>
-            <!-- Inner die -->
-            <rect x="5.5" y="5.5" width="13" height="13" rx="2.5" stroke="var(--color-accent)" stroke-width="1" opacity="0.55"/>
-            <!-- Center core with glow-ish fill -->
-            <rect x="8.5" y="8.5" width="7" height="7" rx="1.5" stroke="#a78bfa" stroke-width="0.8" fill="rgba(167,139,250,0.08)"/>
-            <!-- Horizontal bus lines -->
-            <line x1="8.5" y1="12" x2="15.5" y2="12" stroke="#a78bfa" stroke-width="0.7" opacity="0.5"/>
-            <line x1="12" y1="8.5" x2="12" y2="15.5" stroke="#a78bfa" stroke-width="0.7" opacity="0.5"/>
-            <!-- Center node -->
-            <circle cx="12" cy="12" r="1.8" stroke="var(--color-accent)" stroke-width="0.8" fill="rgba(99,102,241,0.25)"/>
+          <!-- ASCII-inspired terminal logo: block-grid 'MS' -->
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+            <!-- Background die -->
+            <rect x="1" y="1" width="22" height="22" rx="3" fill="rgba(10,10,20,0.9)" stroke="var(--color-accent)" stroke-width="1.2"/>
+            <!-- M block (left half): terminal-style block grid -->
+            <rect x="3" y="4" width="3" height="16" rx="0.5" fill="#22d3ee" opacity="0.9"/>
+            <rect x="3" y="4" width="8" height="3" rx="0.5" fill="#22d3ee" opacity="0.9"/>
+            <rect x="8" y="10" width="3" height="3" rx="0.5" fill="#22d3ee" opacity="0.7"/>
+            <rect x="3" y="17" width="8" height="3" rx="0.5" fill="#22d3ee" opacity="0.9"/>
+            <!-- S block (right half) -->
+            <rect x="13" y="4" width="8" height="3" rx="0.5" fill="#a78bfa" opacity="0.9"/>
+            <rect x="13" y="4" width="3" height="7" rx="0.5" fill="#a78bfa" opacity="0.9"/>
+            <rect x="13" y="10" width="8" height="3" rx="0.5" fill="#a78bfa" opacity="0.9"/>
+            <rect x="18" y="13" width="3" height="8" rx="0.5" fill="#a78bfa" opacity="0.9"/>
+            <rect x="13" y="17" width="8" height="3" rx="0.5" fill="#a78bfa" opacity="0.9"/>
             <!-- Corner termination dots -->
-            <circle cx="2" cy="2" r="1.2" fill="#22d3ee" opacity="0.8"/>
-            <circle cx="22" cy="2" r="1.2" fill="#22d3ee" opacity="0.8"/>
-            <circle cx="2" cy="22" r="1.2" fill="#22d3ee" opacity="0.8"/>
-            <circle cx="22" cy="22" r="1.2" fill="#22d3ee" opacity="0.8"/>
+            <circle cx="1" cy="1" r="1.2" fill="#22d3ee" opacity="0.6"/>
+            <circle cx="23" cy="1" r="1.2" fill="#22d3ee" opacity="0.6"/>
+            <circle cx="1" cy="23" r="1.2" fill="#22d3ee" opacity="0.6"/>
+            <circle cx="23" cy="23" r="1.2" fill="#22d3ee" opacity="0.6"/>
             <!-- Data traces -->
-            <path d="M2 6 L5.5 6" stroke="#22d3ee" stroke-width="0.6" opacity="0.5"/>
-            <path d="M18.5 6 L22 6" stroke="#22d3ee" stroke-width="0.6" opacity="0.5"/>
-            <path d="M2 18 L5.5 18" stroke="#22d3ee" stroke-width="0.6" opacity="0.5"/>
-            <path d="M18.5 18 L22 18" stroke="#22d3ee" stroke-width="0.6" opacity="0.5"/>
-            <path d="M6 2 L6 5.5" stroke="#22d3ee" stroke-width="0.6" opacity="0.5"/>
-            <path d="M6 18.5 L6 22" stroke="#22d3ee" stroke-width="0.6" opacity="0.5"/>
-            <path d="M18 2 L18 5.5" stroke="#22d3ee" stroke-width="0.6" opacity="0.5"/>
-            <path d="M18 18.5 L18 22" stroke="#22d3ee" stroke-width="0.6" opacity="0.5"/>
+            <path d="M1 4 L3 4" stroke="#22d3ee" stroke-width="0.6" opacity="0.4"/>
+            <path d="M21 4 L23 4" stroke="#22d3ee" stroke-width="0.6" opacity="0.4"/>
+            <path d="M1 20 L3 20" stroke="#22d3ee" stroke-width="0.6" opacity="0.4"/>
+            <path d="M21 20 L23 20" stroke="#22d3ee" stroke-width="0.6" opacity="0.4"/>
           </svg>
         </div>
         <div>
