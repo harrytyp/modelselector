@@ -1253,53 +1253,124 @@
       border-radius: 6px; color: #fff; outline: none;
     }
 
+    /* Mobile filter toggle: hidden on desktop */
+    .mobile-filter-toggle { display: none; }
+
     /* === RESPONSIVE === */
+    /* Tablet: medium screens (48rem to 64rem) */
+    @media (max-width: 64rem) {
+      .container { grid-template-columns: 220px 1fr; gap: 1rem; padding: 1rem; }
+      .sidebar { width: 220px; padding: 1rem; }
+      .stat-value { font-size: 1rem; }
+      .models-table th, .models-table td { font-size: 0.7rem; padding: 0.35rem 0.3rem; }
+      .model-name-row { max-width: 120px; }
+      .brand-title { font-size: 1.15rem; }
+      .sort-select { min-width: 140px !important; }
+    }
+
+    /* Mobile: small screens */
     @media (max-width: 48rem) {
+      html { font-size: 15px; }
       .container {
         grid-template-columns: 1fr;
-        padding: 0.75rem;
-        gap: 0.5rem;
+        padding: 0.5rem;
+        gap: 0.4rem;
       }
-      header { gap: 0.35rem; }
-      .brand-title { font-size: 1rem; }
+      header { gap: 0.3rem; flex-wrap: nowrap; overflow-x: auto; }
+      .brand-title { font-size: 0.9rem; }
       .brand-subtitle { display: none; }
-      .brand-logo { width: 28px; height: 28px; }
-      .brand-logo svg { width: 16px; height: 16px; }
-      .badge-cache-status { padding: 0.2rem 0.35rem; font-size: 0.55rem; gap: 0.2rem; }
-      .badge-cache-status .cache-dot { width: 5px; height: 5px; }
-      .sidebar { display: none; }
-      .stats-overview { grid-template-columns: 1fr 1fr; gap: 0.35rem; }
-      .stat-card { padding: 0.5rem; border-radius: 8px; }
-      .stat-title { font-size: 0.55rem; }
-      .stat-value { font-size: 0.9rem; margin-top: 0.2rem; }
-      .stat-desc { font-size: 0.55rem; margin-top: 0.1rem; }
-      .controls-bar { flex-direction: column; align-items: stretch; gap: 0.4rem; padding: 0.5rem 0.6rem !important; }
+      .brand-logo { width: 24px; height: 24px; flex-shrink: 0; }
+      .brand-logo svg { width: 14px; height: 14px; }
+      .badge-cache-status { padding: 0.15rem 0.3rem; font-size: 0.5rem; gap: 0.15rem; white-space: nowrap; }
+      .badge-cache-status .cache-dot { width: 4px; height: 4px; }
+      .header-dropdown-content { right: -5px; width: 200px; }
+
+      /* Sidebar: collapsible, shown inline on toggle */
+      .sidebar {
+        display: block;
+        max-height: 0;
+        overflow: hidden;
+        padding: 0 1rem;
+        margin: 0;
+        border: none;
+        border-radius: 10px;
+        background: var(--color-paper-2);
+        transition: max-height 0.3s ease, padding 0.3s ease, margin 0.3s ease;
+        width: 100%;
+        box-sizing: border-box;
+      }
+      .sidebar.open {
+        max-height: 3000px;
+        padding: 0.75rem 1rem;
+        margin: 0.25rem 0;
+        border: 1px solid var(--color-rule);
+      }
+
+      /* Stats: compact 2x2 */
+      .stats-overview { grid-template-columns: 1fr 1fr; gap: 0.3rem; }
+      .stat-card { padding: 0.4rem; border-radius: 6px; }
+      .stat-title { font-size: 0.5rem; }
+      .stat-value { font-size: 0.8rem; margin-top: 0.15rem; }
+      .stat-desc { font-size: 0.5rem; margin-top: 0.05rem; }
+
+      /* Controls bar */
+      .controls-bar {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0.35rem;
+        padding: 0.4rem 0.5rem !important;
+      }
       .search-wrapper { max-width: 100% !important; }
       .sort-wrapper { flex-wrap: wrap; justify-content: flex-start; }
-      .sort-select { min-width: 120px !important; font-size: 0.65rem !important; }
-      .models-table th, .models-table td { padding: 0.3rem 0.2rem; font-size: 0.6rem; }
-      .models-table th { font-size: 0.5rem; letter-spacing: 0.1px; }
+      .sort-select { min-width: 100px !important; font-size: 0.6rem !important; padding: 0.35rem 1.5rem 0.35rem 0.5rem !important; }
+      .view-toggle-group { display: none; }
+
+      /* Mobile filter toggle button */
+      .mobile-filter-toggle {
+        display: flex;
+        width: 100%;
+        padding: 0.4rem 0.6rem;
+        background: var(--color-paper-3);
+        border: 1px solid var(--color-rule);
+        border-radius: 8px;
+        color: var(--color-muted);
+        font-size: 0.7rem;
+        font-weight: 600;
+        cursor: pointer;
+        align-items: center;
+        gap: 0.4rem;
+        box-sizing: border-box;
+      }
+
+      /* Table: scrollable horizontally */
+      .models-table-container { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+      .models-table { min-width: 480px; }
+      .models-table th, .models-table td { padding: 0.25rem 0.15rem; font-size: 0.55rem; }
+      .models-table th { font-size: 0.45rem; letter-spacing: 0.05px; white-space: nowrap; }
       .model-desc-row, .tags-container, .dev-badge, .license-badge { display: none; }
-      .model-name-row { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 80px; }
-      .fit-meta { font-size: 0.45rem; }
-      .tps-value { font-size: 0.65rem; }
-      .tps-label { font-size: 0.5rem; }
-      .quality-number { font-size: 0.65rem; }
-      .quality-loss-tag { font-size: 0.4rem; }
-      .fit-badge { font-size: 0.45rem; padding: 0.05rem 0.2rem; }
-      .fit-badge span { width: 4px !important; height: 4px !important; }
-      .quant-pill { font-size: 0.5rem; padding: 0.05rem 0.2rem; }
-      td.checkbox-col, th.checkbox-col { width: 14px; }
-      .compare-checkbox { width: 9px; height: 9px; }
-      .score-container { width: 45px; }
-      .score-bar-fill { height: 4px; }
-      .score-percent { font-size: 0.5rem; width: 25px; }
-      .header-dropdown { display: flex; }
-      .header-dropdown-content { right: -5px; width: 220px; }
-      .bench-drill { gap: 0.05rem 0.15rem; }
-      .bench-item { font-size: 0.45rem; }
-      .pagination-bar { justify-content: center !important; }
-      .page-btn { padding: 0.15rem 0.3rem; font-size: 0.55rem; }
+      .model-name-row { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 60px; }
+      .fit-meta { font-size: 0.4rem; }
+      .tps-value { font-size: 0.6rem; }
+      .tps-label { font-size: 0.45rem; }
+      .quality-number { font-size: 0.6rem; }
+      .quality-loss-tag { font-size: 0.35rem; }
+      .fit-badge { font-size: 0.4rem; padding: 0.05rem 0.15rem; }
+      .fit-badge span { width: 3px !important; height: 3px !important; }
+      .quant-pill { font-size: 0.45rem; padding: 0.05rem 0.15rem; }
+      td.checkbox-col, th.checkbox-col { width: 12px; }
+      .compare-checkbox { width: 8px; height: 8px; }
+      .score-container { width: 35px; }
+      .score-bar-fill { height: 3px; }
+      .score-percent { font-size: 0.45rem; width: 20px; }
+
+      /* Benchmarks drill-down */
+      .bench-drill { gap: 0.05rem 0.1rem; }
+      .bench-item { font-size: 0.4rem; }
+
+      /* Pagination */
+      .pagination-bar { justify-content: center !important; flex-wrap: wrap; gap: 0.15rem; }
+      .pagination-bar .page-btn { padding: 0.15rem 0.25rem; font-size: 0.5rem; min-width: 22px; }
+      .pagination-bar .page-count { font-size: 0.5rem; }
     }
   </style>
 </head>
@@ -1612,6 +1683,14 @@
           </select>
         </div>
       </div>
+
+      <!-- Mobile filter toggle (visible only on mobile) -->
+      <button id="mobileFilterToggle" class="mobile-filter-toggle">
+        ☰ Filters & Settings
+      </button>
+
+      <!-- Top pagination bar -->
+      <div id="paginationControlsTop" class="pagination-bar" style="display: none; padding: 0.4rem 0.75rem; border-radius: 10px; background: var(--color-paper-3); border: 1px solid var(--color-rule); align-items: center; justify-content: center; gap: 0.2rem; flex-wrap: wrap;"></div>
 
       <!-- Models List Container -->
       <div id="activeFilters" class="active-filters-bar" style="display: none; margin-top: 0.5rem; padding: 0.5rem 1rem; border-radius: 12px; background: rgba(0,0,0,0.15); border: 1px solid var(--color-rule); gap: 0.5rem; flex-wrap: wrap; align-items: center; font-size: 0.8rem;">
@@ -2777,6 +2856,16 @@
           if (headerLicenseFilter) headerLicenseFilter.value = sidebarLicenseFilter.value;
           currentPage = 1;
           renderDashboard();
+        });
+      }
+
+      // Mobile filter toggle: show/hide sidebar inline
+      const mobileFilterToggle = document.getElementById("mobileFilterToggle");
+      const sidebar = document.querySelector(".sidebar");
+      if (mobileFilterToggle && sidebar) {
+        mobileFilterToggle.addEventListener("click", () => {
+          sidebar.classList.toggle("open");
+          mobileFilterToggle.textContent = sidebar.classList.contains("open") ? "✕ Close Filters" : "☰ Filters & Settings";
         });
       }
 
@@ -4746,15 +4835,19 @@
 
     // RENDER PAGINATION CONTROLS
     function renderPagination(totalPages, totalItems) {
-      const container = document.getElementById("paginationControls");
-      if (!container) return;
+      const containers = [
+        document.getElementById("paginationControlsTop"),
+        document.getElementById("paginationControls")
+      ];
+      const valid = containers.filter(c => c);
+      if (valid.length === 0) return;
       if (totalItems === 0 || totalPages <= 1) {
-        container.style.display = "none";
+        valid.forEach(c => { c.style.display = "none"; });
         return;
       }
-      container.style.display = "flex";
+      valid.forEach(c => { c.style.display = "flex"; });
       
-      let html = `<span style="font-size:0.75rem;color:var(--color-neutral);margin-right:0.5rem;">${totalItems} models</span>`;
+      let html = `<span class="page-count" style="font-size:0.75rem;color:var(--color-neutral);margin-right:0.5rem;">${totalItems} models · Page ${currentPage} of ${totalPages}</span>`;
       
       // Prev
       html += `<button class="page-btn" data-page="${currentPage - 1}" ${currentPage <= 1 ? 'disabled' : ''}>‹ Prev</button>`;
@@ -4771,17 +4864,17 @@
       // Next
       html += `<button class="page-btn" data-page="${currentPage + 1}" ${currentPage >= totalPages ? 'disabled' : ''}>Next ›</button>`;
       
-      container.innerHTML = html;
+      valid.forEach(c => { c.innerHTML = html; });
       
-      // Click handlers
-      container.querySelectorAll(".page-btn:not([disabled])").forEach(btn => {
+      // Click handlers (attach once)
+      valid[0].querySelectorAll(".page-btn:not([disabled])").forEach(btn => {
         btn.addEventListener("click", () => {
           const page = parseInt(btn.dataset.page);
           if (page && page !== currentPage && page >= 1 && page <= totalPages) {
             currentPage = page;
             renderDashboard();
             // Scroll to top of table
-            document.querySelector(".models-table-container")?.scrollIntoView({ behavior: "smooth", block: "start" });
+            document.querySelector(".controls-bar")?.scrollIntoView({ behavior: "smooth", block: "start" });
           }
         });
       });
