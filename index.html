@@ -50,6 +50,8 @@
   </script>
   
   <style>
+    *, *::before, *::after { box-sizing: border-box; }
+    html { overflow-x: hidden; }
     :root {
       /* OKLCH palette — cool-teal anchor (hue 220) */
       --color-paper:    oklch(15% 0.008 220);
@@ -1270,8 +1272,7 @@
 
     /* Mobile: small screens */
     @media (max-width: 48rem) {
-      html { overflow-x: hidden; font-size: 14px; }
-      *, *::before, *::after { box-sizing: border-box; }
+      html { font-size: 14px; }
       .container {
         grid-template-columns: 1fr;
         padding: 0.5rem;
