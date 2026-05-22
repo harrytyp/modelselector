@@ -1259,49 +1259,44 @@
       <div id="hwManualBlock" style="display: none;">
         <select id="gpuSelect" style="display:none;"></select>
 
-        <div style="font-size: 0.72rem; text-align: right; margin-bottom: 0.5rem;">
-          <a href="#" id="toggleGpuSearch" style="color: var(--color-accent); text-decoration: none; font-weight: 500; opacity: 0.85; transition: opacity 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.85'">
-            Search 2,800+ GPU models
-          </a>
-        </div>
-
-        <!-- Collapsible GPU search panel -->
-        <div id="gpuSearchBlock" class="hardware-custom-card" style="display: none; margin-bottom: 0.75rem; border-color: rgba(99, 102, 241, 0.25);">
-          <div class="form-group" style="position: relative;">
-            <label class="form-label" for="gpuSearchInput" style="font-size: 0.7rem; color: var(--color-neutral);">Search 2,800+ GPUs</label>
-            <div style="display: flex; gap: 0.5rem; margin-top: 0.25rem;">
-              <input type="text" id="gpuSearchInput" placeholder="e.g. RTX 4070, RX 7900" style="flex: 1; padding: 0.5rem 0.75rem; font-size: 0.8rem; border-radius: 8px; background: rgba(0,0,0,0.2); border: 1px solid var(--color-rule); color: #fff;">
-              <button id="btnSearchGpu" class="btn-toggle" style="padding: 0.5rem 0.75rem; background: var(--color-accent); color: white; border-color: var(--color-accent); font-weight: bold; border-radius: 8px; font-size: 0.8rem;">Find</button>
-            </div>
-            <div id="gpuSearchResults" style="display: none; background: rgba(12, 17, 34, 0.98); border: 1px solid var(--color-rule); border-radius: 8px; margin-top: 0.5rem; max-height: 180px; overflow-y: auto; font-size: 0.8rem; padding: 0.5rem; position: absolute; z-index: 100; width: 100%; box-shadow: 0 10px 25px rgba(0,0,0,0.8); backdrop-filter: blur(10px);"></div>
+        <!-- GPU Section -->
+        <div style="margin-bottom: 1rem;">
+          <div style="font-size:0.68rem;color:var(--color-neutral);font-weight:600;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:0.4rem;">GPU</div>
+          <div style="display:flex;gap:0.4rem;align-items:center;">
+            <input type="text" id="gpuSearchInput" placeholder="e.g. RTX 4090, RX 7900 XTX" style="flex:1;padding:0.5rem 0.65rem;font-size:0.78rem;border-radius:8px;background:rgba(0,0,0,0.25);border:1px solid var(--color-rule);color:#fff;outline:none;">
+            <button id="btnSearchGpu" style="padding:0.5rem 0.65rem;background:var(--color-accent);color:#fff;border:none;border-radius:8px;font-size:0.75rem;font-weight:600;cursor:pointer;white-space:nowrap;">Find</button>
           </div>
+          <div id="gpuSearchResults" style="display:none;background:var(--color-paper-2);border:1px solid var(--color-rule);border-radius:8px;margin-top:0.4rem;max-height:160px;overflow-y:auto;font-size:0.78rem;padding:0.4rem;position:absolute;z-index:100;width:calc(100% - 1rem);box-shadow:0 8px 20px rgba(0,0,0,0.6);"></div>
         </div>
 
         <!-- Custom hardware controls (shown when custom GPU is selected) -->
-        <div id="customHardwareBlock" class="hardware-custom-card" style="display: none;">
-          <div class="form-group">
-            <label class="form-label" for="customVramRange">Dedicated VRAM <span class="label-value" id="customVramVal">24 GB</span></label>
+        <div id="customHardwareBlock" class="hardware-custom-card" style="display:none;margin-bottom:1rem;">
+          <div class="form-group" style="margin-bottom:0.75rem;">
+            <label class="form-label" for="customVramRange" style="font-size:0.78rem;">VRAM <span class="label-value" id="customVramVal">24 GB</span></label>
             <input type="range" id="customVramRange" min="2" max="96" step="1" value="24">
           </div>
-          <div class="form-group">
-            <label class="form-label" for="customBandwidthRange">GPU Bus Bandwidth <span class="label-value" id="customBandwidthVal">1008 GB/s</span></label>
+          <div class="form-group" style="margin-bottom:0;">
+            <label class="form-label" for="customBandwidthRange" style="font-size:0.78rem;">Bus Bandwidth <span class="label-value" id="customBandwidthVal">1008 GB/s</span></label>
             <input type="range" id="customBandwidthRange" min="50" max="2048" step="10" value="1008">
           </div>
         </div>
 
-        <div class="form-group">
-          <label class="form-label" for="ramRange">System RAM <span class="label-value" id="ramVal">64 GB</span></label>
-          <input type="range" id="ramRange" min="8" max="256" step="8" value="64">
-        </div>
-
-        <div class="form-group" style="margin-bottom: 0;">
-          <label class="form-label" for="ramSpeedSelect">System RAM Speed</label>
-          <select id="ramSpeedSelect">
-            <option value="40" selected>DDR4 Dual-Channel (~40 GB/s)</option>
-            <option value="80">DDR5 Dual-Channel (~80 GB/s)</option>
-            <option value="150">DDR5 Quad-Channel/Threadripper (~150 GB/s)</option>
-            <option value="30">DDR4 Single-Channel (~30 GB/s)</option>
-          </select>
+        <!-- System Section -->
+        <div style="margin-bottom:0.5rem;padding-top:0.5rem;border-top:1px solid var(--color-rule);">
+          <div style="font-size:0.68rem;color:var(--color-neutral);font-weight:600;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:0.4rem;">System</div>
+          <div class="form-group" style="margin-bottom:0.75rem;">
+            <label class="form-label" for="ramRange" style="font-size:0.78rem;">RAM <span class="label-value" id="ramVal">64 GB</span></label>
+            <input type="range" id="ramRange" min="8" max="256" step="8" value="64">
+          </div>
+          <div class="form-group" style="margin-bottom:0;">
+            <label class="form-label" for="ramSpeedSelect" style="font-size:0.78rem;">RAM Speed</label>
+            <select id="ramSpeedSelect" style="background:rgba(0,0,0,0.25);border:1px solid var(--color-rule);border-radius:8px;padding:0.45rem 0.65rem;color:#fff;font-size:0.78rem;width:100%;outline:none;">
+              <option value="40" selected>DDR4 Dual-Channel (~40 GB/s)</option>
+              <option value="80">DDR5 Dual-Channel (~80 GB/s)</option>
+              <option value="150">DDR5 Quad-Channel/Threadripper (~150 GB/s)</option>
+              <option value="30">DDR4 Single-Channel (~30 GB/s)</option>
+            </select>
+          </div>
         </div>
       </div>
 
@@ -2648,19 +2643,7 @@
         });
       }
 
-      // Toggle collapsible GPU search panel
-      const toggleGpuSearch = document.getElementById("toggleGpuSearch");
-      const gpuSearchBlock = document.getElementById("gpuSearchBlock");
-      if (toggleGpuSearch && gpuSearchBlock) {
-        toggleGpuSearch.addEventListener("click", (e) => {
-          e.preventDefault();
-          const isHidden = gpuSearchBlock.style.display === "none";
-          gpuSearchBlock.style.display = isHidden ? "block" : "none";
-          toggleGpuSearch.textContent = isHidden ? "Hide Search" : "Search 2,800+ GPU models";
-        });
-      }
-
-      // Toggle Advanced Features Block
+      // Search & Sorting controls
       const btnToggleAdvanced = document.getElementById("btnToggleAdvanced");
       const advancedControlsBlock = document.getElementById("advancedControlsBlock");
       const advancedIcon = document.getElementById("advancedIcon");
