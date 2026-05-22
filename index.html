@@ -52,15 +52,15 @@
   <style>
     :root {
       /* OKLCH palette — cool-teal anchor (hue 220) */
-      --color-paper:    oklch(6%  0.006 220);
-      --color-paper-2:  oklch(9%  0.008 220);
-      --color-paper-3:  oklch(12% 0.010 220);
-      --color-rule:     oklch(22% 0.008 220);
-      --color-neutral:  oklch(45% 0.006 220);
-      --color-muted:    oklch(62% 0.005 220);
-      --color-ink:      oklch(93% 0.004 220);
+      --color-paper:    oklch(15% 0.008 220);
+      --color-paper-2:  oklch(19% 0.010 220);
+      --color-paper-3:  oklch(24% 0.012 220);
+      --color-rule:     oklch(32% 0.008 220);
+      --color-neutral:  oklch(58% 0.006 220);
+      --color-muted:    oklch(72% 0.005 220);
+      --color-ink:      oklch(94% 0.004 220);
       --color-accent:   oklch(62% 0.16  240);
-      --color-accent-soft: oklch(62% 0.16 240 / 0.12);
+      --color-accent-soft: oklch(62% 0.16 240 / 0.15);
       --color-focus:    oklch(68% 0.18  230);
       
       --color-fit-green:  oklch(62% 0.14 150);
@@ -1066,19 +1066,21 @@
 
     /* === COMPARISON CHECKBOX === */
     .compare-checkbox {
-      width: 18px; height: 18px;
-      border: 2px solid var(--color-rule);
-      border-radius: 4px;
-      background: rgba(255,255,255,0.03);
+      width: 14px; height: 14px;
+      border: 1.5px solid var(--color-rule);
+      border-radius: 3px;
+      background: transparent;
       cursor: pointer;
       accent-color: var(--color-accent);
-      transition: all 0.2s;
+      transition: border-color 0.15s;
+      opacity: 0.4;
     }
+    .compare-checkbox:hover { opacity: 1; }
     .compare-checkbox:checked {
+      opacity: 1;
       border-color: var(--color-accent);
-      box-shadow: 0 0 8px rgba(99,102,241,0.4);
     }
-    th.checkbox-col, td.checkbox-col { width: 40px; text-align: center; }
+    th.checkbox-col, td.checkbox-col { width: 28px; text-align: center; }
     td.checkbox-col { cursor: default; }
 
     .btn-compare {
