@@ -38,6 +38,54 @@ def get_model_family(model_id):
         return "deepseek"
     return "generic"
 
+# Architecture Lookup-Table: bekannte Architekturen mit exakten total/active params
+# Wird für Modelle verwendet, deren Name keine Parameterzahl (z.B. "70B") enthält.
+# active_params ist kritisch für MoE-Speed-Berechnung (z.B. DeepSeek V4: 671B total, 37B active)
+ARCH_PARAMS_LOOKUP = [
+    # (suchstring, total_params, active_params, quality_score)
+    # DeepSeek V4 Familie
+    ("deepseek-v4-flash",     671, 37,  82),
+    ("deepseek-v4-pro",       671, 65,  84),
+    ("deepseek-v4",           671, 37,  82),  # generic fallback
+    ("deepseekv4",            671, 37,  82),
+    # DeepSeek R1
+    ("deepseek-r1",           671, 37,  85),
+    ("deepseekr1",            671, 37,  85),
+    # DeepSeek V2 / V3
+    ("deepseek-v2",           236, 21,  78),
+    ("deepseekv2",            236, 21,  78),
+    ("deepseek-v3",           671, 37,  80),
+    ("deepseekv3",            671, 37,  80),
+    # Mixtral
+    ("mixtral-8x7b",           47, 13,  74),
+    ("mixtral8x7b",            47, 13,  74),
+    ("mixtral-8x22b",         141, 39,  78),
+    ("mixtral8x22b",          141, 39,  78),
+    # Qwen MoE
+    ("qwen2-moe",             236, 21,  78),
+    ("qwen2moe",              236, 21,  78),
+    ("qwen3-moe",             236, 21,  80),
+    ("qwen3moe",              236, 21,  80),
+    # DBRX
+    ("dbrx",                  132, 36,  76),
+    # Command R
+    ("command-r-plus",        104, 104, 76),  # dense
+    ("command-r",              35,  35, 72),  # dense
+    # OLMoE
+    ("olmo-1b-7b",              1,   7,  60),  # 1B active, 7B total
+    ("olmoe",                    7,   1,  60),
+    # Granite MoE
+    ("granite-moe",            14,   3,  70),
+    ("granitemoe",             14,   3,  70),
+]
+# Helper: sucht in ARCH_PARAMS_LOOKUP nach der Modell-ID
+def lookup_architecture_params(model_id):
+    lower_id = model_id.lower()
+    for pattern, total, active, quality in ARCH_PARAMS_LOOKUP:
+        if pattern in lower_id:
+            return {"total": total, "active": active, "quality": quality}
+    return None
+
 def fetch_livebench_scores():
     """Fetch LiveBench scores from the latest CSV + categories JSON."""
     # Try to get the latest available table date
@@ -312,68 +360,80 @@ def refresh_cache():
                     except:
                         pass
         
-        # Skip embedding/OCR/moved non-causal files
+        # Hybrid Parameter-Extraktion: Architecture Lookup + base_model API + Fallback
+        if params is None:
+            # Stufe 1: Architecture Lookup-Table (schnell, kein API-Call)
+            arch_info = lookup_architecture_params(model_id)
+            if arch_info:
+                params = arch_info["total"]
+                print(f"   └─ Architecture Lookup: {arch_info['total']}B (active: {arch_info['active']}B)")
+
+        if params is None:
+            # Stufe 2: base_model Tag → API Call für safetensors.total
+            base_tag = None
+            for tag in m.get('tags', []):
+                if tag.startswith('base_model:') and '/' in tag:
+                    bt = tag.split(':', 1)[1]
+                    # Skip quantized/GGUF base_model references (they point to other quants, not the real model)
+                    if not any(x in bt.lower() for x in ['gguf', 'q8_0', 'q4', 'q5', 'q6', 'q2', 'q3', 'fp16', 'fp8']):
+                        base_tag = bt
+                        break
+            if not base_tag:
+                # Stufe 2b: HF Search nach dem base model (für Repos ohne base_model-Tag)
+                raw_parts = raw_name.lower().replace('-gguf', '').replace('_gguf', '').split('-')
+                search_name = '-'.join([p for p in raw_parts if p and p not in ('gguf', 'abliterated', 'uncensored', 'lora', 'fp16', 'fp8')])
+                if search_name:
+                    try:
+                        search_url = f"https://huggingface.co/api/models?search={urllib.parse.quote(search_name)}&sort=downloads&direction=-1&limit=5"
+                        s_req = urllib.request.Request(search_url, headers={'User-Agent': 'Mozilla/5.0'})
+                        with urllib.request.urlopen(s_req, timeout=15) as s_resp:
+                            search_results = json.loads(s_resp.read().decode('utf-8'))
+                        for sr in search_results:
+                            sr_id = sr.get('id', '')
+                            if sr_id and 'gguf' not in sr_id.lower():
+                                try:
+                                    sr_url = f"https://huggingface.co/api/models/{sr_id}"
+                                    sr_req = urllib.request.Request(sr_url, headers={'User-Agent': 'Mozilla/5.0'})
+                                    with urllib.request.urlopen(sr_req, timeout=15) as sr_resp:
+                                        sr_data = json.loads(sr_resp.read().decode('utf-8'))
+                                    st = sr_data.get('safetensors', {})
+                                    total_params = st.get('total', 0) if isinstance(st, dict) else 0
+                                    if total_params:
+                                        params = round(total_params / 1e9, 1)
+                                        print(f"   └─ HF Search → safetensors: {params}B")
+                                        break
+                                except Exception:
+                                    continue
+                    except Exception:
+                        pass
+            if base_tag and params is None:
+                try:
+                    base_url = f"https://huggingface.co/api/models/{base_tag}"
+                    b_req = urllib.request.Request(base_url, headers={'User-Agent': 'Mozilla/5.0'})
+                    with urllib.request.urlopen(b_req, timeout=15) as b_resp:
+                        base_data = json.loads(b_resp.read().decode('utf-8'))
+                    st = base_data.get('safetensors', {})
+                    total_params = st.get('total', 0) if isinstance(st, dict) else 0
+                    if total_params:
+                        params = round(total_params / 1e9, 1)
+                        print(f"   └─ base_model API → safetensors: {params}B")
+                    if not params:
+                        m_id = base_data.get('id', '')
+                        m_match = re.search(r'(\d+(\.\d+)?)[bB]', m_id)
+                        if m_match:
+                            params = float(m_match.group(1))
+                except Exception:
+                    pass
+
+        # Stufe 3: Letzte Rescue – Default 7.0 nur für text-generation Modelle
         if params is None:
             is_text_gen = any(t in ['text-generation', 'text2text-generation', 'image-text-to-text'] for t in m.get('tags', []))
             if is_text_gen or "it" in raw_name.lower() or "instruct" in raw_name.lower():
                 params = 7.0
+                print(f"   ⚠️  Fallback: params=7.0 (keine Parameterquelle für text-gen Modell)")
             else:
-                # Last resort: try to get params from the base model API
-                base_tag = None
-                for tag in m.get('tags', []):
-                    if tag.startswith('base_model:') and '/' in tag:
-                        bt = tag.split(':', 1)[1]
-                        # Skip quantized/GGUF base_model references (they point to other quants, not the real model)
-                        if not any(x in bt.lower() for x in ['gguf', 'q8_0', 'q4', 'q5', 'q6', 'q2', 'q3', 'fp16', 'fp8']):
-                            base_tag = bt
-                            break
-                if not base_tag:
-                    # Try searching for the model name in HF API to find the real model
-                    raw_parts = raw_name.lower().replace('-gguf', '').replace('_gguf', '').split('-')
-                    search_name = '-'.join([p for p in raw_parts if p and p not in ('gguf', 'abliterated', 'uncensored', 'lora', 'fp16', 'fp8')])
-                    if search_name:
-                        try:
-                            search_url = f"https://huggingface.co/api/models?search={urllib.parse.quote(search_name)}&sort=downloads&direction=-1&limit=5"
-                            s_req = urllib.request.Request(search_url, headers={'User-Agent': 'Mozilla/5.0'})
-                            with urllib.request.urlopen(s_req, timeout=15) as s_resp:
-                                search_results = json.loads(s_resp.read().decode('utf-8'))
-                            # Try each result until one has safetensors data
-                            for sr in search_results:
-                                sr_id = sr.get('id', '')
-                                if sr_id and 'gguf' not in sr_id.lower():
-                                    try:
-                                        sr_url = f"https://huggingface.co/api/models/{sr_id}"
-                                        sr_req = urllib.request.Request(sr_url, headers={'User-Agent': 'Mozilla/5.0'})
-                                        with urllib.request.urlopen(sr_req, timeout=15) as sr_resp:
-                                            sr_data = json.loads(sr_resp.read().decode('utf-8'))
-                                        st = sr_data.get('safetensors', {})
-                                        total_params = st.get('total', 0) if isinstance(st, dict) else 0
-                                        if total_params:
-                                            params = round(total_params / 1e9, 1)
-                                            break
-                                    except Exception:
-                                        continue
-                        except Exception:
-                            pass
-                if base_tag:
-                    try:
-                        base_url = f"https://huggingface.co/api/models/{base_tag}"
-                        b_req = urllib.request.Request(base_url, headers={'User-Agent': 'Mozilla/5.0'})
-                        with urllib.request.urlopen(b_req, timeout=15) as b_resp:
-                            base_data = json.loads(b_resp.read().decode('utf-8'))
-                        st = base_data.get('safetensors', {})
-                        total_params = st.get('total', 0) if isinstance(st, dict) else 0
-                        if total_params:
-                            params = round(total_params / 1e9, 1)
-                        if not params:
-                            m_id = base_data.get('id', '')
-                            m_match = re.search(r'(\d+(\.\d+)?)[bB]', m_id)
-                            if m_match:
-                                params = float(m_match.group(1))
-                    except Exception:
-                        pass
-                if params is None:
-                    continue
+                # Kein text-gen Modell ohne Parameter → überspringen
+                continue
 
         # Skip models that aren't text-generation LLMs (embedding, TTS, reranker, etc.)
         model_tags = m.get('tags', [])
@@ -592,21 +652,50 @@ def refresh_cache():
         }
 
         # Base quality estimation formula in case completely missing
-        quality_score = 50.0 + (params ** 0.5) * 3.6
+        # Nutze Architecture Lookup falls vorhanden, sonst capped Formel
+        arch_info = lookup_architecture_params(model_id)
+        if arch_info:
+            quality_score = arch_info["quality"]
+        else:
+            quality_score = 50.0 + (params ** 0.5) * 3.6
+        quality_score = min(quality_score, 95.0)  # Hard cap: kein Modell über 95
 
         # Detect MoE active parameters (e.g. "30B-A3B" = 30B total, 3B active per token)
         active_params = params
-        a_match = re.search(r'[aA](\d+(\.\d+)?)[bB]', model_id)
-        if not a_match:
-            a_match = re.search(r'[aA](\d+(\.\d+)?)[bB]', clean_name)
-        if a_match:
-            detected = float(a_match.group(1))
-            if detected < params and detected > 0:
-                active_params = detected
 
-        # For DeepSeek V4 Flash (158B MoE, ~37B active) and similar
-        if active_params == params and ('deepseek' in model_id.lower() or 'glm-5' in model_id.lower()):
-            active_params = round(params / 4.0, 1)  # estimate: MoE with ~25% active
+        # Stufe 1: Architecture Lookup-Table (exakte active_params für bekannte MoE)
+        arch_info = lookup_architecture_params(model_id)
+        if arch_info:
+            active_params = arch_info["active"]
+        else:
+            # Stufe 2: Regex für "A#B" Pattern (z.B. "30B-A3B" = 3B active)
+            a_match = re.search(r'[aA](\d+(\.\d+)?)[bB]', model_id)
+            if not a_match:
+                a_match = re.search(r'[aA](\d+(\.\d+)?)[bB]', clean_name)
+            if a_match:
+                detected = float(a_match.group(1))
+                if detected < params and detected > 0:
+                    active_params = detected
+            else:
+                # Stufe 3: Architecture-spezifische Activation Ratio Heuristik
+                # Verschiedene MoE-Familien haben unterschiedliche Activation Ratios
+                lower_id = model_id.lower()
+                if 'deepseek' in lower_id:
+                    # DeepSeek V4/R1: ~5.5% activation (671B total, 37B active)
+                    active_params = round(params * 0.055, 1)
+                elif 'mixtral' in lower_id:
+                    # Mixtral 8x7B: ~27% (47B→13B), 8x22B: ~28% (141B→39B)
+                    active_params = round(params * 0.27, 1)
+                elif 'dbrx' in lower_id:
+                    # DBRX: ~27% activation (132B total, 36B active)
+                    active_params = round(params * 0.27, 1)
+                elif ('qwen' in lower_id and 'moe' in lower_id):
+                    # Qwen2 MoE: ~9% activation (236B total, 21B active)
+                    active_params = round(params * 0.09, 1)
+                elif 'glm-5' in lower_id:
+                    # GLM-5: ~25% activation
+                    active_params = round(params * 0.25, 1)
+                # Dense Modelle: active_params = params (unverändert)
 
         models_list.append({
             "model_id": model_id,
