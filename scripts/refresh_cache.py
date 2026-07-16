@@ -664,9 +664,17 @@ def refresh_cache():
         active_params = params
 
         # Stufe 1: Architecture Lookup-Table (exakte active_params für bekannte MoE)
+        # Nur matchen wenn total_params kompatibel (kein destilliertes/kleines Modell)
         arch_info = lookup_architecture_params(model_id)
         if arch_info:
-            active_params = arch_info["active"]
+            total_from_lookup = arch_info["total"]
+            # Nur Lookup nutzen wenn params nah an lookup-total dran ist
+            # (verhindert active=37B für Qwen3.5-9B-DeepSeek-V4-Flash)
+            ratio = params / total_from_lookup if total_from_lookup > 0 else 0
+            if ratio > 0.3:  # z.B. 671/671=1.0 ✓, 9/671=0.013 ❌
+                active_params = arch_info["active"]
+            else:
+                arch_info = None  # Fall-through zu Regex/Heuristik
         else:
             # Stufe 2: Regex für "A#B" Pattern (z.B. "30B-A3B" = 3B active)
             a_match = re.search(r'[aA](\d+(\.\d+)?)[bB]', model_id)
