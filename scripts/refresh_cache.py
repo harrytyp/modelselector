@@ -6,6 +6,10 @@ import re
 from datetime import datetime, timezone
 import os
 import sys
+
+def normalize_name(name):
+    """Konsistente Normalisierung: lower, Bindestriche/Unterstriche/Punkte → Leerzeichen"""
+    return name.lower().replace('-', ' ').replace('_', ' ').replace('.', ' ')
 import time
 
 def get_model_family(model_id):
@@ -128,7 +132,7 @@ def fetch_livebench_scores():
             cols = row.strip().split(",")
             if len(cols) < 2:
                 continue
-            model_name = cols[0].strip().lower()
+            model_name = normalize_name(cols[0].strip())
             vals = []
             for v in cols[1:]:
                 try:
@@ -154,7 +158,7 @@ def fetch_evalplus_scores():
             humaneval = pass1.get("humaneval+")
             mbpp = pass1.get("mbpp+")
             if humaneval is not None and mbpp is not None:
-                scores[model_name.lower().replace("-", " ").replace("_", " ")] = {
+                scores[normalize_name(model_name)] = {
                     "humaneval": round(float(humaneval) * 100, 1),
                     "mbpp": round(float(mbpp) * 100, 1)
                 }
@@ -164,20 +168,20 @@ def fetch_evalplus_scores():
         return {}, f"failed: {e}"
 
 def find_benchlm_match(hf_id, benchlm_models):
-    hf_id_lower = hf_id.lower()
-    clean_hf = hf_id_lower.replace('-', ' ').replace('_', ' ')
+    clean_hf = normalize_name(hf_id)
     
     best_match = None
     max_score = 0
     
     for bm in benchlm_models:
         bm_name = bm.get("model", "").lower()
+        bm_normalized = normalize_name(bm_name)
         
         # Simple equivalence maps
-        if bm_name in clean_hf or clean_hf in bm_name:
+        if bm_normalized in clean_hf or clean_hf in bm_normalized:
             return bm
             
-        tokens = bm_name.replace('-', ' ').replace('_', ' ').split()
+        tokens = bm_normalized.split()
         match_count = sum(1 for t in tokens if t in clean_hf)
         
         if match_count > max_score and match_count >= 2:
@@ -577,7 +581,7 @@ def refresh_cache():
 
         # 3.7 Resolve LiveBench & EvalPlus from live API data
         fam = get_model_family(model_id)
-        model_key = model_id.lower().replace("-", " ").replace("_", " ")
+        model_key = normalize_name(model_id)
         livebench_score = None
         
         # Try exact model name match first
@@ -587,7 +591,7 @@ def refresh_cache():
                 status = "measured"  # echter LiveBench-Eintrag!
         # Try base model name (als derived wenn noch nicht measured)
         if livebench_score is None:
-            base_key = base_model_id.lower().replace("-", " ").replace("_", " ")
+            base_key = normalize_name(base_model_id)
             if base_key in livebench_scores:
                 livebench_score = livebench_scores[base_key].get("score")
                 if livebench_score is not None and status != "measured":
@@ -619,7 +623,7 @@ def refresh_cache():
                 status = "measured"  # echter EvalPlus-Eintrag!
         # Try base model name (als derived wenn noch nicht measured)
         if he_score is None:
-            base_key = base_model_id.lower().replace("-", " ").replace("_", " ")
+            base_key = normalize_name(base_model_id)
             if base_key in evalplus_scores:
                 he_score = evalplus_scores[base_key].get("humaneval")
                 mbpp_score = evalplus_scores[base_key].get("mbpp")
