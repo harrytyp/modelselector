@@ -797,11 +797,14 @@ def refresh_cache():
                     # schlicht keine Benchmark-Werte für diese Metrik.
                     pass
 
-        # Calculate a default overall base score using standard weighted averages
-        if resolved:
+        # Quality Score: Nur gemessene/derived Benchmarks zählen für Sortierung.
+        # Family-Median (estimated) wird in Benchmark-Details angezeigt,
+        # aber NICHT für quality_score verwendet (vermeidet verzerrte Sortierung).
+        if status in ("measured", "derived") and resolved:
             avg_overall = sum(resolved.values()) / len(resolved)
         else:
-            avg_overall = model_obj["quality_score"]  # initiale Basisschätzung (gecappt auf 95)
+            # Keine verlässlichen Benchmarks → params-basierte Schätzung
+            avg_overall = model_obj["quality_score"]
         model_obj["quality_score"] = round(avg_overall, 1)
         
         model_obj["benchmarks"] = {
