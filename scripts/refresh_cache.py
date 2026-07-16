@@ -549,6 +549,9 @@ def refresh_cache():
 
         # Let's search in BenchLM.ai rankings
         bm_entry = find_benchlm_match(model_id, benchlm_models)
+        if bm_entry and status == "estimated":
+            status = "derived"
+            derived_from = model_id
         if not bm_entry:
             bm_entry = find_benchlm_match(base_model_id, benchlm_models)
             if bm_entry and status == "estimated":
