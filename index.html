@@ -3965,14 +3965,16 @@
       const evalplus_humaneval = metrics.evalplus_humaneval !== undefined ? metrics.evalplus_humaneval : 55.0;
       const evalplus_mbpp = metrics.evalplus_mbpp !== undefined ? metrics.evalplus_mbpp : 58.0;
 
-      // Parameter size heuristic quality fallback
-      const heuristicScore = Math.min(98.0, 48.0 + Math.sqrt(model.parameters || 7.0) * 3.6);
+      // Quality Score aus cache.json (größenbasiert + Architecture-Lookup für bekannte Modelle).
+      // Wird verwendet wenn keine echten Metriken vorhanden sind (estimated Modelle).
+      const fallbackScore = Math.min(98.0, 50.0 + Math.sqrt(model.parameters || 7.0) * 3.6);
+      const cachedScore = (model.quality_score && model.quality_score > 0) ? model.quality_score : fallbackScore;
 
       // Wenn keine echten Metriken vorhanden sind (estimated Modelle ohne Benchmarks),
-      // direkt den größenbasierten heuristicScore verwenden statt flacher Fallbacks.
+      // quality_score aus cache.json verwenden statt flacher Fallback-Konstanten.
       const hasRealMetrics = Object.keys(metrics).length > 0;
       if (!hasRealMetrics) {
-        return parseFloat(heuristicScore.toFixed(1));
+        return parseFloat(cachedScore.toFixed(1));
       }
 
       let components = [];
