@@ -783,14 +783,15 @@ def refresh_cache():
                 else:
                     resolved[c] = round(val, 1)
             else:
-                # Stage 3: Family Median Fallback
+                # Stage 3: Family Median Fallback – KEINE Metriken für estimated Modelle.
+                # Nur measured/derived Modelle bekommen Family-Median als Ergänzung.
                 fam_val = family_medians.get(fam, {}).get(c)
                 if fam_val is not None:
-                    resolved[c] = fam_val
                     if status == "measured" or status == "derived":
-                        pass # keep status
+                        resolved[c] = fam_val  # Metriken nur für measured/derived
                     else:
                         status = "estimated"
+                        # Kein resolved[c] für estimated – Frontend hat eigene Fallbacks
                 else:
                     # Stage 4 ENTFERNT: Keine fake Parameter-Scaling Schätzungen.
                     # Modelle ohne echte Benchmarks oder Family-Median haben
