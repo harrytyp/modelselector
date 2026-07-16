@@ -165,16 +165,34 @@ Memory and speed allocations are compiled using verified GQA-aware formulas:
      \text{VRAM}_{\text{KV Cache}} = \frac{2 \times \text{layers} \times \text{context\_length} \times \text{hidden\_size} \times \left( \frac{\text{num\_kv\_heads}}{\text{num\_attn\_heads}} \right) \times 2 \text{ [bytes/fp16]}}{10^9}
    ```
 
-3. **Throughput Compilation (Tokens/s):**
-   * If VRAM fits entirely within the GPU:
-     ```math
-       \text{TPS} = \frac{\text{Memory Bandwidth (GB/s)}}{\text{Model Weights Size (GB)}} \times \text{Efficiency Bonus (35\% for GPU)} \times \text{Quant Scaling Factor}
-     ```
+3. **Throughput Compilation (Tokens/s):**  
+   Die Token/s werden mit einem **modellgrößenabhängigen Roofline-Modell** berechnet, kalibriert gegen reale RTX 4090 Benchmarks (llama.cpp PR #12183):
+
+   ```math
+     \\text{eff}(w) = \\min\\left(0.47,\\; 0.32 \\times w^{0.63}\\right)
+   ```
+   ```math
+     \\text{TPS}_{\\text{GPU}} = \\frac{\\text{Bandwidth (GB/s)} \\times \\text{eff}(w)}{\\text{Active Weights (GB)}} \\times \\text{Quant Scaling}
+   ```
+
+   **Effizienz nach Modellgröße (empirisch, RTX 4090):**
+
+   | Aktive Weights | Beispiel | Effizienz | Realistische t/s |
+   |:-------------:|:--------:|:---------:|:----------------:|
+   | 0.3-0.4 GB | 0.5-1B Modelle | ~16-20% | 400-600 |
+   | 0.85 GB | 1.5B (Q4_K_M) | ~29% | 344 (gemessen) |
+   | 1.7 GB | 3B (Q4_K_M) | ~45% | 269 (gemessen) |
+   | 4.5 GB | 8B (Q4_K_M) | 47% (cap) | 95-110 |
+   | 39 GB | 70B (Q4_K_M) | 47% (cap) | 8-12 |
+
+   **Warum modellgrößenabhängige Effizienz?**  
+   Kleine Modelle nutzen den GPU-Speicherbus weniger effizient, weil die Gewichtsmatrizen kleiner sind und die GPU nicht voll ausgelastet wird. Für große Modelle (>5B) wird eine stabile Obergrenze von ~47% erreicht.
+
    * If memory limits require offloading to system RAM:
      ```math
-       \text{TPS} = \frac{\text{System Bus Bandwidth (GB/s)}}{\text{Model Weights Size (GB)}} \times \text{Efficiency (22\% for CPU)} \times \text{Quant Scaling Factor}
+       \\text{TPS} = \\frac{\\text{System Bus Bandwidth (GB/s)}}{\\text{Model Weights Size (GB)}} \\times \\text{Efficiency (22\\% for CPU)} \\times \\text{Quant Scaling Factor}
      ```
-   * **Per-quant speed scaling** — quantization type affects throughput: Q2\_K (1.10x), Q4\_K\_M (1.00x baseline), Q8\_0 (0.78x), fp16 (0.65x). These factors are stored in the nightly cache and override JS fallbacks.
+   * **Per-quant speed scaling** — quantization type affects throughput: Q2\\_K (1.10x), Q4\\_K\\_M (1.00x baseline), Q8\\_0 (0.78x), fp16 (0.65x). These factors are stored in the nightly cache and override JS fallbacks.
 
 ---
 
