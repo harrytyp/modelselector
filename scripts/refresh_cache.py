@@ -907,7 +907,33 @@ def refresh_cache():
       "type": "multi_gpu",
       "description": "Elite multi-GPU consumer workstation. Phenomenal speed and capacity."
     })
-
+    
+    # 📱 Smartphone / Mobile SoC presets (generic, nach RAM-Klasse)
+    # Keine herstellerspezifischen Einträge – zukunftssicher:
+    # Neue Handys fallen automatisch in die passende Klasse.
+    # Shared LPDDR memory: Bandbreite hängt vom RAM-Typ ab.
+    phone_profiles = [
+        ("📱 Phone - High-end (LPDDR5X-8000)", 24.0, 77,
+         "Flagship SoC: Snapdragon 8 Elite / A18 Pro. LPDDR5X-8000, ~77 GB/s unified."),
+        ("📱 Phone - Upper-mid (LPDDR5X-4800)", 16.0, 51,
+         "Premium SoC: Snapdragon 8 Gen 3 / A17 Pro. LPDDR5X-4800, ~51 GB/s."),
+        ("📱 Phone - Mid-range (LPDDR5-4200)", 12.0, 39,
+         "Mid SoC: Dimensity 8300 / Exynos 2400. LPDDR5-4200, ~39 GB/s."),
+        ("📱 Phone - Budget (LPDDR4X-3200)", 8.0, 26,
+         "Entry SoC: Snapdragon 7 Gen 1 / Helio. LPDDR4X-3200, ~26 GB/s."),
+        ("📱 Phone - Old / basic (LPDDR4-2400)", 4.0, 14,
+         "Older SoC: Snapdragon 6xx / Kirin 7xx. LPDDR4-2400, ~14 GB/s."),
+    ]
+    for idx, (p_name, p_vram, p_bw, p_desc) in enumerate(phone_profiles):
+        gpus_list.append({
+            "id": f"phone_{idx}",
+            "name": p_name,
+            "vram": p_vram,
+            "bandwidth": p_bw,
+            "type": "mobile",
+            "description": p_desc,
+        })
+    
     # TechPowerUp modern GPU database endpoints
     tpu_urls = [
         ("NVIDIA", "https://raw.githubusercontent.com/RightNow-AI/RightNow-GPU-Database/main/data/nvidia/all.json"),
@@ -1045,6 +1071,7 @@ def refresh_cache():
     _TYPE_DEFAULTS = {
         "gpu": (0.47, 1.00),    # Default: Ada-like
         "mac": (0.50, 0.55),    # Apple Silicon (M2/M3 family)
+        "mobile": (0.35, 0.40),  # Smartphone SoC (shared memory, Vulkan)
         "cpu": (0.15, 0.15),    # CPU-only (sehr niedrig)
     }
     for _g in gpus_list:

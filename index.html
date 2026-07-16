@@ -2590,10 +2590,12 @@
     function populateGpuDropdown() {
       gpuSelect.innerHTML = "";
       appDb.gpus.forEach(gpu => {
-        if (CORE_GPU_IDS.includes(gpu.id) || gpu.id === activeSelectedGpuId) {
+        // Show: core GPUs + currently selected GPU + all mobile/phone GPUs
+        if (CORE_GPU_IDS.includes(gpu.id) || gpu.id === activeSelectedGpuId || gpu.type === "mobile") {
           const opt = document.createElement("option");
           opt.value = gpu.id;
-          opt.textContent = `${gpu.name} (${gpu.vram > 0 ? gpu.vram + 'GB' : 'System RAM'})`;
+          const icon = gpu.type === "mobile" ? "📱 " : "";
+          opt.textContent = `${icon}${gpu.name} (${gpu.vram > 0 ? gpu.vram + 'GB' : 'System RAM'})`;
           gpuSelect.appendChild(opt);
         }
       });
