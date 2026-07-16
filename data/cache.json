@@ -1,60 +1,60 @@
 {
-  "generated_at": "2026-07-16T15:39:26.969115+00:00",
+  "generated_at": "2026-07-16T15:43:34.712641+00:00",
   "sources": {
     "huggingface_leaderboard": {
       "name": "Hugging Face Open LLM Leaderboard v2",
       "url": "https://huggingface.co/datasets/open-llm-leaderboard/contents",
       "status": "success",
-      "last_updated": "2026-07-16T15:39:26.969141+00:00",
+      "last_updated": "2026-07-16T15:43:34.712664+00:00",
       "row_count": 4495
     },
     "benchlm": {
       "name": "BenchLM.ai Scientific API",
       "url": "https://benchlm.ai/api/data/leaderboard",
       "status": "success",
-      "last_updated": "2026-07-16T15:39:26.969145+00:00",
+      "last_updated": "2026-07-16T15:43:34.712667+00:00",
       "row_count": 198
     },
     "livebench": {
       "name": "LiveBench LLM Benchmark",
       "url": "https://livebench.ai/",
       "status": "success",
-      "last_updated": "2026-07-16T15:39:26.969148+00:00",
+      "last_updated": "2026-07-16T15:43:34.712669+00:00",
       "row_count": 121
     },
     "evalplus": {
       "name": "EvalPlus Code Benchmark (HumanEval+ & MBPP+)",
       "url": "https://evalplus.github.io/results.json",
       "status": "success",
-      "last_updated": "2026-07-16T15:39:26.969150+00:00",
+      "last_updated": "2026-07-16T15:43:34.712672+00:00",
       "row_count": 89
     },
     "techpowerup": {
       "name": "TechPowerUp GPU Database",
       "url": "https://raw.githubusercontent.com/RightNow-AI/RightNow-GPU-Database/main/data/",
       "status": "success",
-      "last_updated": "2026-07-16T15:39:26.969152+00:00",
+      "last_updated": "2026-07-16T15:43:34.712673+00:00",
       "row_count": 801
     },
     "huggingface_models": {
       "name": "Hugging Face GGUF Catalog API",
       "url": "https://huggingface.co/api/models",
       "status": "success",
-      "last_updated": "2026-07-16T15:39:26.969154+00:00",
+      "last_updated": "2026-07-16T15:43:34.712675+00:00",
       "row_count": 821
     },
     "quantization": {
       "name": "GGUF Quantization Constants & Quality Loss",
       "url": "https://github.com/ggml-org/llama.cpp/wiki/Feature-Matrix",
       "status": "success",
-      "last_updated": "2026-07-16T15:39:26.969156+00:00",
+      "last_updated": "2026-07-16T15:43:34.712677+00:00",
       "row_count": 8
     },
     "speed_estimation": {
       "name": "Speed Estimation Engine",
       "url": "https://github.com/ggml-org/llama.cpp/wiki/Feature-Matrix",
       "status": "success",
-      "last_updated": "2026-07-16T15:39:26.969158+00:00",
+      "last_updated": "2026-07-16T15:43:34.712679+00:00",
       "row_count": 8
     }
   },
