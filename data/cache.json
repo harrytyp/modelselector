@@ -1,60 +1,60 @@
 {
-  "generated_at": "2026-07-16T21:25:10.130339+00:00",
+  "generated_at": "2026-07-16T22:10:47.546196+00:00",
   "sources": {
     "huggingface_leaderboard": {
       "name": "Hugging Face Open LLM Leaderboard v2",
       "url": "https://huggingface.co/datasets/open-llm-leaderboard/contents",
       "status": "success",
-      "last_updated": "2026-07-16T21:25:10.130360+00:00",
+      "last_updated": "2026-07-16T22:10:47.546221+00:00",
       "row_count": 4495
     },
     "benchlm": {
       "name": "BenchLM.ai Scientific API",
       "url": "https://benchlm.ai/api/data/leaderboard",
       "status": "success",
-      "last_updated": "2026-07-16T21:25:10.130364+00:00",
+      "last_updated": "2026-07-16T22:10:47.546224+00:00",
       "row_count": 198
     },
     "livebench": {
       "name": "LiveBench LLM Benchmark",
       "url": "https://livebench.ai/",
       "status": "success",
-      "last_updated": "2026-07-16T21:25:10.130365+00:00",
+      "last_updated": "2026-07-16T22:10:47.546227+00:00",
       "row_count": 121
     },
     "evalplus": {
       "name": "EvalPlus Code Benchmark (HumanEval+ & MBPP+)",
       "url": "https://evalplus.github.io/results.json",
       "status": "success",
-      "last_updated": "2026-07-16T21:25:10.130367+00:00",
+      "last_updated": "2026-07-16T22:10:47.546229+00:00",
       "row_count": 89
     },
     "techpowerup": {
       "name": "TechPowerUp GPU Database",
       "url": "https://raw.githubusercontent.com/RightNow-AI/RightNow-GPU-Database/main/data/",
       "status": "success",
-      "last_updated": "2026-07-16T21:25:10.130368+00:00",
+      "last_updated": "2026-07-16T22:10:47.546231+00:00",
       "row_count": 801
     },
     "huggingface_models": {
       "name": "Hugging Face GGUF Catalog API",
       "url": "https://huggingface.co/api/models",
       "status": "success",
-      "last_updated": "2026-07-16T21:25:10.130370+00:00",
+      "last_updated": "2026-07-16T22:10:47.546233+00:00",
       "row_count": 821
     },
     "quantization": {
       "name": "GGUF Quantization Constants & Quality Loss",
       "url": "https://github.com/ggml-org/llama.cpp/wiki/Feature-Matrix",
       "status": "success",
-      "last_updated": "2026-07-16T21:25:10.130372+00:00",
+      "last_updated": "2026-07-16T22:10:47.546234+00:00",
       "row_count": 8
     },
     "speed_estimation": {
       "name": "Speed Estimation Engine",
       "url": "https://github.com/ggml-org/llama.cpp/wiki/Feature-Matrix",
       "status": "success",
-      "last_updated": "2026-07-16T21:25:10.130373+00:00",
+      "last_updated": "2026-07-16T22:10:47.546236+00:00",
       "row_count": 8
     }
   },
@@ -27765,6 +27765,56 @@
       "description": "Elite multi-GPU consumer workstation. Phenomenal speed and capacity.",
       "efficiency_cap": 0.35,
       "efficiency_mult": 0.55
+    },
+    {
+      "id": "phone_0",
+      "name": "📱 Phone - High-end (LPDDR5X-8000)",
+      "vram": 24.0,
+      "bandwidth": 77,
+      "type": "mobile",
+      "description": "Flagship SoC: Snapdragon 8 Elite / A18 Pro. LPDDR5X-8000, ~77 GB/s unified.",
+      "efficiency_cap": 0.35,
+      "efficiency_mult": 0.4
+    },
+    {
+      "id": "phone_1",
+      "name": "📱 Phone - Upper-mid (LPDDR5X-4800)",
+      "vram": 16.0,
+      "bandwidth": 51,
+      "type": "mobile",
+      "description": "Premium SoC: Snapdragon 8 Gen 3 / A17 Pro. LPDDR5X-4800, ~51 GB/s.",
+      "efficiency_cap": 0.35,
+      "efficiency_mult": 0.4
+    },
+    {
+      "id": "phone_2",
+      "name": "📱 Phone - Mid-range (LPDDR5-4200)",
+      "vram": 12.0,
+      "bandwidth": 39,
+      "type": "mobile",
+      "description": "Mid SoC: Dimensity 8300 / Exynos 2400. LPDDR5-4200, ~39 GB/s.",
+      "efficiency_cap": 0.35,
+      "efficiency_mult": 0.4
+    },
+    {
+      "id": "phone_3",
+      "name": "📱 Phone - Budget (LPDDR4X-3200)",
+      "vram": 8.0,
+      "bandwidth": 26,
+      "type": "mobile",
+      "description": "Entry SoC: Snapdragon 7 Gen 1 / Helio. LPDDR4X-3200, ~26 GB/s.",
+      "efficiency_cap": 0.35,
+      "efficiency_mult": 0.4
+    },
+    {
+      "id": "phone_4",
+      "name": "📱 Phone - Old / basic (LPDDR4-2400)",
+      "vram": 4.0,
+      "bandwidth": 14,
+      "type": "mobile",
+      "description": "Older SoC: Snapdragon 6xx / Kirin 7xx. LPDDR4-2400, ~14 GB/s.",
+      "efficiency_cap": 0.35,
+      "efficiency_mult": 0.4
     },
     {
       "id": "ext_nvidia_tesla_c1080",
