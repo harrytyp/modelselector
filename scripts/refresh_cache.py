@@ -583,12 +583,17 @@ def refresh_cache():
         # Try exact model name match first
         if model_key in livebench_scores:
             livebench_score = livebench_scores[model_key].get("score")
-        # Try base model name
+            if livebench_score is not None:
+                status = "measured"  # echter LiveBench-Eintrag!
+        # Try base model name (als derived wenn noch nicht measured)
         if livebench_score is None:
             base_key = base_model_id.lower().replace("-", " ").replace("_", " ")
             if base_key in livebench_scores:
                 livebench_score = livebench_scores[base_key].get("score")
-        # Try family-level grouping from live data
+                if livebench_score is not None and status != "measured":
+                    status = "derived"
+                    derived_from = base_model_id
+        # Try family-level grouping from live data (KEINE Status-Änderung!)
         if livebench_score is None:
             fam_scores = []
             for lk, lv in livebench_scores.items():
@@ -610,13 +615,18 @@ def refresh_cache():
         if model_key in evalplus_scores:
             he_score = evalplus_scores[model_key].get("humaneval")
             mbpp_score = evalplus_scores[model_key].get("mbpp")
-        # Try base model name
+            if he_score is not None:
+                status = "measured"  # echter EvalPlus-Eintrag!
+        # Try base model name (als derived wenn noch nicht measured)
         if he_score is None:
             base_key = base_model_id.lower().replace("-", " ").replace("_", " ")
             if base_key in evalplus_scores:
                 he_score = evalplus_scores[base_key].get("humaneval")
                 mbpp_score = evalplus_scores[base_key].get("mbpp")
-        # Try family-level grouping from live data
+                if he_score is not None and status != "measured":
+                    status = "derived"
+                    derived_from = base_model_id
+        # Try family-level grouping from live data (KEINE Status-Änderung)
         if he_score is None:
             fam_he, fam_mbpp = [], []
             for ek, ev in evalplus_scores.items():

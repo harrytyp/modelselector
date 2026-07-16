@@ -3968,8 +3968,10 @@
       // Parameter size heuristic quality fallback
       const heuristicScore = Math.min(98.0, 48.0 + Math.sqrt(model.parameters || 7.0) * 3.6);
 
-      // If all evaluation APIs are toggled off, fall back 100% to parameter heuristic
-      if (!enabledHfLeaderboard && !enabledBenchlm && !enabledLiveBench && !enabledEvalPlus) {
+      // Wenn keine echten Metriken vorhanden sind (estimated Modelle ohne Benchmarks),
+      // direkt den größenbasierten heuristicScore verwenden statt flacher Fallbacks.
+      const hasRealMetrics = Object.keys(metrics).length > 0;
+      if (!hasRealMetrics) {
         return parseFloat(heuristicScore.toFixed(1));
       }
 
