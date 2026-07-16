@@ -1696,6 +1696,11 @@
           <span class="stat-desc">Peak throughput (theoretical)</span>
         </div>
         <div class="stat-card">
+          <span class="stat-title">BW Efficiency</span>
+          <span class="stat-value" id="poolEfficiency" style="font-size: 1.25rem;">47%</span>
+          <span class="stat-desc" id="poolEfficiencyDesc">Ada Lovelace baseline</span>
+        </div>
+        <div class="stat-card">
           <span class="stat-title">Use Case</span>
           <span class="stat-value" id="profileTitle" style="font-size: 1.35rem; font-weight: 700; margin-top: 0.75rem;">💬 Chat</span>
           <span class="stat-desc" id="profileWeights">60% Speed · 40% Quality</span>
@@ -3813,6 +3818,20 @@
       poolRamDesc.textContent = speedName;
 
       poolBandwidth.textContent = `${activeHardware.bandwidth.toLocaleString()} GB/s`;
+      
+      // Show architecture efficiency
+      const archCap = activeHardware.efficiency_cap;
+      const archMult = activeHardware.efficiency_mult;
+      if (archCap && poolEfficiency) {
+        poolEfficiency.textContent = `${(archCap * 100).toFixed(0)}% cap`;
+        const archName = activeHardware.name || "GPU";
+        const effDesc = archMult ? `×${archMult.toFixed(2)} vs Ada` : "—";
+        poolEfficiencyDesc.textContent = `${archName}`;
+        poolEfficiency.title = `Architecture: cap=${archCap}, mult=${archMult}`;
+      } else if (poolEfficiency) {
+        poolEfficiency.textContent = "—";
+        poolEfficiencyDesc.textContent = "Custom / default";
+      }
     }
 
     // CORE PHYSICAL SIMULATOR ENGINE
@@ -3896,10 +3915,12 @@
           actualGpuLayers = numLayers;
 
           // Bandwidth performance: weights are fully in ultra-fast VRAM
-          // Empirisch kalibrierte BW-Effizienz (size-dependent):
+          // Empirisch kalibrierte BW-Effizienz (size + architecture dependent):
           const activeGB = activeWeights;
-          const rawEff = 0.32 * Math.pow(activeGB, 0.63);
-          const bwEff = Math.min(GPU_BW_EFFICIENCY, Math.max(0.12, rawEff));
+          const archMult = activeHardware.efficiency_mult || 1.0;
+          const archCap = activeHardware.efficiency_cap || GPU_BW_EFFICIENCY;
+          const rawEff = archMult * 0.32 * Math.pow(activeGB, 0.63);
+          const bwEff = Math.min(archCap, Math.max(0.06, rawEff));
           const effectiveBandwidth = activeHardware.bandwidth * bwEff;
           genSpeedTPS = (effectiveBandwidth / activeWeights);
         } else {
@@ -3918,8 +3939,10 @@
             // Harmonic average physics calculation of split execution speed
             // Sequential execution requires traversing all layers, hence times are additive
             const activeGB_gpu = activeWeights * (actualGpuLayers / numLayers);
-            const rawEff_gpu = 0.32 * Math.pow(activeGB_gpu, 0.63);
-            const bwEff_gpu = Math.min(GPU_BW_EFFICIENCY, Math.max(0.12, rawEff_gpu));
+            const archMult_gpu = activeHardware.efficiency_mult || 1.0;
+            const archCap_gpu = activeHardware.efficiency_cap || GPU_BW_EFFICIENCY;
+            const rawEff_gpu = archMult_gpu * 0.32 * Math.pow(activeGB_gpu, 0.63);
+            const bwEff_gpu = Math.min(archCap_gpu, Math.max(0.06, rawEff_gpu));
             const gpuTime = (weightsSize * (actualGpuLayers / numLayers)) / (activeHardware.bandwidth * bwEff_gpu);
             const cpuTime = ((weightsSize * (actualCpuLayers / numLayers)) + kvCacheSizeGB) / (activeHardware.ram_bandwidth * CPU_EFFICIENCY);
             

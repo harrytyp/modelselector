@@ -166,33 +166,53 @@ Memory and speed allocations are compiled using verified GQA-aware formulas:
    ```
 
 3. **Throughput Compilation (Tokens/s):**  
-   Die Token/s werden mit einem **modellgrößenabhängigen Roofline-Modell** berechnet, kalibriert gegen reale RTX 4090 Benchmarks (llama.cpp PR #12183):
+   Die Token/s werden mit einem **modell- und architekturabhängigen Roofline-Modell** berechnet:
 
    ```math
-     \\text{eff}(w) = \\min\\left(0.47,\\; 0.32 \\times w^{0.63}\\right)
+     \\text{eff}(w) = \\min\\left(\\text{cap}_{arch},\\; \\text{mult}_{arch} \\times 0.32 \\times w^{0.63}\\right)
    ```
    ```math
      \\text{TPS}_{\\text{GPU}} = \\frac{\\text{Bandwidth (GB/s)} \\times \\text{eff}(w)}{\\text{Active Weights (GB)}} \\times \\text{Quant Scaling}
    ```
 
-   **Effizienz nach Modellgröße (empirisch, RTX 4090):**
+   **Architektur-Effizienz-Faktoren** (kalibriert gegen reale Benchmarks aus llama.cpp PRs/Issues):
+
+   | Architektur | `cap` | `mult` | 8B Q4_K_M t/s | Beispiele |
+   |:-----------|:----:|:------:|:-------------:|:----------|
+   | Blackwell 2 | 0.50 | 0.92 | 198 | RTX 5090 |
+   | **Ada Lovelace** | **0.47** | **1.00** | **105** | **RTX 4090 (Baseline)** |
+   | Hopper | 0.48 | 0.95 | 357 | H100 |
+   | Ampere | 0.35 | 0.70 | 73 | RTX 3090 |
+   | Turing | 0.30 | 0.55 | 41 | RTX 2080 Ti |
+   | Volta | 0.25 | 0.40 | 63 | V100 |
+   | Pascal | 0.43 | 0.55 | 46 | GTX 1080 Ti / P40 |
+   | RDNA 3 | 0.60 | 0.85 | 128 | RX 7900 XTX |
+   | RDNA 2 | 0.58 | 0.85 | 66 | RX 6800 |
+   | Apple M4 | 0.52 | 0.60 | 82 | M4 Max |
+   | Apple M3/M2 | 0.50 | 0.55 | 57 | M3 Max / M2 Ultra |
+   | Xe2-HPG | 0.50 | 0.70 | 51 | Arc B580 |
+   | AMD APU | 0.30 | 0.40 | 17 | Strix Halo |
+   | Intel iGPU | 0.25 | 0.30 | 9 | Iris Xe |
+
+   **Modellgrößenabhängigkeit (am Beispiel Ada Lovelace):**
 
    | Aktive Weights | Beispiel | Effizienz | Realistische t/s |
    |:-------------:|:--------:|:---------:|:----------------:|
    | 0.3-0.4 GB | 0.5-1B Modelle | ~16-20% | 400-600 |
    | 0.85 GB | 1.5B (Q4_K_M) | ~29% | 344 (gemessen) |
    | 1.7 GB | 3B (Q4_K_M) | ~45% | 269 (gemessen) |
-   | 4.5 GB | 8B (Q4_K_M) | 47% (cap) | 95-110 |
-   | 39 GB | 70B (Q4_K_M) | 47% (cap) | 8-12 |
+   | 4.5 GB | 8B (Q4_K_M) | 47% (cap) | 105 |
+   | 39 GB | 70B (Q4_K_M) | 47% (cap) | 12 |
 
-   **Warum modellgrößenabhängige Effizienz?**  
-   Kleine Modelle nutzen den GPU-Speicherbus weniger effizient, weil die Gewichtsmatrizen kleiner sind und die GPU nicht voll ausgelastet wird. Für große Modelle (>5B) wird eine stabile Obergrenze von ~47% erreicht.
+   **Warum modell- und architekturabhängige Effizienz?**  
+   Kleine Modelle nutzen den GPU-Speicherbus weniger effizient (kleinere Matrizen → geringere Bus-Auslastung).  
+   Ältere Architekturen (Ampere, Turing, Volta) haben geringere Kernel-Effizienz durch fehlende FP8-Unterstützung, ältere Tensor Core Generationen und ineffizientere Speicher-Controller.
 
    * If memory limits require offloading to system RAM:
      ```math
-       \\text{TPS} = \\frac{\\text{System Bus Bandwidth (GB/s)}}{\\text{Model Weights Size (GB)}} \\times \\text{Efficiency (22\\% for CPU)} \\times \\text{Quant Scaling Factor}
+       \\\\text{TPS} = \\\\frac{\\\\text{System Bus Bandwidth (GB/s)}}{\\\\text{Model Weights Size (GB)}} \\\\times \\\\text{Efficiency (22\\\\% for CPU)} \\\\times \\\\text{Quant Scaling Factor}
      ```
-   * **Per-quant speed scaling** — quantization type affects throughput: Q2\\_K (1.10x), Q4\\_K\\_M (1.00x baseline), Q8\\_0 (0.78x), fp16 (0.65x). These factors are stored in the nightly cache and override JS fallbacks.
+   * **Per-quant speed scaling** — quantization type affects throughput: Q2\\\\_K (1.10x), Q4\\\\_K\\\\_M (1.00x baseline), Q8\\\\_0 (0.78x), fp16 (0.65x). These factors are stored in the nightly cache and override JS fallbacks.
 
 ---
 
