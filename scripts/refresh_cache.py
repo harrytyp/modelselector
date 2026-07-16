@@ -757,25 +757,10 @@ def refresh_cache():
                 median = vals[n // 2] if n % 2 != 0 else (vals[(n // 2) - 1] + vals[n // 2]) / 2.0
                 family_medians[fam][c] = round(median, 1)
 
-    # Global fallback medians based on parameters scaling if family has no scores
-    global_fallbacks = {
-        "ifeval": 50.0,
-        "bbh": 45.0,
-        "math_lvl5": 20.0,
-        "gpqa": 18.0,
-        "musr": 35.0,
-        "mmlu_pro": 38.0,
-        "benchlm_coding": 50.0,
-        "benchlm_reasoning": 55.0,
-        "benchlm_instruction": 55.0,
-        "benchlm_math": 25.0,
-        "benchlm_knowledge": 50.0,
-        "benchlm_multilingual": 60.0,
-        "livebench": 50.0,
-        "evalplus_humaneval": 55.0,
-        "evalplus_mbpp": 58.0
-    }
-
+    # NOTE: global_fallbacks wurde entfernt (Stage 4).
+    # Es werden KEINE Parameterschätzungen als Benchmarks ausgegeben.
+    # Modelle haben nur gemessene/derived Benchmarks oder gar keine.
+    
     # Final pass to populate benchmarks with fallback rules and quant penalties
     for model_obj in models_list:
         m_id = model_obj["model_id"]
@@ -807,15 +792,16 @@ def refresh_cache():
                     else:
                         status = "estimated"
                 else:
-                    # Stage 4: Global parameter-scaling fallback
-                    base_val = global_fallbacks[c]
-                    scale = (params ** 0.3) * 1.2
-                    resolved[c] = round(min(100.0, base_val * scale), 1)
-                    if status != "measured" and status != "derived":
-                        status = "estimated"
+                    # Stage 4 ENTFERNT: Keine fake Parameter-Scaling Schätzungen.
+                    # Modelle ohne echte Benchmarks oder Family-Median haben
+                    # schlicht keine Benchmark-Werte für diese Metrik.
+                    pass
 
         # Calculate a default overall base score using standard weighted averages
-        avg_overall = sum(resolved.values()) / len(cols)
+        if resolved:
+            avg_overall = sum(resolved.values()) / len(resolved)
+        else:
+            avg_overall = model_obj["quality_score"]  # initiale Basisschätzung (gecappt auf 95)
         model_obj["quality_score"] = round(avg_overall, 1)
         
         model_obj["benchmarks"] = {
