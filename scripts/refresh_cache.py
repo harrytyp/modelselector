@@ -772,31 +772,27 @@ def refresh_cache():
         fam = raw_obj["family"]
         params = raw_obj["params"]
         
-        # Apply staging fallback rules
-        for c in cols:
-            val = raw_obj["scores"].get(c)
-            if val is not None:
-                # Direct match or derived match (Stage 1 / 2)
-                if status == "derived":
-                    # Apply a small quant quality penalty for derived quants
-                    resolved[c] = round(max(0.0, val - 1.8), 1)
-                else:
-                    resolved[c] = round(val, 1)
-            else:
-                # Stage 3: Family Median Fallback – KEINE Metriken für estimated Modelle.
-                # Nur measured/derived Modelle bekommen Family-Median als Ergänzung.
-                fam_val = family_medians.get(fam, {}).get(c)
-                if fam_val is not None:
-                    if status == "measured" or status == "derived":
-                        resolved[c] = fam_val  # Metriken nur für measured/derived
+        # Nur measured/derived Modelle bekommen Metriken in resolved.
+        # Für estimated Modelle: resolved bleibt leer, quality_score = initiale Formel.
+        if status not in ("measured", "derived"):
+            resolved = {}
+        else:
+            # measured/derived: Stage 1-2-3 Metriken
+            for c in cols:
+                val = raw_obj["scores"].get(c)
+                if val is not None:
+                    # Direct match or derived match (Stage 1 / 2)
+                    if status == "derived":
+                        # Apply a small quant quality penalty for derived quants
+                        resolved[c] = round(max(0.0, val - 1.8), 1)
                     else:
-                        status = "estimated"
-                        # Kein resolved[c] für estimated – Frontend hat eigene Fallbacks
+                        resolved[c] = round(val, 1)
                 else:
-                    # Stage 4 ENTFERNT: Keine fake Parameter-Scaling Schätzungen.
-                    # Modelle ohne echte Benchmarks oder Family-Median haben
-                    # schlicht keine Benchmark-Werte für diese Metrik.
-                    pass
+                    # Stage 3: Family Median Fallback – ergänzt fehlende Metriken
+                    fam_val = family_medians.get(fam, {}).get(c)
+                    if fam_val is not None:
+                        resolved[c] = fam_val
+                    # Stage 4 entfernt – keine Parameterschätzungen
 
         # Quality Score: Nur gemessene/derived Benchmarks zählen für Sortierung.
         # Family-Median (estimated) wird in Benchmark-Details angezeigt,
