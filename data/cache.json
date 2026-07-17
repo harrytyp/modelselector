@@ -1,60 +1,60 @@
 {
-  "generated_at": "2026-07-16T22:10:47.546196+00:00",
+  "generated_at": "2026-07-17T01:17:52.156726+00:00",
   "sources": {
     "huggingface_leaderboard": {
       "name": "Hugging Face Open LLM Leaderboard v2",
       "url": "https://huggingface.co/datasets/open-llm-leaderboard/contents",
       "status": "success",
-      "last_updated": "2026-07-16T22:10:47.546221+00:00",
+      "last_updated": "2026-07-17T01:17:52.156743+00:00",
       "row_count": 4495
     },
     "benchlm": {
       "name": "BenchLM.ai Scientific API",
       "url": "https://benchlm.ai/api/data/leaderboard",
       "status": "success",
-      "last_updated": "2026-07-16T22:10:47.546224+00:00",
+      "last_updated": "2026-07-17T01:17:52.156745+00:00",
       "row_count": 198
     },
     "livebench": {
       "name": "LiveBench LLM Benchmark",
       "url": "https://livebench.ai/",
       "status": "success",
-      "last_updated": "2026-07-16T22:10:47.546227+00:00",
+      "last_updated": "2026-07-17T01:17:52.156747+00:00",
       "row_count": 121
     },
     "evalplus": {
       "name": "EvalPlus Code Benchmark (HumanEval+ & MBPP+)",
       "url": "https://evalplus.github.io/results.json",
       "status": "success",
-      "last_updated": "2026-07-16T22:10:47.546229+00:00",
+      "last_updated": "2026-07-17T01:17:52.156748+00:00",
       "row_count": 89
     },
     "techpowerup": {
       "name": "TechPowerUp GPU Database",
       "url": "https://raw.githubusercontent.com/RightNow-AI/RightNow-GPU-Database/main/data/",
       "status": "success",
-      "last_updated": "2026-07-16T22:10:47.546231+00:00",
+      "last_updated": "2026-07-17T01:17:52.156750+00:00",
       "row_count": 801
     },
     "huggingface_models": {
       "name": "Hugging Face GGUF Catalog API",
       "url": "https://huggingface.co/api/models",
       "status": "success",
-      "last_updated": "2026-07-16T22:10:47.546233+00:00",
+      "last_updated": "2026-07-17T01:17:52.156751+00:00",
       "row_count": 821
     },
     "quantization": {
       "name": "GGUF Quantization Constants & Quality Loss",
       "url": "https://github.com/ggml-org/llama.cpp/wiki/Feature-Matrix",
       "status": "success",
-      "last_updated": "2026-07-16T22:10:47.546234+00:00",
+      "last_updated": "2026-07-17T01:17:52.156752+00:00",
       "row_count": 8
     },
     "speed_estimation": {
       "name": "Speed Estimation Engine",
       "url": "https://github.com/ggml-org/llama.cpp/wiki/Feature-Matrix",
       "status": "success",
-      "last_updated": "2026-07-16T22:10:47.546236+00:00",
+      "last_updated": "2026-07-17T01:17:52.156753+00:00",
       "row_count": 8
     }
   },
@@ -2424,6 +2424,32 @@
       }
     },
     {
+      "model_id": "DeepBeepMeep/LTX-2",
+      "name": "Ltx 2",
+      "developer": "Deepbeepmeep",
+      "parameters": 18.9,
+      "active_parameters": 18.9,
+      "base_model_id": "Lightricks/LTX-2",
+      "quality_score": 65.7,
+      "license": "other",
+      "description": "HF GGUF repository. 262,281 active community downloads.",
+      "config": {
+        "num_layers": 64,
+        "hidden_size": 6656,
+        "num_kv_heads": 8,
+        "num_attn_heads": 64,
+        "vocab_size": 32000
+      },
+      "tags": [
+        "api-imported"
+      ],
+      "benchmarks": {
+        "status": "estimated",
+        "derived_from": "",
+        "metrics": {}
+      }
+    },
+    {
       "model_id": "handy-computer/parakeet-tdt-0.6b-v3-gguf",
       "name": "Parakeet Tdt 0.6B V3",
       "developer": "Handy-Computer",
@@ -2684,7 +2710,7 @@
       "parameters": 1.5,
       "active_parameters": 1.5,
       "base_model_id": "Qwen/Qwen2.5-1.5B-Instruct",
-      "quality_score": 47.6,
+      "quality_score": 47.8,
       "license": "apache-2.0",
       "description": "HF GGUF repository. 224,910 active community downloads.",
       "config": {
@@ -2712,7 +2738,7 @@
           "benchlm_reasoning": 35.8,
           "benchlm_instruction": 64.8,
           "benchlm_math": 70.3,
-          "benchlm_knowledge": 66.3,
+          "benchlm_knowledge": 69.2,
           "benchlm_multilingual": 64.4,
           "livebench": 50.2,
           "evalplus_humaneval": 96.2,
@@ -2929,7 +2955,7 @@
       "parameters": 3.0,
       "active_parameters": 3.0,
       "base_model_id": "Qwen/Qwen2.5-3B-Instruct",
-      "quality_score": 51.0,
+      "quality_score": 51.2,
       "license": "other",
       "description": "HF GGUF repository. 208,793 active community downloads.",
       "config": {
@@ -2957,7 +2983,7 @@
           "benchlm_reasoning": 35.8,
           "benchlm_instruction": 64.8,
           "benchlm_math": 70.3,
-          "benchlm_knowledge": 66.3,
+          "benchlm_knowledge": 69.2,
           "benchlm_multilingual": 64.4,
           "livebench": 50.2,
           "evalplus_humaneval": 96.2,
@@ -3128,17 +3154,17 @@
       "model_id": "unsloth/Qwen-Image-Edit-2511-GGUF",
       "name": "Qwen Image Edit 2511",
       "developer": "Unsloth",
-      "parameters": 7.0,
-      "active_parameters": 7.0,
+      "parameters": 20.4,
+      "active_parameters": 20.4,
       "base_model_id": "Qwen/Qwen-Image-Edit-2511",
       "quality_score": 53.7,
       "license": "apache-2.0",
       "description": "HF GGUF repository. 184,488 active community downloads.",
       "config": {
-        "num_layers": 32,
-        "hidden_size": 4096,
+        "num_layers": 64,
+        "hidden_size": 6656,
         "num_kv_heads": 8,
-        "num_attn_heads": 32,
+        "num_attn_heads": 64,
         "vocab_size": 32000
       },
       "tags": [
@@ -3440,7 +3466,7 @@
       "parameters": 0.5,
       "active_parameters": 0.5,
       "base_model_id": "Qwen/Qwen2.5-0.5B-Instruct",
-      "quality_score": 44.3,
+      "quality_score": 44.5,
       "license": "apache-2.0",
       "description": "HF GGUF repository. 166,677 active community downloads.",
       "config": {
@@ -3468,7 +3494,7 @@
           "benchlm_reasoning": 35.8,
           "benchlm_instruction": 64.8,
           "benchlm_math": 70.3,
-          "benchlm_knowledge": 66.3,
+          "benchlm_knowledge": 69.2,
           "benchlm_multilingual": 64.4,
           "livebench": 50.2,
           "evalplus_humaneval": 96.2,
@@ -5885,7 +5911,7 @@
       "parameters": 7.0,
       "active_parameters": 7.0,
       "base_model_id": "Qwen/Qwen2.5-7B-Instruct",
-      "quality_score": 54.3,
+      "quality_score": 54.4,
       "license": "apache-2.0",
       "description": "HF GGUF repository. 92,236 active community downloads.",
       "config": {
@@ -5913,7 +5939,7 @@
           "benchlm_reasoning": 35.8,
           "benchlm_instruction": 64.8,
           "benchlm_math": 70.3,
-          "benchlm_knowledge": 66.3,
+          "benchlm_knowledge": 69.2,
           "benchlm_multilingual": 64.4,
           "livebench": 50.2,
           "evalplus_humaneval": 96.2,
@@ -6002,17 +6028,17 @@
       "model_id": "QuantStack/Qwen-Image-Edit-2509-GGUF",
       "name": "Qwen Image Edit 2509",
       "developer": "Quantstack",
-      "parameters": 7.0,
-      "active_parameters": 7.0,
+      "parameters": 20.4,
+      "active_parameters": 20.4,
       "base_model_id": "Qwen/Qwen-Image-Edit-2509",
       "quality_score": 56.3,
       "license": "apache-2.0",
       "description": "HF GGUF repository. 90,662 active community downloads.",
       "config": {
-        "num_layers": 32,
-        "hidden_size": 4096,
+        "num_layers": 64,
+        "hidden_size": 6656,
         "num_kv_heads": 8,
-        "num_attn_heads": 32,
+        "num_attn_heads": 64,
         "vocab_size": 32000
       },
       "tags": [
@@ -6305,7 +6331,7 @@
       "parameters": 32.0,
       "active_parameters": 32.0,
       "base_model_id": "Qwen/Qwen2.5-32B-Instruct",
-      "quality_score": 58.8,
+      "quality_score": 59.0,
       "license": "apache-2.0",
       "description": "HF GGUF repository. 86,901 active community downloads.",
       "config": {
@@ -6333,7 +6359,7 @@
           "benchlm_reasoning": 35.8,
           "benchlm_instruction": 64.8,
           "benchlm_math": 70.3,
-          "benchlm_knowledge": 66.3,
+          "benchlm_knowledge": 69.2,
           "benchlm_multilingual": 64.4,
           "livebench": 50.2,
           "evalplus_humaneval": 96.2,
@@ -6663,7 +6689,7 @@
       "parameters": 14.0,
       "active_parameters": 14.0,
       "base_model_id": "Qwen/Qwen2.5-14B-Instruct",
-      "quality_score": 56.7,
+      "quality_score": 56.9,
       "license": "apache-2.0",
       "description": "HF GGUF repository. 83,741 active community downloads.",
       "config": {
@@ -6691,7 +6717,7 @@
           "benchlm_reasoning": 35.8,
           "benchlm_instruction": 64.8,
           "benchlm_math": 70.3,
-          "benchlm_knowledge": 66.3,
+          "benchlm_knowledge": 69.2,
           "benchlm_multilingual": 64.4,
           "livebench": 50.2,
           "evalplus_humaneval": 96.2,
@@ -7572,7 +7598,7 @@
       "parameters": 7.0,
       "active_parameters": 7.0,
       "base_model_id": "Qwen/Qwen2-7B-Instruct",
-      "quality_score": 51.3,
+      "quality_score": 51.5,
       "license": "qwen",
       "description": "HF GGUF repository. 76,350 active community downloads.",
       "config": {
@@ -7600,7 +7626,7 @@
           "benchlm_reasoning": 35.8,
           "benchlm_instruction": 64.8,
           "benchlm_math": 70.3,
-          "benchlm_knowledge": 66.3,
+          "benchlm_knowledge": 69.2,
           "benchlm_multilingual": 64.4,
           "livebench": 50.2,
           "evalplus_humaneval": 96.2,
@@ -8673,6 +8699,48 @@
       }
     },
     {
+      "model_id": "wikeeyang/Real-Qwen-Image-V2",
+      "name": "Real Qwen Image V2",
+      "developer": "Wikeeyang",
+      "parameters": 20.4,
+      "active_parameters": 20.4,
+      "base_model_id": "Qwen/Qwen-Image-2512",
+      "quality_score": 53.7,
+      "license": "apache-2.0",
+      "description": "HF GGUF repository. 69,685 active community downloads.",
+      "config": {
+        "num_layers": 64,
+        "hidden_size": 6656,
+        "num_kv_heads": 8,
+        "num_attn_heads": 64,
+        "vocab_size": 32000
+      },
+      "tags": [
+        "api-imported"
+      ],
+      "benchmarks": {
+        "status": "derived",
+        "derived_from": "Qwen/Qwen-Image-2512",
+        "metrics": {
+          "ifeval": 56.8,
+          "bbh": 34.9,
+          "math_lvl5": 36.8,
+          "gpqa": 5.5,
+          "musr": 8.5,
+          "mmlu_pro": 31.6,
+          "benchlm_coding": 67.3,
+          "benchlm_reasoning": 35.8,
+          "benchlm_instruction": 64.8,
+          "benchlm_math": 70.3,
+          "benchlm_knowledge": 86.5,
+          "benchlm_multilingual": 64.4,
+          "livebench": 50.2,
+          "evalplus_humaneval": 96.2,
+          "evalplus_mbpp": 96.2
+        }
+      }
+    },
+    {
       "model_id": "VLTX/VertaLily-1.2-1B-GGUF",
       "name": "Vertalily 1.2 1B",
       "developer": "Vltx",
@@ -9654,6 +9722,48 @@
           "benchlm_knowledge": 87.8,
           "benchlm_multilingual": 61.6,
           "livebench": 60.4,
+          "evalplus_humaneval": 96.2,
+          "evalplus_mbpp": 96.2
+        }
+      }
+    },
+    {
+      "model_id": "unsloth/Qwen-Image-2512-GGUF",
+      "name": "Qwen Image 2512",
+      "developer": "Unsloth",
+      "parameters": 20.4,
+      "active_parameters": 20.4,
+      "base_model_id": "Qwen/Qwen-Image-2512",
+      "quality_score": 53.7,
+      "license": "apache-2.0",
+      "description": "HF GGUF repository. 54,306 active community downloads.",
+      "config": {
+        "num_layers": 64,
+        "hidden_size": 6656,
+        "num_kv_heads": 8,
+        "num_attn_heads": 64,
+        "vocab_size": 32000
+      },
+      "tags": [
+        "api-imported"
+      ],
+      "benchmarks": {
+        "status": "derived",
+        "derived_from": "unsloth/Qwen-Image-2512-GGUF",
+        "metrics": {
+          "ifeval": 56.8,
+          "bbh": 34.9,
+          "math_lvl5": 36.8,
+          "gpqa": 5.5,
+          "musr": 8.5,
+          "mmlu_pro": 31.6,
+          "benchlm_coding": 67.3,
+          "benchlm_reasoning": 35.8,
+          "benchlm_instruction": 64.8,
+          "benchlm_math": 70.3,
+          "benchlm_knowledge": 86.5,
+          "benchlm_multilingual": 64.4,
+          "livebench": 50.2,
           "evalplus_humaneval": 96.2,
           "evalplus_mbpp": 96.2
         }
@@ -13375,7 +13485,7 @@
       "parameters": 7.0,
       "active_parameters": 7.0,
       "base_model_id": "LocalAI-io/LocalAI-functioncall-qwen2.5-7b-v0.5",
-      "quality_score": 52.5,
+      "quality_score": 52.7,
       "license": "apache-2.0",
       "description": "HF GGUF repository. 31,306 active community downloads.",
       "config": {
@@ -13402,7 +13512,7 @@
           "benchlm_reasoning": 35.8,
           "benchlm_instruction": 64.8,
           "benchlm_math": 70.3,
-          "benchlm_knowledge": 66.3,
+          "benchlm_knowledge": 69.2,
           "benchlm_multilingual": 64.4,
           "livebench": 50.2,
           "evalplus_humaneval": 96.2,
@@ -17506,6 +17616,48 @@
       }
     },
     {
+      "model_id": "city96/Qwen-Image-gguf",
+      "name": "Qwen Image",
+      "developer": "City96",
+      "parameters": 20.4,
+      "active_parameters": 20.4,
+      "base_model_id": "Qwen/Qwen-Image",
+      "quality_score": 49.9,
+      "license": "apache-2.0",
+      "description": "HF GGUF repository. 21,533 active community downloads.",
+      "config": {
+        "num_layers": 64,
+        "hidden_size": 6656,
+        "num_kv_heads": 8,
+        "num_attn_heads": 64,
+        "vocab_size": 32000
+      },
+      "tags": [
+        "api-imported"
+      ],
+      "benchmarks": {
+        "status": "derived",
+        "derived_from": "city96/Qwen-Image-gguf",
+        "metrics": {
+          "ifeval": 56.8,
+          "bbh": 34.9,
+          "math_lvl5": 36.8,
+          "gpqa": 5.5,
+          "musr": 8.5,
+          "mmlu_pro": 31.6,
+          "benchlm_coding": 59.3,
+          "benchlm_reasoning": 35.8,
+          "benchlm_instruction": 64.8,
+          "benchlm_math": 45.6,
+          "benchlm_knowledge": 61.7,
+          "benchlm_multilingual": 64.4,
+          "livebench": 50.2,
+          "evalplus_humaneval": 96.2,
+          "evalplus_mbpp": 96.2
+        }
+      }
+    },
+    {
       "model_id": "defog/sqlcoder-7b-2",
       "name": "Sqlcoder 7B 2",
       "developer": "Defog",
@@ -17788,7 +17940,7 @@
       "parameters": 7.0,
       "active_parameters": 7.0,
       "base_model_id": "Qwen/Qwen2.5-7B-Instruct",
-      "quality_score": 54.3,
+      "quality_score": 54.4,
       "license": "gpl-3.0",
       "description": "HF GGUF repository. 21,041 active community downloads.",
       "config": {
@@ -17816,7 +17968,7 @@
           "benchlm_reasoning": 35.8,
           "benchlm_instruction": 64.8,
           "benchlm_math": 70.3,
-          "benchlm_knowledge": 66.3,
+          "benchlm_knowledge": 69.2,
           "benchlm_multilingual": 64.4,
           "livebench": 50.2,
           "evalplus_humaneval": 96.2,
@@ -19518,7 +19670,7 @@
       "parameters": 9.0,
       "active_parameters": 9.0,
       "base_model_id": "agentscope-ai/QwenPaw-Flash-9B-Q4_K_M",
-      "quality_score": 52.5,
+      "quality_score": 52.7,
       "license": "apache-2.0",
       "description": "HF GGUF repository. 18,437 active community downloads.",
       "config": {
@@ -19545,7 +19697,7 @@
           "benchlm_reasoning": 35.8,
           "benchlm_instruction": 64.8,
           "benchlm_math": 70.3,
-          "benchlm_knowledge": 66.3,
+          "benchlm_knowledge": 69.2,
           "benchlm_multilingual": 64.4,
           "livebench": 50.2,
           "evalplus_humaneval": 96.2,
@@ -20034,7 +20186,7 @@
       "parameters": 14.0,
       "active_parameters": 14.0,
       "base_model_id": "bartowski/Qwen2.5-14B_Uncensored_Instruct",
-      "quality_score": 52.5,
+      "quality_score": 52.7,
       "license": "apache-2.0",
       "description": "HF GGUF repository. 17,867 active community downloads.",
       "config": {
@@ -20062,7 +20214,7 @@
           "benchlm_reasoning": 35.8,
           "benchlm_instruction": 64.8,
           "benchlm_math": 70.3,
-          "benchlm_knowledge": 66.3,
+          "benchlm_knowledge": 69.2,
           "benchlm_multilingual": 64.4,
           "livebench": 50.2,
           "evalplus_humaneval": 96.2,
@@ -20849,7 +21001,7 @@
       "parameters": 7.0,
       "active_parameters": 7.0,
       "base_model_id": "QuantFactory/Josiefied-Qwen2-7B-Instruct-abliterated",
-      "quality_score": 52.5,
+      "quality_score": 52.7,
       "license": "apache-2.0",
       "description": "HF GGUF repository. 16,833 active community downloads.",
       "config": {
@@ -20877,7 +21029,7 @@
           "benchlm_reasoning": 35.8,
           "benchlm_instruction": 64.8,
           "benchlm_math": 70.3,
-          "benchlm_knowledge": 66.3,
+          "benchlm_knowledge": 69.2,
           "benchlm_multilingual": 64.4,
           "livebench": 50.2,
           "evalplus_humaneval": 96.2,
@@ -22421,17 +22573,17 @@
       "model_id": "QuantStack/Qwen-Image-Edit-GGUF",
       "name": "Qwen Image Edit",
       "developer": "Quantstack",
-      "parameters": 7.0,
-      "active_parameters": 7.0,
+      "parameters": 20.4,
+      "active_parameters": 20.4,
       "base_model_id": "Qwen/Qwen-Image-Edit",
-      "quality_score": 59.5,
+      "quality_score": 66.3,
       "license": "apache-2.0",
       "description": "HF GGUF repository. 15,031 active community downloads.",
       "config": {
-        "num_layers": 32,
-        "hidden_size": 4096,
+        "num_layers": 64,
+        "hidden_size": 6656,
         "num_kv_heads": 8,
-        "num_attn_heads": 32,
+        "num_attn_heads": 64,
         "vocab_size": 32000
       },
       "tags": [
@@ -22486,7 +22638,7 @@
       "parameters": 27.0,
       "active_parameters": 27.0,
       "base_model_id": "huihui-ai/Huihui-Qwen3.6-27B-abliterated",
-      "quality_score": 52.5,
+      "quality_score": 52.7,
       "license": "agpl-3.0",
       "description": "HF GGUF repository. 15,020 active community downloads.",
       "config": {
@@ -22513,7 +22665,7 @@
           "benchlm_reasoning": 35.8,
           "benchlm_instruction": 64.8,
           "benchlm_math": 70.3,
-          "benchlm_knowledge": 66.3,
+          "benchlm_knowledge": 69.2,
           "benchlm_multilingual": 64.4,
           "livebench": 50.2,
           "evalplus_humaneval": 96.2,
@@ -24823,7 +24975,7 @@
       "parameters": 0.5,
       "active_parameters": 0.5,
       "base_model_id": "Qwen/Qwen2-0.5B-Instruct",
-      "quality_score": 42.9,
+      "quality_score": 43.1,
       "license": "apache-2.0",
       "description": "HF GGUF repository. 13,017 active community downloads.",
       "config": {
@@ -24851,7 +25003,7 @@
           "benchlm_reasoning": 35.8,
           "benchlm_instruction": 64.8,
           "benchlm_math": 70.3,
-          "benchlm_knowledge": 66.3,
+          "benchlm_knowledge": 69.2,
           "benchlm_multilingual": 64.4,
           "livebench": 50.2,
           "evalplus_humaneval": 96.2,
@@ -25749,6 +25901,32 @@
           "evalplus_humaneval": 96.2,
           "evalplus_mbpp": 96.2
         }
+      }
+    },
+    {
+      "model_id": "unsloth/Qwen-Image-Layered-GGUF",
+      "name": "Qwen Image Layered",
+      "developer": "Unsloth",
+      "parameters": 20.4,
+      "active_parameters": 20.4,
+      "base_model_id": "Qwen/Qwen-Image-Layered",
+      "quality_score": 66.3,
+      "license": "apache-2.0",
+      "description": "HF GGUF repository. 12,458 active community downloads.",
+      "config": {
+        "num_layers": 64,
+        "hidden_size": 6656,
+        "num_kv_heads": 8,
+        "num_attn_heads": 64,
+        "vocab_size": 32000
+      },
+      "tags": [
+        "api-imported"
+      ],
+      "benchmarks": {
+        "status": "estimated",
+        "derived_from": "",
+        "metrics": {}
       }
     },
     {
