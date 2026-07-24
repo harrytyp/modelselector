@@ -68,6 +68,7 @@ jobs:
     needs: refresh
     runs-on: ubuntu-latest
     if: success()
+    continue-on-error: true
     environment:
       name: github-pages
       url: ${{ steps.deploy.outputs.page_url }}
