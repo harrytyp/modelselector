@@ -1,60 +1,60 @@
 {
-  "generated_at": "2026-08-05T01:13:28.538877+00:00",
+  "generated_at": "2026-08-06T01:11:03.756992+00:00",
   "sources": {
     "huggingface_leaderboard": {
       "name": "Hugging Face Open LLM Leaderboard v2",
       "url": "https://huggingface.co/datasets/open-llm-leaderboard/contents",
       "status": "success",
-      "last_updated": "2026-08-05T01:13:28.538899+00:00",
+      "last_updated": "2026-08-06T01:11:03.757011+00:00",
       "row_count": 4495
     },
     "benchlm": {
       "name": "BenchLM.ai Scientific API",
       "url": "https://benchlm.ai/api/data/leaderboard",
       "status": "success",
-      "last_updated": "2026-08-05T01:13:28.538903+00:00",
+      "last_updated": "2026-08-06T01:11:03.757013+00:00",
       "row_count": 200
     },
     "livebench": {
       "name": "LiveBench LLM Benchmark",
       "url": "https://livebench.ai/",
       "status": "success",
-      "last_updated": "2026-08-05T01:13:28.538905+00:00",
+      "last_updated": "2026-08-06T01:11:03.757015+00:00",
       "row_count": 121
     },
     "evalplus": {
       "name": "EvalPlus Code Benchmark (HumanEval+ & MBPP+)",
       "url": "https://evalplus.github.io/results.json",
       "status": "success",
-      "last_updated": "2026-08-05T01:13:28.538907+00:00",
+      "last_updated": "2026-08-06T01:11:03.757016+00:00",
       "row_count": 89
     },
     "techpowerup": {
       "name": "TechPowerUp GPU Database",
       "url": "https://raw.githubusercontent.com/RightNow-AI/RightNow-GPU-Database/main/data/",
       "status": "success",
-      "last_updated": "2026-08-05T01:13:28.538909+00:00",
+      "last_updated": "2026-08-06T01:11:03.757018+00:00",
       "row_count": 801
     },
     "huggingface_models": {
       "name": "Hugging Face GGUF Catalog API",
       "url": "https://huggingface.co/api/models",
       "status": "success",
-      "last_updated": "2026-08-05T01:13:28.538910+00:00",
-      "row_count": 814
+      "last_updated": "2026-08-06T01:11:03.757020+00:00",
+      "row_count": 813
     },
     "quantization": {
       "name": "GGUF Quantization Constants & Quality Loss",
       "url": "https://github.com/ggml-org/llama.cpp/wiki/Feature-Matrix",
       "status": "success",
-      "last_updated": "2026-08-05T01:13:28.538912+00:00",
+      "last_updated": "2026-08-06T01:11:03.757021+00:00",
       "row_count": 8
     },
     "speed_estimation": {
       "name": "Speed Estimation Engine",
       "url": "https://github.com/ggml-org/llama.cpp/wiki/Feature-Matrix",
       "status": "success",
-      "last_updated": "2026-08-05T01:13:28.538914+00:00",
+      "last_updated": "2026-08-06T01:11:03.757022+00:00",
       "row_count": 8
     }
   },
@@ -105,12 +105,12 @@
   },
   "models": [
     {
-      "model_id": "deepreinforce-ai/Ornith-1.0-9B-GGUF",
+      "model_id": "ornith-ai/Ornith-1.0-9B-GGUF",
       "name": "Ornith 1.0 9B",
-      "developer": "Deepreinforce-Ai",
+      "developer": "Ornith-Ai",
       "parameters": 9.0,
       "active_parameters": 9.0,
-      "base_model_id": "deepreinforce-ai/Ornith-1.0-9B",
+      "base_model_id": "ornith-ai/Ornith-1.0-9B",
       "quality_score": 54.9,
       "license": "mit",
       "description": "HF GGUF repository. 4,907,682 active community downloads.",
@@ -126,7 +126,7 @@
       ],
       "benchmarks": {
         "status": "derived",
-        "derived_from": "deepreinforce-ai/Ornith-1.0-9B-GGUF",
+        "derived_from": "ornith-ai/Ornith-1.0-9B-GGUF",
         "metrics": {
           "ifeval": 54.8,
           "bbh": 30.2,
@@ -172,7 +172,7 @@
         "status": "derived",
         "derived_from": "unsloth/Qwen3-Coder-30B-A3B-Instruct-GGUF",
         "metrics": {
-          "benchlm_coding": 40.5,
+          "benchlm_coding": 40.6,
           "benchlm_reasoning": 69.6,
           "benchlm_instruction": 76.4,
           "benchlm_math": 63.4,
@@ -184,12 +184,12 @@
       }
     },
     {
-      "model_id": "deepreinforce-ai/Ornith-1.0-35B-GGUF",
+      "model_id": "ornith-ai/Ornith-1.0-35B-GGUF",
       "name": "Ornith 1.0 35B",
-      "developer": "Deepreinforce-Ai",
+      "developer": "Ornith-Ai",
       "parameters": 35.0,
       "active_parameters": 35.0,
-      "base_model_id": "deepreinforce-ai/Ornith-1.0-35B",
+      "base_model_id": "ornith-ai/Ornith-1.0-35B",
       "quality_score": 54.9,
       "license": "mit",
       "description": "HF GGUF repository. 3,755,106 active community downloads.",
@@ -205,7 +205,7 @@
       ],
       "benchmarks": {
         "status": "derived",
-        "derived_from": "deepreinforce-ai/Ornith-1.0-35B-GGUF",
+        "derived_from": "ornith-ai/Ornith-1.0-35B-GGUF",
         "metrics": {
           "ifeval": 54.8,
           "bbh": 30.2,
@@ -380,6 +380,48 @@
           "benchlm_instruction": 90.9,
           "benchlm_math": 71.3,
           "benchlm_knowledge": 83.3,
+          "benchlm_multilingual": 34.9,
+          "livebench": 60.4,
+          "evalplus_humaneval": 96.2,
+          "evalplus_mbpp": 96.2
+        }
+      }
+    },
+    {
+      "model_id": "nvidia/parakeet-ctc-1.1b",
+      "name": "Parakeet Ctc 1.1B",
+      "developer": "Nvidia",
+      "parameters": 1.1,
+      "active_parameters": 1.1,
+      "base_model_id": "nvidia/parakeet-ctc-1.1b",
+      "quality_score": 54.9,
+      "license": "cc-by-4.0",
+      "description": "HF GGUF repository. 1,852,566 active community downloads.",
+      "config": {
+        "num_layers": 32,
+        "hidden_size": 3072,
+        "num_kv_heads": 32,
+        "num_attn_heads": 32,
+        "vocab_size": 32000
+      },
+      "tags": [
+        "api-imported"
+      ],
+      "benchmarks": {
+        "status": "derived",
+        "derived_from": "nvidia/parakeet-ctc-1.1b",
+        "metrics": {
+          "ifeval": 54.8,
+          "bbh": 30.2,
+          "math_lvl5": 11.5,
+          "gpqa": 7.0,
+          "musr": 11.1,
+          "mmlu_pro": 25.7,
+          "benchlm_coding": 61.8,
+          "benchlm_reasoning": 79.1,
+          "benchlm_instruction": 90.9,
+          "benchlm_math": 71.3,
+          "benchlm_knowledge": 91.7,
           "benchlm_multilingual": 34.9,
           "livebench": 60.4,
           "evalplus_humaneval": 96.2,
@@ -822,7 +864,7 @@
         "status": "derived",
         "derived_from": "Qwen/Qwen3-VL-30B-A3B-Instruct-GGUF",
         "metrics": {
-          "benchlm_coding": 40.5,
+          "benchlm_coding": 40.6,
           "benchlm_reasoning": 75.6,
           "benchlm_instruction": 76.4,
           "benchlm_math": 71.7,
@@ -1235,7 +1277,7 @@
         "status": "derived",
         "derived_from": "unsloth/gemma-4-12b-it-GGUF",
         "metrics": {
-          "benchlm_coding": 44.7,
+          "benchlm_coding": 44.8,
           "benchlm_reasoning": 23.9,
           "benchlm_math": 55.9,
           "benchlm_knowledge": 68.6,
@@ -1318,7 +1360,7 @@
           "gpqa": 7.0,
           "musr": 11.1,
           "mmlu_pro": 25.7,
-          "benchlm_coding": 38.1,
+          "benchlm_coding": 38.0,
           "benchlm_reasoning": 79.1,
           "benchlm_instruction": 90.9,
           "benchlm_math": 71.3,
@@ -1355,7 +1397,7 @@
         "status": "derived",
         "derived_from": "lmstudio-community/gemma-4-12B-it-QAT-GGUF",
         "metrics": {
-          "benchlm_coding": 44.7,
+          "benchlm_coding": 44.8,
           "benchlm_reasoning": 23.9,
           "benchlm_math": 55.9,
           "benchlm_knowledge": 68.6,
@@ -1848,7 +1890,7 @@
         "status": "derived",
         "derived_from": "yuxinlu1/gemma-4-12B-agentic-fable5-composer2.5-v2-3.5x-tau2-GGUF",
         "metrics": {
-          "benchlm_coding": 44.7,
+          "benchlm_coding": 44.8,
           "benchlm_reasoning": 23.9,
           "benchlm_math": 55.9,
           "benchlm_knowledge": 68.6,
@@ -1888,7 +1930,7 @@
           "gpqa": 4.6,
           "musr": 11.0,
           "mmlu_pro": 11.7,
-          "benchlm_coding": 44.7,
+          "benchlm_coding": 44.8,
           "benchlm_reasoning": 23.9,
           "benchlm_math": 55.9,
           "benchlm_knowledge": 68.6,
@@ -2180,8 +2222,8 @@
       }
     },
     {
-      "model_id": "LuffyTheFox/Qwen3.6-35B-A3B-Uncensored-Genesis-Hermes-V6-GGUF",
-      "name": "Qwen3.6 35B A3B Uncensored Genesis Hermes V6",
+      "model_id": "LuffyTheFox/Qwen3.6-35B-A3B-Uncensored-Genesis-Hermes-V7-GGUF",
+      "name": "Qwen3.6 35B A3B Uncensored Genesis Hermes V7",
       "developer": "Luffythefox",
       "parameters": 35.0,
       "active_parameters": 3.0,
@@ -2201,7 +2243,7 @@
       ],
       "benchmarks": {
         "status": "derived",
-        "derived_from": "LuffyTheFox/Qwen3.6-35B-A3B-Uncensored-Genesis-Hermes-V6-GGUF",
+        "derived_from": "LuffyTheFox/Qwen3.6-35B-A3B-Uncensored-Genesis-Hermes-V7-GGUF",
         "metrics": {
           "benchlm_coding": 47.4,
           "benchlm_reasoning": 75.6,
@@ -2349,7 +2391,7 @@
         "status": "derived",
         "derived_from": "yuxinlu1/gemma-4-12B-coder-fable5-composer2.5-v1-GGUF",
         "metrics": {
-          "benchlm_coding": 44.7,
+          "benchlm_coding": 44.8,
           "benchlm_reasoning": 23.9,
           "benchlm_math": 55.9,
           "benchlm_knowledge": 68.6,
@@ -2488,7 +2530,7 @@
         "status": "derived",
         "derived_from": "google/gemma-4-12B-it-qat-q4_0-gguf",
         "metrics": {
-          "benchlm_coding": 44.7,
+          "benchlm_coding": 44.8,
           "benchlm_reasoning": 23.9,
           "benchlm_math": 55.9,
           "benchlm_knowledge": 68.6,
@@ -2686,7 +2728,7 @@
       "base_model_id": "google/madlad400-3b-mt",
       "quality_score": 50.7,
       "license": "apache-2.0",
-      "description": "HF GGUF repository. 265,275 active community downloads.",
+      "description": "HF GGUF repository. 266,782 active community downloads.",
       "config": {
         "num_layers": 32,
         "hidden_size": 3072,
@@ -3221,7 +3263,7 @@
         "status": "derived",
         "derived_from": "culturerevolt/gemma-4-12b-heretic-abliterated-GGUF",
         "metrics": {
-          "benchlm_coding": 44.7,
+          "benchlm_coding": 44.8,
           "benchlm_reasoning": 23.9,
           "benchlm_math": 55.9,
           "benchlm_knowledge": 68.6,
@@ -3387,8 +3429,8 @@
       "model_id": "unsloth/Kimi-K2.7-Code-GGUF",
       "name": "Kimi K2.7 Code",
       "developer": "Unsloth",
-      "parameters": 1058.6,
-      "active_parameters": 1058.6,
+      "parameters": 1026.9,
+      "active_parameters": 1026.9,
       "base_model_id": "moonshotai/Kimi-K2.7-Code",
       "quality_score": 53.6,
       "license": "other",
@@ -3999,7 +4041,7 @@
         "status": "derived",
         "derived_from": "MaziyarPanahi/Qwen3-30B-A3B-GGUF",
         "metrics": {
-          "benchlm_coding": 40.5,
+          "benchlm_coding": 40.6,
           "benchlm_reasoning": 75.6,
           "benchlm_instruction": 76.4,
           "benchlm_math": 71.7,
@@ -4638,7 +4680,7 @@
         "status": "derived",
         "derived_from": "HauhauCS/Gemma4-12B-QAT-Uncensored-HauhauCS-Balanced",
         "metrics": {
-          "benchlm_coding": 44.7,
+          "benchlm_coding": 44.8,
           "benchlm_reasoning": 23.9,
           "benchlm_math": 55.9,
           "benchlm_knowledge": 68.6,
@@ -4761,45 +4803,6 @@
           "benchlm_knowledge": 83.3,
           "benchlm_multilingual": 34.9,
           "livebench": 60.4,
-          "evalplus_humaneval": 96.2,
-          "evalplus_mbpp": 96.2
-        }
-      }
-    },
-    {
-      "model_id": "TheBloke/TinyLlama-1.1B-Chat-v1.0-GGUF",
-      "name": "Tinyllama 1.1B Chat V1.0",
-      "developer": "Thebloke",
-      "parameters": 1.1,
-      "active_parameters": 1.1,
-      "base_model_id": "TinyLlama/TinyLlama-1.1B-Chat-v1.0",
-      "quality_score": 28.4,
-      "license": "apache-2.0",
-      "description": "HF GGUF repository. 128,751 active community downloads.",
-      "config": {
-        "num_layers": 32,
-        "hidden_size": 3072,
-        "num_kv_heads": 32,
-        "num_attn_heads": 32,
-        "vocab_size": 128256
-      },
-      "tags": [
-        "api-imported",
-        "chat"
-      ],
-      "benchmarks": {
-        "status": "derived",
-        "derived_from": "TinyLlama/TinyLlama-1.1B-Chat-v1.0",
-        "metrics": {
-          "ifeval": 4.2,
-          "bbh": 2.2,
-          "math_lvl5": 0.0,
-          "gpqa": 0.0,
-          "musr": 2.5,
-          "mmlu_pro": 0.0,
-          "benchlm_coding": 35.5,
-          "benchlm_math": 25.4,
-          "livebench": 50.5,
           "evalplus_humaneval": 96.2,
           "evalplus_mbpp": 96.2
         }
@@ -5116,6 +5119,45 @@
           "benchlm_coding": 63.6,
           "benchlm_knowledge": 79.2,
           "livebench": 50.4,
+          "evalplus_humaneval": 96.2,
+          "evalplus_mbpp": 96.2
+        }
+      }
+    },
+    {
+      "model_id": "TheBloke/TinyLlama-1.1B-Chat-v1.0-GGUF",
+      "name": "Tinyllama 1.1B Chat V1.0",
+      "developer": "Thebloke",
+      "parameters": 1.1,
+      "active_parameters": 1.1,
+      "base_model_id": "TinyLlama/TinyLlama-1.1B-Chat-v1.0",
+      "quality_score": 28.4,
+      "license": "apache-2.0",
+      "description": "HF GGUF repository. 123,223 active community downloads.",
+      "config": {
+        "num_layers": 32,
+        "hidden_size": 3072,
+        "num_kv_heads": 32,
+        "num_attn_heads": 32,
+        "vocab_size": 128256
+      },
+      "tags": [
+        "api-imported",
+        "chat"
+      ],
+      "benchmarks": {
+        "status": "derived",
+        "derived_from": "TinyLlama/TinyLlama-1.1B-Chat-v1.0",
+        "metrics": {
+          "ifeval": 4.2,
+          "bbh": 2.2,
+          "math_lvl5": 0.0,
+          "gpqa": 0.0,
+          "musr": 2.5,
+          "mmlu_pro": 0.0,
+          "benchlm_coding": 35.5,
+          "benchlm_math": 25.4,
+          "livebench": 50.5,
           "evalplus_humaneval": 96.2,
           "evalplus_mbpp": 96.2
         }
@@ -5587,7 +5629,7 @@
           "benchlm_reasoning": 79.1,
           "benchlm_instruction": 90.9,
           "benchlm_math": 71.3,
-          "benchlm_knowledge": 63.4,
+          "benchlm_knowledge": 63.5,
           "benchlm_multilingual": 34.9,
           "livebench": 60.4,
           "evalplus_humaneval": 96.2,
@@ -5711,7 +5753,7 @@
       "parameters": 7.0,
       "active_parameters": 7.0,
       "base_model_id": "mistralai/Mistral-7B-Instruct-v0.3",
-      "quality_score": 39.6,
+      "quality_score": 39.7,
       "license": "apache-2.0",
       "description": "HF GGUF repository. 103,127 active community downloads.",
       "config": {
@@ -5735,48 +5777,10 @@
           "gpqa": 2.1,
           "musr": 2.5,
           "mmlu_pro": 21.3,
-          "benchlm_coding": 45.4,
+          "benchlm_coding": 45.5,
           "livebench": 54.0,
           "evalplus_humaneval": 96.2,
           "evalplus_mbpp": 96.2
-        }
-      }
-    },
-    {
-      "model_id": "google/gemma-2b",
-      "name": "Gemma 2B",
-      "developer": "Google",
-      "parameters": 2.0,
-      "active_parameters": 2.0,
-      "base_model_id": "google/gemma-2b",
-      "quality_score": 34.2,
-      "license": "gemma",
-      "description": "HF GGUF repository. 101,035 active community downloads.",
-      "config": {
-        "num_layers": 26,
-        "hidden_size": 2048,
-        "num_kv_heads": 8,
-        "num_attn_heads": 8,
-        "vocab_size": 32000
-      },
-      "tags": [
-        "api-imported"
-      ],
-      "benchmarks": {
-        "status": "measured",
-        "derived_from": "",
-        "metrics": {
-          "ifeval": 20.4,
-          "bbh": 8.2,
-          "math_lvl5": 3.0,
-          "gpqa": 0.7,
-          "musr": 7.6,
-          "mmlu_pro": 4.1,
-          "benchlm_coding": 45.0,
-          "benchlm_knowledge": 38.4,
-          "livebench": 53.1,
-          "evalplus_humaneval": 98.0,
-          "evalplus_mbpp": 98.0
         }
       }
     },
@@ -5897,6 +5901,44 @@
           "livebench": 50.2,
           "evalplus_humaneval": 63.1,
           "evalplus_mbpp": 65.3
+        }
+      }
+    },
+    {
+      "model_id": "google/gemma-2b",
+      "name": "Gemma 2B",
+      "developer": "Google",
+      "parameters": 2.0,
+      "active_parameters": 2.0,
+      "base_model_id": "google/gemma-2b",
+      "quality_score": 34.2,
+      "license": "gemma",
+      "description": "HF GGUF repository. 99,801 active community downloads.",
+      "config": {
+        "num_layers": 26,
+        "hidden_size": 2048,
+        "num_kv_heads": 8,
+        "num_attn_heads": 8,
+        "vocab_size": 32000
+      },
+      "tags": [
+        "api-imported"
+      ],
+      "benchmarks": {
+        "status": "measured",
+        "derived_from": "",
+        "metrics": {
+          "ifeval": 20.4,
+          "bbh": 8.2,
+          "math_lvl5": 3.0,
+          "gpqa": 0.7,
+          "musr": 7.6,
+          "mmlu_pro": 4.1,
+          "benchlm_coding": 45.0,
+          "benchlm_knowledge": 38.4,
+          "livebench": 53.1,
+          "evalplus_humaneval": 98.0,
+          "evalplus_mbpp": 98.0
         }
       }
     },
@@ -6099,7 +6141,7 @@
       "parameters": 24.0,
       "active_parameters": 24.0,
       "base_model_id": "mistralai/Mistral-Small-24B-Instruct-2501",
-      "quality_score": 41.6,
+      "quality_score": 41.7,
       "license": "apache-2.0",
       "description": "HF GGUF repository. 97,368 active community downloads.",
       "config": {
@@ -6123,7 +6165,7 @@
           "gpqa": 5.4,
           "musr": 8.5,
           "mmlu_pro": 23.1,
-          "benchlm_coding": 43.6,
+          "benchlm_coding": 43.7,
           "livebench": 59.0,
           "evalplus_humaneval": 96.2,
           "evalplus_mbpp": 96.2
@@ -6393,7 +6435,7 @@
           "gpqa": 3.6,
           "musr": 6.7,
           "mmlu_pro": 26.2,
-          "benchlm_coding": 45.4,
+          "benchlm_coding": 45.5,
           "livebench": 55.9,
           "evalplus_humaneval": 96.2,
           "evalplus_mbpp": 96.2
@@ -6626,7 +6668,7 @@
           "gpqa": 9.3,
           "musr": 8.4,
           "mmlu_pro": 32.6,
-          "benchlm_coding": 43.6,
+          "benchlm_coding": 43.7,
           "livebench": 58.6,
           "evalplus_humaneval": 96.2,
           "evalplus_mbpp": 96.2
@@ -6640,7 +6682,7 @@
       "parameters": 24.0,
       "active_parameters": 24.0,
       "base_model_id": "mrfakename/mistral-small-3.1-24b-instruct-2503-hf",
-      "quality_score": 41.6,
+      "quality_score": 41.7,
       "license": "apache-2.0",
       "description": "HF GGUF repository. 92,821 active community downloads.",
       "config": {
@@ -6664,7 +6706,7 @@
           "gpqa": 5.4,
           "musr": 8.5,
           "mmlu_pro": 23.1,
-          "benchlm_coding": 43.6,
+          "benchlm_coding": 43.7,
           "livebench": 59.0,
           "evalplus_humaneval": 96.2,
           "evalplus_mbpp": 96.2
@@ -7145,7 +7187,7 @@
           "gpqa": 7.0,
           "musr": 11.1,
           "mmlu_pro": 25.7,
-          "benchlm_coding": 40.5,
+          "benchlm_coding": 40.6,
           "benchlm_reasoning": 79.1,
           "benchlm_instruction": 76.4,
           "benchlm_math": 71.3,
@@ -7421,7 +7463,7 @@
           "gpqa": 23.1,
           "musr": 15.4,
           "mmlu_pro": 48.9,
-          "benchlm_coding": 45.4,
+          "benchlm_coding": 45.5,
           "livebench": 72.6,
           "evalplus_humaneval": 96.2,
           "evalplus_mbpp": 96.2
@@ -7754,7 +7796,7 @@
           "gpqa": 7.0,
           "musr": 11.1,
           "mmlu_pro": 25.7,
-          "benchlm_coding": 42.7,
+          "benchlm_coding": 42.8,
           "benchlm_reasoning": 79.1,
           "benchlm_instruction": 37.1,
           "benchlm_math": 71.3,
@@ -8139,7 +8181,7 @@
           "benchlm_reasoning": 75.6,
           "benchlm_instruction": 88.4,
           "benchlm_math": 71.7,
-          "benchlm_knowledge": 69.0,
+          "benchlm_knowledge": 69.1,
           "benchlm_multilingual": 36.8,
           "livebench": 50.2,
           "evalplus_humaneval": 60.2,
@@ -8857,7 +8899,7 @@
           "benchlm_reasoning": 75.6,
           "benchlm_instruction": 88.4,
           "benchlm_math": 71.7,
-          "benchlm_knowledge": 69.0,
+          "benchlm_knowledge": 69.1,
           "benchlm_multilingual": 36.8,
           "livebench": 50.2,
           "evalplus_humaneval": 63.1,
@@ -9681,7 +9723,7 @@
           "benchlm_reasoning": 79.1,
           "benchlm_instruction": 90.9,
           "benchlm_math": 71.3,
-          "benchlm_knowledge": 69.0,
+          "benchlm_knowledge": 69.1,
           "benchlm_multilingual": 34.9,
           "livebench": 60.4,
           "evalplus_humaneval": 96.2,
@@ -9765,7 +9807,7 @@
           "benchlm_reasoning": 79.1,
           "benchlm_instruction": 90.9,
           "benchlm_math": 71.3,
-          "benchlm_knowledge": 69.0,
+          "benchlm_knowledge": 69.1,
           "benchlm_multilingual": 34.9,
           "livebench": 60.4,
           "evalplus_humaneval": 96.2,
@@ -9928,45 +9970,6 @@
       }
     },
     {
-      "model_id": "google/gemma-2b-it",
-      "name": "Gemma 2B It",
-      "developer": "Google",
-      "parameters": 2.0,
-      "active_parameters": 2.0,
-      "base_model_id": "google/gemma-2b-it",
-      "quality_score": 34.3,
-      "license": "gemma",
-      "description": "HF GGUF repository. 56,770 active community downloads.",
-      "config": {
-        "num_layers": 26,
-        "hidden_size": 2048,
-        "num_kv_heads": 8,
-        "num_attn_heads": 8,
-        "vocab_size": 32000
-      },
-      "tags": [
-        "api-imported",
-        "chat"
-      ],
-      "benchmarks": {
-        "status": "measured",
-        "derived_from": "",
-        "metrics": {
-          "ifeval": 26.9,
-          "bbh": 5.2,
-          "math_lvl5": 2.0,
-          "gpqa": 3.8,
-          "musr": 3.0,
-          "mmlu_pro": 3.9,
-          "benchlm_coding": 45.0,
-          "benchlm_knowledge": 38.4,
-          "livebench": 53.1,
-          "evalplus_humaneval": 98.0,
-          "evalplus_mbpp": 98.0
-        }
-      }
-    },
-    {
       "model_id": "AInVFX/SeedVR2_comfyUI",
       "name": "Seedvr2 Comfyui",
       "developer": "Ainvfx",
@@ -10087,7 +10090,7 @@
       "parameters": 14.0,
       "active_parameters": 14.0,
       "base_model_id": "mistralai/Ministral-3-14B-Reasoning-2512",
-      "quality_score": 52.3,
+      "quality_score": 49.5,
       "license": "apache-2.0",
       "description": "HF GGUF repository. 54,503 active community downloads.",
       "config": {
@@ -10110,11 +10113,11 @@
           "gpqa": 7.0,
           "musr": 11.1,
           "mmlu_pro": 25.7,
-          "benchlm_coding": 31.3,
+          "benchlm_coding": 43.1,
           "benchlm_reasoning": 79.1,
           "benchlm_instruction": 90.9,
-          "benchlm_math": 71.3,
-          "benchlm_knowledge": 83.3,
+          "benchlm_math": 42.9,
+          "benchlm_knowledge": 58.5,
           "benchlm_multilingual": 34.9,
           "livebench": 60.4,
           "evalplus_humaneval": 96.2,
@@ -10154,6 +10157,45 @@
           "livebench": 55.8,
           "evalplus_humaneval": 65.3,
           "evalplus_mbpp": 67.3
+        }
+      }
+    },
+    {
+      "model_id": "google/gemma-2b-it",
+      "name": "Gemma 2B It",
+      "developer": "Google",
+      "parameters": 2.0,
+      "active_parameters": 2.0,
+      "base_model_id": "google/gemma-2b-it",
+      "quality_score": 34.3,
+      "license": "gemma",
+      "description": "HF GGUF repository. 54,229 active community downloads.",
+      "config": {
+        "num_layers": 26,
+        "hidden_size": 2048,
+        "num_kv_heads": 8,
+        "num_attn_heads": 8,
+        "vocab_size": 32000
+      },
+      "tags": [
+        "api-imported",
+        "chat"
+      ],
+      "benchmarks": {
+        "status": "measured",
+        "derived_from": "",
+        "metrics": {
+          "ifeval": 26.9,
+          "bbh": 5.2,
+          "math_lvl5": 2.0,
+          "gpqa": 3.8,
+          "musr": 3.0,
+          "mmlu_pro": 3.9,
+          "benchlm_coding": 45.0,
+          "benchlm_knowledge": 38.4,
+          "livebench": 53.1,
+          "evalplus_humaneval": 98.0,
+          "evalplus_mbpp": 98.0
         }
       }
     },
@@ -10858,44 +10900,6 @@
       }
     },
     {
-      "model_id": "TheBloke/Mistral-7B-Instruct-v0.2-GGUF",
-      "name": "Mistral 7B Instruct V0.2",
-      "developer": "Thebloke",
-      "parameters": 7.0,
-      "active_parameters": 7.0,
-      "base_model_id": "mistralai/Mistral-7B-Instruct-v0.2",
-      "quality_score": 39.2,
-      "license": "apache-2.0",
-      "description": "HF GGUF repository. 50,907 active community downloads.",
-      "config": {
-        "num_layers": 32,
-        "hidden_size": 4096,
-        "num_kv_heads": 8,
-        "num_attn_heads": 32,
-        "vocab_size": 32000
-      },
-      "tags": [
-        "api-imported",
-        "chat"
-      ],
-      "benchmarks": {
-        "status": "derived",
-        "derived_from": "mistralai/Mistral-7B-Instruct-v0.2",
-        "metrics": {
-          "ifeval": 53.2,
-          "bbh": 21.1,
-          "math_lvl5": 1.2,
-          "gpqa": 1.7,
-          "musr": 5.8,
-          "mmlu_pro": 17.3,
-          "benchlm_coding": 45.4,
-          "livebench": 54.0,
-          "evalplus_humaneval": 96.2,
-          "evalplus_mbpp": 96.2
-        }
-      }
-    },
-    {
       "model_id": "YanissAmz/Hy3-295B-A21B-GGUF",
       "name": "Hy3 295B A21B",
       "developer": "Yanissamz",
@@ -10971,6 +10975,44 @@
           "benchlm_coding": 43.2,
           "benchlm_knowledge": 36.6,
           "livebench": 59.4,
+          "evalplus_humaneval": 96.2,
+          "evalplus_mbpp": 96.2
+        }
+      }
+    },
+    {
+      "model_id": "TheBloke/Mistral-7B-Instruct-v0.2-GGUF",
+      "name": "Mistral 7B Instruct V0.2",
+      "developer": "Thebloke",
+      "parameters": 7.0,
+      "active_parameters": 7.0,
+      "base_model_id": "mistralai/Mistral-7B-Instruct-v0.2",
+      "quality_score": 39.2,
+      "license": "apache-2.0",
+      "description": "HF GGUF repository. 49,675 active community downloads.",
+      "config": {
+        "num_layers": 32,
+        "hidden_size": 4096,
+        "num_kv_heads": 8,
+        "num_attn_heads": 32,
+        "vocab_size": 32000
+      },
+      "tags": [
+        "api-imported",
+        "chat"
+      ],
+      "benchmarks": {
+        "status": "derived",
+        "derived_from": "mistralai/Mistral-7B-Instruct-v0.2",
+        "metrics": {
+          "ifeval": 53.2,
+          "bbh": 21.1,
+          "math_lvl5": 1.2,
+          "gpqa": 1.7,
+          "musr": 5.8,
+          "mmlu_pro": 17.3,
+          "benchlm_coding": 45.5,
+          "livebench": 54.0,
           "evalplus_humaneval": 96.2,
           "evalplus_mbpp": 96.2
         }
@@ -11407,7 +11449,7 @@
           "gpqa": 7.0,
           "musr": 11.1,
           "mmlu_pro": 25.7,
-          "benchlm_coding": 38.1,
+          "benchlm_coding": 38.0,
           "benchlm_reasoning": 79.1,
           "benchlm_instruction": 90.9,
           "benchlm_math": 71.3,
@@ -11999,7 +12041,7 @@
       "parameters": 24.0,
       "active_parameters": 24.0,
       "base_model_id": "mistralai/Mistral-Small-3.2-24B-Instruct-2506",
-      "quality_score": 41.6,
+      "quality_score": 41.7,
       "license": "apache-2.0",
       "description": "HF GGUF repository. 43,667 active community downloads.",
       "config": {
@@ -12023,7 +12065,7 @@
           "gpqa": 5.4,
           "musr": 8.5,
           "mmlu_pro": 23.1,
-          "benchlm_coding": 43.6,
+          "benchlm_coding": 43.7,
           "livebench": 59.0,
           "evalplus_humaneval": 96.2,
           "evalplus_mbpp": 96.2
@@ -12144,45 +12186,6 @@
       }
     },
     {
-      "model_id": "TheBloke/Llama-2-7B-Chat-GGUF",
-      "name": "Llama 2 7B Chat",
-      "developer": "Thebloke",
-      "parameters": 7.0,
-      "active_parameters": 7.0,
-      "base_model_id": "meta-llama/Llama-2-7b-chat-hf",
-      "quality_score": 32.3,
-      "license": "llama2",
-      "description": "HF GGUF repository. 43,291 active community downloads.",
-      "config": {
-        "num_layers": 32,
-        "hidden_size": 4096,
-        "num_kv_heads": 8,
-        "num_attn_heads": 32,
-        "vocab_size": 128256
-      },
-      "tags": [
-        "api-imported",
-        "chat"
-      ],
-      "benchmarks": {
-        "status": "derived",
-        "derived_from": "meta-llama/Llama-2-7b-chat-hf",
-        "metrics": {
-          "ifeval": 38.1,
-          "bbh": 2.7,
-          "math_lvl5": 0.2,
-          "gpqa": 0.0,
-          "musr": 1.5,
-          "mmlu_pro": 5.8,
-          "benchlm_coding": 35.5,
-          "benchlm_math": 25.4,
-          "livebench": 54.0,
-          "evalplus_humaneval": 96.2,
-          "evalplus_mbpp": 96.2
-        }
-      }
-    },
-    {
       "model_id": "TheBloke/TinyLlama-1.1B-Chat-v0.3-GGUF",
       "name": "Tinyllama 1.1B Chat V0.3",
       "developer": "Thebloke",
@@ -12191,7 +12194,7 @@
       "base_model_id": "TinyLlama/TinyLlama-1.1B-Chat-v0.3",
       "quality_score": 33.0,
       "license": "apache-2.0",
-      "description": "HF GGUF repository. 43,269 active community downloads.",
+      "description": "HF GGUF repository. 42,984 active community downloads.",
       "config": {
         "num_layers": 32,
         "hidden_size": 3072,
@@ -12216,6 +12219,43 @@
           "benchlm_coding": 35.5,
           "benchlm_math": 25.4,
           "livebench": 50.5,
+          "evalplus_humaneval": 96.2,
+          "evalplus_mbpp": 96.2
+        }
+      }
+    },
+    {
+      "model_id": "NousResearch/Hermes-2-Pro-Mistral-7B-GGUF",
+      "name": "Hermes 2 Pro Mistral 7B",
+      "developer": "Nousresearch",
+      "parameters": 7.0,
+      "active_parameters": 7.0,
+      "base_model_id": "mistralai/Mistral-7B-v0.1",
+      "quality_score": 36.9,
+      "license": "apache-2.0",
+      "description": "HF GGUF repository. 42,637 active community downloads.",
+      "config": {
+        "num_layers": 32,
+        "hidden_size": 4096,
+        "num_kv_heads": 8,
+        "num_attn_heads": 32,
+        "vocab_size": 32000
+      },
+      "tags": [
+        "api-imported"
+      ],
+      "benchmarks": {
+        "status": "derived",
+        "derived_from": "mistralai/Mistral-7B-v0.1",
+        "metrics": {
+          "ifeval": 22.1,
+          "bbh": 20.2,
+          "math_lvl5": 1.1,
+          "gpqa": 3.8,
+          "musr": 8.9,
+          "mmlu_pro": 20.6,
+          "benchlm_coding": 45.5,
+          "livebench": 54.0,
           "evalplus_humaneval": 96.2,
           "evalplus_mbpp": 96.2
         }
@@ -12258,43 +12298,6 @@
           "benchlm_knowledge": 83.3,
           "benchlm_multilingual": 34.9,
           "livebench": 60.4,
-          "evalplus_humaneval": 96.2,
-          "evalplus_mbpp": 96.2
-        }
-      }
-    },
-    {
-      "model_id": "NousResearch/Hermes-2-Pro-Mistral-7B-GGUF",
-      "name": "Hermes 2 Pro Mistral 7B",
-      "developer": "Nousresearch",
-      "parameters": 7.0,
-      "active_parameters": 7.0,
-      "base_model_id": "mistralai/Mistral-7B-v0.1",
-      "quality_score": 36.9,
-      "license": "apache-2.0",
-      "description": "HF GGUF repository. 42,512 active community downloads.",
-      "config": {
-        "num_layers": 32,
-        "hidden_size": 4096,
-        "num_kv_heads": 8,
-        "num_attn_heads": 32,
-        "vocab_size": 32000
-      },
-      "tags": [
-        "api-imported"
-      ],
-      "benchmarks": {
-        "status": "derived",
-        "derived_from": "mistralai/Mistral-7B-v0.1",
-        "metrics": {
-          "ifeval": 22.1,
-          "bbh": 20.2,
-          "math_lvl5": 1.1,
-          "gpqa": 3.8,
-          "musr": 8.9,
-          "mmlu_pro": 20.6,
-          "benchlm_coding": 45.4,
-          "livebench": 54.0,
           "evalplus_humaneval": 96.2,
           "evalplus_mbpp": 96.2
         }
@@ -12483,6 +12486,45 @@
           "livebench": 50.2,
           "evalplus_humaneval": 71.4,
           "evalplus_mbpp": 72.8
+        }
+      }
+    },
+    {
+      "model_id": "TheBloke/Llama-2-7B-Chat-GGUF",
+      "name": "Llama 2 7B Chat",
+      "developer": "Thebloke",
+      "parameters": 7.0,
+      "active_parameters": 7.0,
+      "base_model_id": "meta-llama/Llama-2-7b-chat-hf",
+      "quality_score": 32.3,
+      "license": "llama2",
+      "description": "HF GGUF repository. 41,504 active community downloads.",
+      "config": {
+        "num_layers": 32,
+        "hidden_size": 4096,
+        "num_kv_heads": 8,
+        "num_attn_heads": 32,
+        "vocab_size": 128256
+      },
+      "tags": [
+        "api-imported",
+        "chat"
+      ],
+      "benchmarks": {
+        "status": "derived",
+        "derived_from": "meta-llama/Llama-2-7b-chat-hf",
+        "metrics": {
+          "ifeval": 38.1,
+          "bbh": 2.7,
+          "math_lvl5": 0.2,
+          "gpqa": 0.0,
+          "musr": 1.5,
+          "mmlu_pro": 5.8,
+          "benchlm_coding": 35.5,
+          "benchlm_math": 25.4,
+          "livebench": 54.0,
+          "evalplus_humaneval": 96.2,
+          "evalplus_mbpp": 96.2
         }
       }
     },
@@ -12815,7 +12857,7 @@
           "gpqa": 7.0,
           "musr": 11.1,
           "mmlu_pro": 25.7,
-          "benchlm_coding": 48.1,
+          "benchlm_coding": 48.2,
           "benchlm_reasoning": 79.1,
           "benchlm_instruction": 90.9,
           "benchlm_math": 71.3,
@@ -12965,7 +13007,7 @@
         "status": "derived",
         "derived_from": "OBLITERATUS/Gemma-4-12B-OBLITERATED",
         "metrics": {
-          "benchlm_coding": 44.7,
+          "benchlm_coding": 44.8,
           "benchlm_reasoning": 23.9,
           "benchlm_math": 55.9,
           "benchlm_knowledge": 68.6,
@@ -13229,6 +13271,46 @@
         "status": "estimated",
         "derived_from": "",
         "metrics": {}
+      }
+    },
+    {
+      "model_id": "google/gemma-7b",
+      "name": "Gemma 7B",
+      "developer": "Google",
+      "parameters": 7.0,
+      "active_parameters": 7.0,
+      "base_model_id": "google/gemma-7b",
+      "quality_score": 45.0,
+      "license": "gemma",
+      "description": "HF GGUF repository. 38,803 active community downloads.",
+      "config": {
+        "num_layers": 32,
+        "hidden_size": 4096,
+        "num_kv_heads": 8,
+        "num_attn_heads": 32,
+        "vocab_size": 32000
+      },
+      "tags": [
+        "api-imported"
+      ],
+      "benchmarks": {
+        "status": "measured",
+        "derived_from": "",
+        "metrics": {
+          "ifeval": 26.6,
+          "bbh": 21.1,
+          "math_lvl5": 7.4,
+          "gpqa": 4.9,
+          "musr": 11.0,
+          "mmlu_pro": 21.6,
+          "benchlm_coding": 63.6,
+          "benchlm_reasoning": 25.7,
+          "benchlm_math": 57.7,
+          "benchlm_knowledge": 93.5,
+          "livebench": 55.8,
+          "evalplus_humaneval": 98.0,
+          "evalplus_mbpp": 98.0
+        }
       }
     },
     {
@@ -13571,7 +13653,7 @@
         "status": "derived",
         "derived_from": "unsloth/Qwen3.5-397B-A17B-GGUF",
         "metrics": {
-          "benchlm_coding": 50.0,
+          "benchlm_coding": 50.1,
           "benchlm_reasoning": 82.1,
           "benchlm_instruction": 84.2,
           "benchlm_math": 72.9,
@@ -13580,46 +13662,6 @@
           "livebench": 50.2,
           "evalplus_humaneval": 96.2,
           "evalplus_mbpp": 96.2
-        }
-      }
-    },
-    {
-      "model_id": "google/gemma-7b",
-      "name": "Gemma 7B",
-      "developer": "Google",
-      "parameters": 7.0,
-      "active_parameters": 7.0,
-      "base_model_id": "google/gemma-7b",
-      "quality_score": 45.0,
-      "license": "gemma",
-      "description": "HF GGUF repository. 37,352 active community downloads.",
-      "config": {
-        "num_layers": 32,
-        "hidden_size": 4096,
-        "num_kv_heads": 8,
-        "num_attn_heads": 32,
-        "vocab_size": 32000
-      },
-      "tags": [
-        "api-imported"
-      ],
-      "benchmarks": {
-        "status": "measured",
-        "derived_from": "",
-        "metrics": {
-          "ifeval": 26.6,
-          "bbh": 21.1,
-          "math_lvl5": 7.4,
-          "gpqa": 4.9,
-          "musr": 11.0,
-          "mmlu_pro": 21.6,
-          "benchlm_coding": 63.6,
-          "benchlm_reasoning": 25.7,
-          "benchlm_math": 57.7,
-          "benchlm_knowledge": 93.5,
-          "livebench": 55.8,
-          "evalplus_humaneval": 98.0,
-          "evalplus_mbpp": 98.0
         }
       }
     },
@@ -14239,7 +14281,7 @@
         "status": "derived",
         "derived_from": "llmfan46/gemma-4-12B-agentic-fable5-composer2.5-v2-3.5x-tau2-uncensored-heretic-GGUF",
         "metrics": {
-          "benchlm_coding": 44.7,
+          "benchlm_coding": 44.8,
           "benchlm_reasoning": 23.9,
           "benchlm_math": 55.9,
           "benchlm_knowledge": 68.6,
@@ -14624,44 +14666,6 @@
       }
     },
     {
-      "model_id": "TheBloke/Mistral-7B-Instruct-v0.1-GGUF",
-      "name": "Mistral 7B Instruct V0.1",
-      "developer": "Thebloke",
-      "parameters": 7.0,
-      "active_parameters": 7.0,
-      "base_model_id": "mistralai/Mistral-7B-Instruct-v0.1",
-      "quality_score": 35.9,
-      "license": "apache-2.0",
-      "description": "HF GGUF repository. 33,635 active community downloads.",
-      "config": {
-        "num_layers": 32,
-        "hidden_size": 4096,
-        "num_kv_heads": 8,
-        "num_attn_heads": 32,
-        "vocab_size": 32000
-      },
-      "tags": [
-        "api-imported",
-        "chat"
-      ],
-      "benchmarks": {
-        "status": "derived",
-        "derived_from": "mistralai/Mistral-7B-Instruct-v0.1",
-        "metrics": {
-          "ifeval": 43.1,
-          "bbh": 5.8,
-          "math_lvl5": 0.5,
-          "gpqa": 0.0,
-          "musr": 4.3,
-          "mmlu_pro": 13.9,
-          "benchlm_coding": 45.4,
-          "livebench": 54.0,
-          "evalplus_humaneval": 96.2,
-          "evalplus_mbpp": 96.2
-        }
-      }
-    },
-    {
       "model_id": "NousResearch/Hermes-3-Llama-3.1-8B-GGUF",
       "name": "Hermes 3 Llama 3.1 8B",
       "developer": "Nousresearch",
@@ -14694,6 +14698,44 @@
           "benchlm_coding": 63.6,
           "benchlm_knowledge": 79.2,
           "livebench": 54.4,
+          "evalplus_humaneval": 96.2,
+          "evalplus_mbpp": 96.2
+        }
+      }
+    },
+    {
+      "model_id": "TheBloke/Mistral-7B-Instruct-v0.1-GGUF",
+      "name": "Mistral 7B Instruct V0.1",
+      "developer": "Thebloke",
+      "parameters": 7.0,
+      "active_parameters": 7.0,
+      "base_model_id": "mistralai/Mistral-7B-Instruct-v0.1",
+      "quality_score": 36.0,
+      "license": "apache-2.0",
+      "description": "HF GGUF repository. 33,290 active community downloads.",
+      "config": {
+        "num_layers": 32,
+        "hidden_size": 4096,
+        "num_kv_heads": 8,
+        "num_attn_heads": 32,
+        "vocab_size": 32000
+      },
+      "tags": [
+        "api-imported",
+        "chat"
+      ],
+      "benchmarks": {
+        "status": "derived",
+        "derived_from": "mistralai/Mistral-7B-Instruct-v0.1",
+        "metrics": {
+          "ifeval": 43.1,
+          "bbh": 5.8,
+          "math_lvl5": 0.5,
+          "gpqa": 0.0,
+          "musr": 4.3,
+          "mmlu_pro": 13.9,
+          "benchlm_coding": 45.5,
+          "livebench": 54.0,
           "evalplus_humaneval": 96.2,
           "evalplus_mbpp": 96.2
         }
@@ -15058,7 +15100,7 @@
         "status": "derived",
         "derived_from": "timteh673/Qwen3.5-397B-A17B-Opus-4.6-Reasoning-Uncensored-GGUF",
         "metrics": {
-          "benchlm_coding": 50.0,
+          "benchlm_coding": 50.1,
           "benchlm_reasoning": 82.1,
           "benchlm_instruction": 84.2,
           "benchlm_math": 72.9,
@@ -15190,48 +15232,6 @@
       }
     },
     {
-      "model_id": "TheBloke/MythoMax-L2-13B-GGUF",
-      "name": "Mythomax L2 13B",
-      "developer": "Thebloke",
-      "parameters": 13.0,
-      "active_parameters": 13.0,
-      "base_model_id": "Gryphe/MythoMax-L2-13b",
-      "quality_score": 54.4,
-      "license": "other",
-      "description": "HF GGUF repository. 31,239 active community downloads.",
-      "config": {
-        "num_layers": 40,
-        "hidden_size": 5120,
-        "num_kv_heads": 8,
-        "num_attn_heads": 40,
-        "vocab_size": 32000
-      },
-      "tags": [
-        "api-imported"
-      ],
-      "benchmarks": {
-        "status": "derived",
-        "derived_from": "TheBloke/MythoMax-L2-13B-GGUF",
-        "metrics": {
-          "ifeval": 54.8,
-          "bbh": 30.2,
-          "math_lvl5": 11.5,
-          "gpqa": 7.0,
-          "musr": 11.1,
-          "mmlu_pro": 25.7,
-          "benchlm_coding": 63.6,
-          "benchlm_reasoning": 79.1,
-          "benchlm_instruction": 90.9,
-          "benchlm_math": 71.3,
-          "benchlm_knowledge": 83.3,
-          "benchlm_multilingual": 34.9,
-          "livebench": 60.4,
-          "evalplus_humaneval": 96.2,
-          "evalplus_mbpp": 96.2
-        }
-      }
-    },
-    {
       "model_id": "befox/WAN2.2-14B-Rapid-AllInOne-GGUF",
       "name": "Wan2.2 14B Rapid Allinone",
       "developer": "Befox",
@@ -15307,7 +15307,7 @@
           "benchlm_reasoning": 79.1,
           "benchlm_instruction": 90.9,
           "benchlm_math": 71.3,
-          "benchlm_knowledge": 69.0,
+          "benchlm_knowledge": 69.1,
           "benchlm_multilingual": 34.9,
           "livebench": 60.4,
           "evalplus_humaneval": 96.2,
@@ -15422,7 +15422,7 @@
           "gpqa": 7.0,
           "musr": 11.1,
           "mmlu_pro": 25.7,
-          "benchlm_coding": 38.1,
+          "benchlm_coding": 38.0,
           "benchlm_reasoning": 79.1,
           "benchlm_instruction": 90.9,
           "benchlm_math": 71.3,
@@ -15469,6 +15469,48 @@
           "benchlm_instruction": 90.9,
           "benchlm_math": 71.3,
           "benchlm_knowledge": 36.6,
+          "benchlm_multilingual": 34.9,
+          "livebench": 60.4,
+          "evalplus_humaneval": 96.2,
+          "evalplus_mbpp": 96.2
+        }
+      }
+    },
+    {
+      "model_id": "TheBloke/MythoMax-L2-13B-GGUF",
+      "name": "Mythomax L2 13B",
+      "developer": "Thebloke",
+      "parameters": 13.0,
+      "active_parameters": 13.0,
+      "base_model_id": "Gryphe/MythoMax-L2-13b",
+      "quality_score": 54.4,
+      "license": "other",
+      "description": "HF GGUF repository. 30,682 active community downloads.",
+      "config": {
+        "num_layers": 40,
+        "hidden_size": 5120,
+        "num_kv_heads": 8,
+        "num_attn_heads": 40,
+        "vocab_size": 32000
+      },
+      "tags": [
+        "api-imported"
+      ],
+      "benchmarks": {
+        "status": "derived",
+        "derived_from": "TheBloke/MythoMax-L2-13B-GGUF",
+        "metrics": {
+          "ifeval": 54.8,
+          "bbh": 30.2,
+          "math_lvl5": 11.5,
+          "gpqa": 7.0,
+          "musr": 11.1,
+          "mmlu_pro": 25.7,
+          "benchlm_coding": 63.6,
+          "benchlm_reasoning": 79.1,
+          "benchlm_instruction": 90.9,
+          "benchlm_math": 71.3,
+          "benchlm_knowledge": 83.3,
           "benchlm_multilingual": 34.9,
           "livebench": 60.4,
           "evalplus_humaneval": 96.2,
@@ -15738,7 +15780,7 @@
           "gpqa": 7.0,
           "musr": 11.1,
           "mmlu_pro": 25.7,
-          "benchlm_coding": 62.2,
+          "benchlm_coding": 62.3,
           "benchlm_reasoning": 77.3,
           "benchlm_instruction": 90.9,
           "benchlm_math": 71.3,
@@ -15870,43 +15912,6 @@
       }
     },
     {
-      "model_id": "Ttimofeyka/MistralRP-Noromaid-NSFW-Mistral-7B-GGUF",
-      "name": "Mistralrp Noromaid Nsfw Mistral 7B",
-      "developer": "Ttimofeyka",
-      "parameters": 7.0,
-      "active_parameters": 7.0,
-      "base_model_id": "Ttimofeyka/MistralRP-Noromaid-NSFW-Mistral-7B",
-      "quality_score": 41.3,
-      "license": "apache-2.0",
-      "description": "HF GGUF repository. 29,737 active community downloads.",
-      "config": {
-        "num_layers": 32,
-        "hidden_size": 4096,
-        "num_kv_heads": 8,
-        "num_attn_heads": 32,
-        "vocab_size": 32000
-      },
-      "tags": [
-        "api-imported"
-      ],
-      "benchmarks": {
-        "status": "derived",
-        "derived_from": "Ttimofeyka/MistralRP-Noromaid-NSFW-Mistral-7B-GGUF",
-        "metrics": {
-          "ifeval": 55.0,
-          "bbh": 25.6,
-          "math_lvl5": 3.9,
-          "gpqa": 5.4,
-          "musr": 8.5,
-          "mmlu_pro": 23.1,
-          "benchlm_coding": 45.4,
-          "livebench": 54.0,
-          "evalplus_humaneval": 96.2,
-          "evalplus_mbpp": 96.2
-        }
-      }
-    },
-    {
       "model_id": "mradermacher/Qwen35B-Agent-R2-Abliterated-i1-GGUF",
       "name": "Qwen35B Agent R2 Abliterated I1",
       "developer": "Mradermacher",
@@ -15951,7 +15956,7 @@
       "base_model_id": "deepseek-ai/deepseek-coder-6.7b-instruct",
       "quality_score": 59.8,
       "license": "other",
-      "description": "HF GGUF repository. 29,388 active community downloads.",
+      "description": "HF GGUF repository. 29,495 active community downloads.",
       "config": {
         "num_layers": 32,
         "hidden_size": 4096,
@@ -16057,6 +16062,43 @@
           "benchlm_knowledge": 91.7,
           "benchlm_multilingual": 34.9,
           "livebench": 60.4,
+          "evalplus_humaneval": 96.2,
+          "evalplus_mbpp": 96.2
+        }
+      }
+    },
+    {
+      "model_id": "Ttimofeyka/MistralRP-Noromaid-NSFW-Mistral-7B-GGUF",
+      "name": "Mistralrp Noromaid Nsfw Mistral 7B",
+      "developer": "Ttimofeyka",
+      "parameters": 7.0,
+      "active_parameters": 7.0,
+      "base_model_id": "Ttimofeyka/MistralRP-Noromaid-NSFW-Mistral-7B",
+      "quality_score": 41.3,
+      "license": "apache-2.0",
+      "description": "HF GGUF repository. 29,096 active community downloads.",
+      "config": {
+        "num_layers": 32,
+        "hidden_size": 4096,
+        "num_kv_heads": 8,
+        "num_attn_heads": 32,
+        "vocab_size": 32000
+      },
+      "tags": [
+        "api-imported"
+      ],
+      "benchmarks": {
+        "status": "derived",
+        "derived_from": "Ttimofeyka/MistralRP-Noromaid-NSFW-Mistral-7B-GGUF",
+        "metrics": {
+          "ifeval": 55.0,
+          "bbh": 25.6,
+          "math_lvl5": 3.9,
+          "gpqa": 5.4,
+          "musr": 8.5,
+          "mmlu_pro": 23.1,
+          "benchlm_coding": 45.5,
+          "livebench": 54.0,
           "evalplus_humaneval": 96.2,
           "evalplus_mbpp": 96.2
         }
@@ -16246,7 +16288,7 @@
           "gpqa": 7.0,
           "musr": 11.1,
           "mmlu_pro": 25.7,
-          "benchlm_coding": 62.2,
+          "benchlm_coding": 62.3,
           "benchlm_reasoning": 77.3,
           "benchlm_instruction": 90.9,
           "benchlm_math": 71.3,
@@ -16740,7 +16782,7 @@
           "gpqa": 7.0,
           "musr": 11.1,
           "mmlu_pro": 25.7,
-          "benchlm_coding": 38.1,
+          "benchlm_coding": 38.0,
           "benchlm_reasoning": 79.1,
           "benchlm_instruction": 90.9,
           "benchlm_math": 71.3,
@@ -17461,7 +17503,7 @@
           "gpqa": 7.0,
           "musr": 11.1,
           "mmlu_pro": 25.7,
-          "benchlm_coding": 40.5,
+          "benchlm_coding": 40.6,
           "benchlm_reasoning": 79.1,
           "benchlm_instruction": 76.4,
           "benchlm_math": 71.3,
@@ -17624,7 +17666,7 @@
           "gpqa": 7.0,
           "musr": 11.1,
           "mmlu_pro": 25.7,
-          "benchlm_coding": 62.2,
+          "benchlm_coding": 62.3,
           "benchlm_reasoning": 77.3,
           "benchlm_instruction": 90.9,
           "benchlm_math": 71.3,
@@ -18003,44 +18045,6 @@
       }
     },
     {
-      "model_id": "TheBloke/Llama-2-7B-GGUF",
-      "name": "Llama 2 7B",
-      "developer": "Thebloke",
-      "parameters": 7.0,
-      "active_parameters": 7.0,
-      "base_model_id": "meta-llama/Llama-2-7b-hf",
-      "quality_score": 31.8,
-      "license": "llama2",
-      "description": "HF GGUF repository. 24,402 active community downloads.",
-      "config": {
-        "num_layers": 32,
-        "hidden_size": 4096,
-        "num_kv_heads": 8,
-        "num_attn_heads": 32,
-        "vocab_size": 128256
-      },
-      "tags": [
-        "api-imported"
-      ],
-      "benchmarks": {
-        "status": "derived",
-        "derived_from": "meta-llama/Llama-2-7b-hf",
-        "metrics": {
-          "ifeval": 23.4,
-          "bbh": 8.6,
-          "math_lvl5": 0.0,
-          "gpqa": 0.4,
-          "musr": 2.0,
-          "mmlu_pro": 7.8,
-          "benchlm_coding": 35.5,
-          "benchlm_math": 25.4,
-          "livebench": 54.0,
-          "evalplus_humaneval": 96.2,
-          "evalplus_mbpp": 96.2
-        }
-      }
-    },
-    {
       "model_id": "LiquidAI/LFM2.5-230M-GGUF",
       "name": "Lfm2.5 230M",
       "developer": "Liquidai",
@@ -18077,6 +18081,44 @@
           "benchlm_knowledge": 77.5,
           "benchlm_multilingual": 34.9,
           "livebench": 60.4,
+          "evalplus_humaneval": 96.2,
+          "evalplus_mbpp": 96.2
+        }
+      }
+    },
+    {
+      "model_id": "TheBloke/Llama-2-7B-GGUF",
+      "name": "Llama 2 7B",
+      "developer": "Thebloke",
+      "parameters": 7.0,
+      "active_parameters": 7.0,
+      "base_model_id": "meta-llama/Llama-2-7b-hf",
+      "quality_score": 31.8,
+      "license": "llama2",
+      "description": "HF GGUF repository. 24,255 active community downloads.",
+      "config": {
+        "num_layers": 32,
+        "hidden_size": 4096,
+        "num_kv_heads": 8,
+        "num_attn_heads": 32,
+        "vocab_size": 128256
+      },
+      "tags": [
+        "api-imported"
+      ],
+      "benchmarks": {
+        "status": "derived",
+        "derived_from": "meta-llama/Llama-2-7b-hf",
+        "metrics": {
+          "ifeval": 23.4,
+          "bbh": 8.6,
+          "math_lvl5": 0.0,
+          "gpqa": 0.4,
+          "musr": 2.0,
+          "mmlu_pro": 7.8,
+          "benchlm_coding": 35.5,
+          "benchlm_math": 25.4,
+          "livebench": 54.0,
           "evalplus_humaneval": 96.2,
           "evalplus_mbpp": 96.2
         }
@@ -18507,50 +18549,7 @@
           "gpqa": 7.0,
           "musr": 11.1,
           "mmlu_pro": 25.7,
-          "benchlm_coding": 38.1,
-          "benchlm_reasoning": 79.1,
-          "benchlm_instruction": 90.9,
-          "benchlm_math": 71.3,
-          "benchlm_knowledge": 83.3,
-          "benchlm_multilingual": 34.9,
-          "livebench": 60.4,
-          "evalplus_humaneval": 96.2,
-          "evalplus_mbpp": 96.2
-        }
-      }
-    },
-    {
-      "model_id": "defog/sqlcoder-7b-2",
-      "name": "Sqlcoder 7B 2",
-      "developer": "Defog",
-      "parameters": 7.0,
-      "active_parameters": 7.0,
-      "base_model_id": "defog/sqlcoder-7b-2",
-      "quality_score": 53.6,
-      "license": "cc-by-sa-4.0",
-      "description": "HF GGUF repository. 22,914 active community downloads.",
-      "config": {
-        "num_layers": 32,
-        "hidden_size": 4096,
-        "num_kv_heads": 8,
-        "num_attn_heads": 32,
-        "vocab_size": 32000
-      },
-      "tags": [
-        "api-imported",
-        "coding"
-      ],
-      "benchmarks": {
-        "status": "derived",
-        "derived_from": "defog/sqlcoder-7b-2",
-        "metrics": {
-          "ifeval": 54.8,
-          "bbh": 30.2,
-          "math_lvl5": 11.5,
-          "gpqa": 7.0,
-          "musr": 11.1,
-          "mmlu_pro": 25.7,
-          "benchlm_coding": 50.9,
+          "benchlm_coding": 38.0,
           "benchlm_reasoning": 79.1,
           "benchlm_instruction": 90.9,
           "benchlm_math": 71.3,
@@ -18593,6 +18592,49 @@
           "musr": 11.1,
           "mmlu_pro": 25.7,
           "benchlm_coding": 63.6,
+          "benchlm_reasoning": 79.1,
+          "benchlm_instruction": 90.9,
+          "benchlm_math": 71.3,
+          "benchlm_knowledge": 83.3,
+          "benchlm_multilingual": 34.9,
+          "livebench": 60.4,
+          "evalplus_humaneval": 96.2,
+          "evalplus_mbpp": 96.2
+        }
+      }
+    },
+    {
+      "model_id": "defog/sqlcoder-7b-2",
+      "name": "Sqlcoder 7B 2",
+      "developer": "Defog",
+      "parameters": 7.0,
+      "active_parameters": 7.0,
+      "base_model_id": "defog/sqlcoder-7b-2",
+      "quality_score": 53.6,
+      "license": "cc-by-sa-4.0",
+      "description": "HF GGUF repository. 22,815 active community downloads.",
+      "config": {
+        "num_layers": 32,
+        "hidden_size": 4096,
+        "num_kv_heads": 8,
+        "num_attn_heads": 32,
+        "vocab_size": 32000
+      },
+      "tags": [
+        "api-imported",
+        "coding"
+      ],
+      "benchmarks": {
+        "status": "derived",
+        "derived_from": "defog/sqlcoder-7b-2",
+        "metrics": {
+          "ifeval": 54.8,
+          "bbh": 30.2,
+          "math_lvl5": 11.5,
+          "gpqa": 7.0,
+          "musr": 11.1,
+          "mmlu_pro": 25.7,
+          "benchlm_coding": 50.9,
           "benchlm_reasoning": 79.1,
           "benchlm_instruction": 90.9,
           "benchlm_math": 71.3,
@@ -19331,6 +19373,48 @@
       }
     },
     {
+      "model_id": "TheBloke/MythoMax-L2-Kimiko-v2-13B-GGUF",
+      "name": "Mythomax L2 Kimiko V2 13B",
+      "developer": "Thebloke",
+      "parameters": 13.0,
+      "active_parameters": 13.0,
+      "base_model_id": "Undi95/MythoMax-L2-Kimiko-v2-13b",
+      "quality_score": 54.4,
+      "license": "cc-by-nc-4.0",
+      "description": "HF GGUF repository. 21,765 active community downloads.",
+      "config": {
+        "num_layers": 40,
+        "hidden_size": 5120,
+        "num_kv_heads": 8,
+        "num_attn_heads": 40,
+        "vocab_size": 32000
+      },
+      "tags": [
+        "api-imported"
+      ],
+      "benchmarks": {
+        "status": "derived",
+        "derived_from": "TheBloke/MythoMax-L2-Kimiko-v2-13B-GGUF",
+        "metrics": {
+          "ifeval": 54.8,
+          "bbh": 30.2,
+          "math_lvl5": 11.5,
+          "gpqa": 7.0,
+          "musr": 11.1,
+          "mmlu_pro": 25.7,
+          "benchlm_coding": 63.6,
+          "benchlm_reasoning": 79.1,
+          "benchlm_instruction": 90.9,
+          "benchlm_math": 71.3,
+          "benchlm_knowledge": 83.3,
+          "benchlm_multilingual": 34.9,
+          "livebench": 60.4,
+          "evalplus_humaneval": 96.2,
+          "evalplus_mbpp": 96.2
+        }
+      }
+    },
+    {
       "model_id": "purplesmartai/pony-v7-base",
       "name": "Pony V7 Base",
       "developer": "Purplesmartai",
@@ -19451,48 +19535,6 @@
       "benchmarks": {
         "status": "derived",
         "derived_from": "unsloth/NVIDIA-Nemotron-3-Super-120B-A12B-GGUF",
-        "metrics": {
-          "ifeval": 54.8,
-          "bbh": 30.2,
-          "math_lvl5": 11.5,
-          "gpqa": 7.0,
-          "musr": 11.1,
-          "mmlu_pro": 25.7,
-          "benchlm_coding": 63.6,
-          "benchlm_reasoning": 79.1,
-          "benchlm_instruction": 90.9,
-          "benchlm_math": 71.3,
-          "benchlm_knowledge": 83.3,
-          "benchlm_multilingual": 34.9,
-          "livebench": 60.4,
-          "evalplus_humaneval": 96.2,
-          "evalplus_mbpp": 96.2
-        }
-      }
-    },
-    {
-      "model_id": "TheBloke/MythoMax-L2-Kimiko-v2-13B-GGUF",
-      "name": "Mythomax L2 Kimiko V2 13B",
-      "developer": "Thebloke",
-      "parameters": 13.0,
-      "active_parameters": 13.0,
-      "base_model_id": "Undi95/MythoMax-L2-Kimiko-v2-13b",
-      "quality_score": 54.4,
-      "license": "cc-by-nc-4.0",
-      "description": "HF GGUF repository. 21,513 active community downloads.",
-      "config": {
-        "num_layers": 40,
-        "hidden_size": 5120,
-        "num_kv_heads": 8,
-        "num_attn_heads": 40,
-        "vocab_size": 32000
-      },
-      "tags": [
-        "api-imported"
-      ],
-      "benchmarks": {
-        "status": "derived",
-        "derived_from": "TheBloke/MythoMax-L2-Kimiko-v2-13B-GGUF",
         "metrics": {
           "ifeval": 54.8,
           "bbh": 30.2,
@@ -19643,7 +19685,7 @@
       "base_model_id": "microsoft/phi-2",
       "quality_score": 36.3,
       "license": "other",
-      "description": "HF GGUF repository. 21,360 active community downloads.",
+      "description": "HF GGUF repository. 21,220 active community downloads.",
       "config": {
         "num_layers": 32,
         "hidden_size": 3072,
@@ -19811,7 +19853,7 @@
           "gpqa": 5.4,
           "musr": 8.5,
           "mmlu_pro": 23.1,
-          "benchlm_coding": 45.4,
+          "benchlm_coding": 45.5,
           "livebench": 73.1,
           "evalplus_humaneval": 96.2,
           "evalplus_mbpp": 96.2
@@ -20186,49 +20228,6 @@
       }
     },
     {
-      "model_id": "OrionStarAI/Orion-14B-Chat",
-      "name": "Orion 14B Chat",
-      "developer": "Orionstarai",
-      "parameters": 14.0,
-      "active_parameters": 14.0,
-      "base_model_id": "OrionStarAI/Orion-14B-Chat",
-      "quality_score": 54.9,
-      "license": "other",
-      "description": "HF GGUF repository. 20,344 active community downloads.",
-      "config": {
-        "num_layers": 40,
-        "hidden_size": 5120,
-        "num_kv_heads": 8,
-        "num_attn_heads": 40,
-        "vocab_size": 32000
-      },
-      "tags": [
-        "api-imported",
-        "chat"
-      ],
-      "benchmarks": {
-        "status": "derived",
-        "derived_from": "OrionStarAI/Orion-14B-Chat",
-        "metrics": {
-          "ifeval": 54.8,
-          "bbh": 30.2,
-          "math_lvl5": 11.5,
-          "gpqa": 7.0,
-          "musr": 11.1,
-          "mmlu_pro": 25.7,
-          "benchlm_coding": 61.8,
-          "benchlm_reasoning": 79.1,
-          "benchlm_instruction": 90.9,
-          "benchlm_math": 71.3,
-          "benchlm_knowledge": 91.7,
-          "benchlm_multilingual": 34.9,
-          "livebench": 60.4,
-          "evalplus_humaneval": 96.2,
-          "evalplus_mbpp": 96.2
-        }
-      }
-    },
-    {
       "model_id": "lmstudio-community/olmOCR-2-7B-1025-GGUF",
       "name": "Olmocr 2 7B 1025",
       "developer": "Lmstudio-Community",
@@ -20440,6 +20439,49 @@
       }
     },
     {
+      "model_id": "OrionStarAI/Orion-14B-Chat",
+      "name": "Orion 14B Chat",
+      "developer": "Orionstarai",
+      "parameters": 14.0,
+      "active_parameters": 14.0,
+      "base_model_id": "OrionStarAI/Orion-14B-Chat",
+      "quality_score": 54.9,
+      "license": "other",
+      "description": "HF GGUF repository. 19,825 active community downloads.",
+      "config": {
+        "num_layers": 40,
+        "hidden_size": 5120,
+        "num_kv_heads": 8,
+        "num_attn_heads": 40,
+        "vocab_size": 32000
+      },
+      "tags": [
+        "api-imported",
+        "chat"
+      ],
+      "benchmarks": {
+        "status": "derived",
+        "derived_from": "OrionStarAI/Orion-14B-Chat",
+        "metrics": {
+          "ifeval": 54.8,
+          "bbh": 30.2,
+          "math_lvl5": 11.5,
+          "gpqa": 7.0,
+          "musr": 11.1,
+          "mmlu_pro": 25.7,
+          "benchlm_coding": 61.8,
+          "benchlm_reasoning": 79.1,
+          "benchlm_instruction": 90.9,
+          "benchlm_math": 71.3,
+          "benchlm_knowledge": 91.7,
+          "benchlm_multilingual": 34.9,
+          "livebench": 60.4,
+          "evalplus_humaneval": 96.2,
+          "evalplus_mbpp": 96.2
+        }
+      }
+    },
+    {
       "model_id": "King3Djbl/nexus-medical-GGUF",
       "name": "Nexus Medical",
       "developer": "King3Djbl",
@@ -20526,7 +20568,7 @@
       "base_model_id": "deepseek-ai/deepseek-coder-6.7b-base",
       "quality_score": 59.8,
       "license": "other",
-      "description": "HF GGUF repository. 19,689 active community downloads.",
+      "description": "HF GGUF repository. 19,739 active community downloads.",
       "config": {
         "num_layers": 32,
         "hidden_size": 4096,
@@ -20849,7 +20891,7 @@
           "gpqa": 5.4,
           "musr": 8.5,
           "mmlu_pro": 23.1,
-          "benchlm_coding": 43.6,
+          "benchlm_coding": 43.7,
           "livebench": 72.2,
           "evalplus_humaneval": 96.2,
           "evalplus_mbpp": 96.2
@@ -21154,7 +21196,7 @@
         "status": "derived",
         "derived_from": "huihui-ai/Huihui-gemma-4-12B-it-qat-q4_0-unquantized-abliterated-GGUF",
         "metrics": {
-          "benchlm_coding": 44.7,
+          "benchlm_coding": 44.8,
           "benchlm_reasoning": 23.9,
           "benchlm_math": 55.9,
           "benchlm_knowledge": 68.6,
@@ -21272,7 +21314,7 @@
         "status": "derived",
         "derived_from": "weareapexcreators/Gemma4-12B-Uncensored-LocalAI",
         "metrics": {
-          "benchlm_coding": 44.7,
+          "benchlm_coding": 44.8,
           "benchlm_reasoning": 23.9,
           "benchlm_math": 55.9,
           "benchlm_knowledge": 68.6,
@@ -21667,6 +21709,42 @@
       }
     },
     {
+      "model_id": "TheBloke/dolphin-2.5-mixtral-8x7b-GGUF",
+      "name": "Dolphin 2.5 Mixtral 8X7B",
+      "developer": "Thebloke",
+      "parameters": 7.0,
+      "active_parameters": 7.0,
+      "base_model_id": "dphn/dolphin-2.5-mixtral-8x7b",
+      "quality_score": 45.7,
+      "license": "apache-2.0",
+      "description": "HF GGUF repository. 18,448 active community downloads.",
+      "config": {
+        "num_layers": 32,
+        "hidden_size": 4096,
+        "num_kv_heads": 8,
+        "num_attn_heads": 32,
+        "vocab_size": 32000
+      },
+      "tags": [
+        "api-imported"
+      ],
+      "benchmarks": {
+        "status": "derived",
+        "derived_from": "TheBloke/dolphin-2.5-mixtral-8x7b-GGUF",
+        "metrics": {
+          "ifeval": 56.3,
+          "bbh": 37.7,
+          "math_lvl5": 17.0,
+          "gpqa": 9.5,
+          "musr": 11.6,
+          "mmlu_pro": 32.7,
+          "livebench": 54.0,
+          "evalplus_humaneval": 96.2,
+          "evalplus_mbpp": 96.2
+        }
+      }
+    },
+    {
       "model_id": "weareapexcreators/Ornith-1.0-35B-LocalAI",
       "name": "Ornith 1.0 35B Localai",
       "developer": "Weareapexcreators",
@@ -21776,42 +21854,6 @@
           "benchlm_coding": 63.6,
           "benchlm_knowledge": 79.2,
           "livebench": 54.4,
-          "evalplus_humaneval": 96.2,
-          "evalplus_mbpp": 96.2
-        }
-      }
-    },
-    {
-      "model_id": "TheBloke/dolphin-2.5-mixtral-8x7b-GGUF",
-      "name": "Dolphin 2.5 Mixtral 8X7B",
-      "developer": "Thebloke",
-      "parameters": 7.0,
-      "active_parameters": 7.0,
-      "base_model_id": "dphn/dolphin-2.5-mixtral-8x7b",
-      "quality_score": 45.7,
-      "license": "apache-2.0",
-      "description": "HF GGUF repository. 18,389 active community downloads.",
-      "config": {
-        "num_layers": 32,
-        "hidden_size": 4096,
-        "num_kv_heads": 8,
-        "num_attn_heads": 32,
-        "vocab_size": 32000
-      },
-      "tags": [
-        "api-imported"
-      ],
-      "benchmarks": {
-        "status": "derived",
-        "derived_from": "TheBloke/dolphin-2.5-mixtral-8x7b-GGUF",
-        "metrics": {
-          "ifeval": 56.3,
-          "bbh": 37.7,
-          "math_lvl5": 17.0,
-          "gpqa": 9.5,
-          "musr": 11.6,
-          "mmlu_pro": 32.7,
-          "livebench": 54.0,
           "evalplus_humaneval": 96.2,
           "evalplus_mbpp": 96.2
         }
@@ -22168,7 +22210,7 @@
         "status": "derived",
         "derived_from": "llmfan46/gemma-4-12B-coder-fable5-composer2.5-v1-uncensored-heretic-GGUF",
         "metrics": {
-          "benchlm_coding": 44.7,
+          "benchlm_coding": 44.8,
           "benchlm_reasoning": 23.9,
           "benchlm_math": 55.9,
           "benchlm_knowledge": 68.6,
@@ -22359,7 +22401,7 @@
         "status": "derived",
         "derived_from": "zaakirio/gemma-4-12b-it-uncensored-GGUF",
         "metrics": {
-          "benchlm_coding": 44.7,
+          "benchlm_coding": 44.8,
           "benchlm_reasoning": 23.9,
           "benchlm_math": 55.9,
           "benchlm_knowledge": 68.6,
@@ -22375,7 +22417,7 @@
       "developer": "Jashepp",
       "parameters": 35.0,
       "active_parameters": 3.0,
-      "base_model_id": "deepreinforce-ai/Ornith-1.0-35B",
+      "base_model_id": "ornith-ai/Ornith-1.0-35B",
       "quality_score": 50.3,
       "license": "mit",
       "description": "HF GGUF repository. 17,752 active community downloads.",
@@ -22664,7 +22706,7 @@
         "status": "derived",
         "derived_from": "ggml-org/Qwen3-Omni-30B-A3B-Instruct-GGUF",
         "metrics": {
-          "benchlm_coding": 40.5,
+          "benchlm_coding": 40.6,
           "benchlm_reasoning": 75.6,
           "benchlm_instruction": 76.4,
           "benchlm_math": 71.7,
@@ -23550,7 +23592,7 @@
           "gpqa": 5.4,
           "musr": 8.5,
           "mmlu_pro": 23.1,
-          "benchlm_coding": 45.4,
+          "benchlm_coding": 45.5,
           "livebench": 52.0,
           "evalplus_humaneval": 96.2,
           "evalplus_mbpp": 96.2
@@ -24020,7 +24062,7 @@
         "status": "derived",
         "derived_from": "bartowski/Qwen_Qwen3-30B-A3B-GGUF",
         "metrics": {
-          "benchlm_coding": 40.5,
+          "benchlm_coding": 40.6,
           "benchlm_reasoning": 75.6,
           "benchlm_instruction": 76.4,
           "benchlm_math": 71.7,
@@ -24041,7 +24083,7 @@
       "base_model_id": "mistralai/Mixtral-8x7B-Instruct-v0.1",
       "quality_score": 53.9,
       "license": "apache-2.0",
-      "description": "HF GGUF repository. 16,006 active community downloads.",
+      "description": "HF GGUF repository. 15,912 active community downloads.",
       "config": {
         "num_layers": 32,
         "hidden_size": 4096,
@@ -24521,42 +24563,6 @@
       }
     },
     {
-      "model_id": "TheBloke/deepseek-coder-33B-instruct-GGUF",
-      "name": "Deepseek Coder 33B Instruct",
-      "developer": "Thebloke",
-      "parameters": 33.0,
-      "active_parameters": 1.8,
-      "base_model_id": "deepseek-ai/deepseek-coder-33b-instruct",
-      "quality_score": 58.2,
-      "license": "other",
-      "description": "HF GGUF repository. 15,438 active community downloads.",
-      "config": {
-        "num_layers": 64,
-        "hidden_size": 6656,
-        "num_kv_heads": 8,
-        "num_attn_heads": 64,
-        "vocab_size": 32000
-      },
-      "tags": [
-        "api-imported",
-        "chat",
-        "coding"
-      ],
-      "benchmarks": {
-        "status": "derived",
-        "derived_from": "TheBloke/deepseek-coder-33B-instruct-GGUF",
-        "metrics": {
-          "benchlm_coding": 41.8,
-          "benchlm_reasoning": 51.9,
-          "benchlm_math": 18.1,
-          "benchlm_knowledge": 43.7,
-          "livebench": 59.2,
-          "evalplus_humaneval": 96.2,
-          "evalplus_mbpp": 96.2
-        }
-      }
-    },
-    {
       "model_id": "ressl/gemma-4-31B-it-uncensored-GGUF",
       "name": "Gemma 4 31B It Uncensored",
       "developer": "Ressl",
@@ -24624,49 +24630,6 @@
           "livebench": 50.2,
           "evalplus_humaneval": 60.2,
           "evalplus_mbpp": 62.6
-        }
-      }
-    },
-    {
-      "model_id": "Qwen/Qwen1.5-0.5B-Chat-GGUF",
-      "name": "Qwen1.5 0.5B Chat",
-      "developer": "Qwen",
-      "parameters": 0.5,
-      "active_parameters": 0.5,
-      "base_model_id": "Qwen/Qwen1.5-0.5B-Chat",
-      "quality_score": 44.5,
-      "license": "other",
-      "description": "HF GGUF repository. 15,396 active community downloads.",
-      "config": {
-        "num_layers": 32,
-        "hidden_size": 3072,
-        "num_kv_heads": 32,
-        "num_attn_heads": 32,
-        "vocab_size": 32000
-      },
-      "tags": [
-        "api-imported",
-        "chat"
-      ],
-      "benchmarks": {
-        "status": "derived",
-        "derived_from": "Qwen/Qwen1.5-0.5B-Chat",
-        "metrics": {
-          "ifeval": 16.3,
-          "bbh": 2.5,
-          "math_lvl5": 0.0,
-          "gpqa": 0.8,
-          "musr": 4.3,
-          "mmlu_pro": 0.6,
-          "benchlm_coding": 61.8,
-          "benchlm_reasoning": 70.5,
-          "benchlm_instruction": 84,
-          "benchlm_math": 71.3,
-          "benchlm_knowledge": 91.7,
-          "benchlm_multilingual": 21.1,
-          "livebench": 50.2,
-          "evalplus_humaneval": 96.2,
-          "evalplus_mbpp": 96.2
         }
       }
     },
@@ -24743,7 +24706,7 @@
           "gpqa": 5.4,
           "musr": 8.5,
           "mmlu_pro": 23.1,
-          "benchlm_coding": 45.4,
+          "benchlm_coding": 45.5,
           "livebench": 55.8,
           "evalplus_humaneval": 96.2,
           "evalplus_mbpp": 96.2
@@ -24785,6 +24748,49 @@
           "benchlm_coding": 61.8,
           "benchlm_knowledge": 91.7,
           "livebench": 55.5,
+          "evalplus_humaneval": 96.2,
+          "evalplus_mbpp": 96.2
+        }
+      }
+    },
+    {
+      "model_id": "Qwen/Qwen1.5-0.5B-Chat-GGUF",
+      "name": "Qwen1.5 0.5B Chat",
+      "developer": "Qwen",
+      "parameters": 0.5,
+      "active_parameters": 0.5,
+      "base_model_id": "Qwen/Qwen1.5-0.5B-Chat",
+      "quality_score": 44.5,
+      "license": "other",
+      "description": "HF GGUF repository. 15,246 active community downloads.",
+      "config": {
+        "num_layers": 32,
+        "hidden_size": 3072,
+        "num_kv_heads": 32,
+        "num_attn_heads": 32,
+        "vocab_size": 32000
+      },
+      "tags": [
+        "api-imported",
+        "chat"
+      ],
+      "benchmarks": {
+        "status": "derived",
+        "derived_from": "Qwen/Qwen1.5-0.5B-Chat",
+        "metrics": {
+          "ifeval": 16.3,
+          "bbh": 2.5,
+          "math_lvl5": 0.0,
+          "gpqa": 0.8,
+          "musr": 4.3,
+          "mmlu_pro": 0.6,
+          "benchlm_coding": 61.8,
+          "benchlm_reasoning": 70.5,
+          "benchlm_instruction": 84,
+          "benchlm_math": 71.3,
+          "benchlm_knowledge": 91.7,
+          "benchlm_multilingual": 21.1,
+          "livebench": 50.2,
           "evalplus_humaneval": 96.2,
           "evalplus_mbpp": 96.2
         }
@@ -24856,13 +24862,49 @@
           "gpqa": 7.0,
           "musr": 11.1,
           "mmlu_pro": 25.7,
-          "benchlm_coding": 42.7,
+          "benchlm_coding": 42.8,
           "benchlm_reasoning": 79.1,
           "benchlm_instruction": 37.1,
           "benchlm_math": 71.3,
           "benchlm_knowledge": 44.4,
           "benchlm_multilingual": 34.9,
           "livebench": 60.4,
+          "evalplus_humaneval": 96.2,
+          "evalplus_mbpp": 96.2
+        }
+      }
+    },
+    {
+      "model_id": "TheBloke/deepseek-coder-33B-instruct-GGUF",
+      "name": "Deepseek Coder 33B Instruct",
+      "developer": "Thebloke",
+      "parameters": 33.0,
+      "active_parameters": 1.8,
+      "base_model_id": "deepseek-ai/deepseek-coder-33b-instruct",
+      "quality_score": 58.2,
+      "license": "other",
+      "description": "HF GGUF repository. 15,190 active community downloads.",
+      "config": {
+        "num_layers": 64,
+        "hidden_size": 6656,
+        "num_kv_heads": 8,
+        "num_attn_heads": 64,
+        "vocab_size": 32000
+      },
+      "tags": [
+        "api-imported",
+        "chat",
+        "coding"
+      ],
+      "benchmarks": {
+        "status": "derived",
+        "derived_from": "TheBloke/deepseek-coder-33B-instruct-GGUF",
+        "metrics": {
+          "benchlm_coding": 41.8,
+          "benchlm_reasoning": 51.9,
+          "benchlm_math": 18.1,
+          "benchlm_knowledge": 43.7,
+          "livebench": 59.2,
           "evalplus_humaneval": 96.2,
           "evalplus_mbpp": 96.2
         }
@@ -24973,48 +25015,6 @@
           "livebench": 50.2,
           "evalplus_humaneval": 73.0,
           "evalplus_mbpp": 74.3
-        }
-      }
-    },
-    {
-      "model_id": "handy-computer/nemotron-speech-streaming-en-0.6b-gguf",
-      "name": "Nemotron Speech Streaming En 0.6B",
-      "developer": "Handy-Computer",
-      "parameters": 0.6,
-      "active_parameters": 0.6,
-      "base_model_id": "nvidia/nemotron-speech-streaming-en-0.6b",
-      "quality_score": 54.4,
-      "license": "other",
-      "description": "HF GGUF repository. 15,160 active community downloads.",
-      "config": {
-        "num_layers": 32,
-        "hidden_size": 3072,
-        "num_kv_heads": 32,
-        "num_attn_heads": 32,
-        "vocab_size": 32000
-      },
-      "tags": [
-        "api-imported"
-      ],
-      "benchmarks": {
-        "status": "derived",
-        "derived_from": "handy-computer/nemotron-speech-streaming-en-0.6b-gguf",
-        "metrics": {
-          "ifeval": 54.8,
-          "bbh": 30.2,
-          "math_lvl5": 11.5,
-          "gpqa": 7.0,
-          "musr": 11.1,
-          "mmlu_pro": 25.7,
-          "benchlm_coding": 63.6,
-          "benchlm_reasoning": 79.1,
-          "benchlm_instruction": 90.9,
-          "benchlm_math": 71.3,
-          "benchlm_knowledge": 83.3,
-          "benchlm_multilingual": 34.9,
-          "livebench": 60.4,
-          "evalplus_humaneval": 96.2,
-          "evalplus_mbpp": 96.2
         }
       }
     },
@@ -25206,7 +25206,7 @@
         "status": "derived",
         "derived_from": "SC117/gemma-4-12B-it-heretic-QAT-GGUF",
         "metrics": {
-          "benchlm_coding": 44.7,
+          "benchlm_coding": 44.8,
           "benchlm_reasoning": 23.9,
           "benchlm_math": 55.9,
           "benchlm_knowledge": 68.6,
@@ -25909,7 +25909,7 @@
       "base_model_id": "QuixiAI/WizardLM-7B-Uncensored",
       "quality_score": 54.4,
       "license": "other",
-      "description": "HF GGUF repository. 14,263 active community downloads.",
+      "description": "HF GGUF repository. 14,246 active community downloads.",
       "config": {
         "num_layers": 32,
         "hidden_size": 4096,
@@ -26342,7 +26342,7 @@
           "benchlm_reasoning": 79.1,
           "benchlm_instruction": 90.9,
           "benchlm_math": 71.3,
-          "benchlm_knowledge": 63.4,
+          "benchlm_knowledge": 63.5,
           "benchlm_multilingual": 34.9,
           "livebench": 60.4,
           "evalplus_humaneval": 96.2,
@@ -26483,9 +26483,9 @@
       "developer": "Ma7Ee7",
       "parameters": 4.0,
       "active_parameters": 4.0,
-      "base_model_id": "Ma7ee7/Qwen3.8_4B_Distilled_GGUF",
+      "base_model_id": "Ma7ee7/Qwen3.8_4B_Distilled",
       "quality_score": 65.9,
-      "license": "qwen",
+      "license": "apache-2.0",
       "description": "HF GGUF repository. 13,965 active community downloads.",
       "config": {
         "num_layers": 32,
@@ -26906,48 +26906,6 @@
       }
     },
     {
-      "model_id": "miqudev/miqu-1-70b",
-      "name": "Miqu 1 70B",
-      "developer": "Miqudev",
-      "parameters": 70.0,
-      "active_parameters": 70.0,
-      "base_model_id": "miqudev/miqu-1-70b",
-      "quality_score": 54.9,
-      "license": "other",
-      "description": "HF GGUF repository. 13,778 active community downloads.",
-      "config": {
-        "num_layers": 80,
-        "hidden_size": 8192,
-        "num_kv_heads": 8,
-        "num_attn_heads": 64,
-        "vocab_size": 32000
-      },
-      "tags": [
-        "api-imported"
-      ],
-      "benchmarks": {
-        "status": "derived",
-        "derived_from": "miqudev/miqu-1-70b",
-        "metrics": {
-          "ifeval": 54.8,
-          "bbh": 30.2,
-          "math_lvl5": 11.5,
-          "gpqa": 7.0,
-          "musr": 11.1,
-          "mmlu_pro": 25.7,
-          "benchlm_coding": 61.8,
-          "benchlm_reasoning": 79.1,
-          "benchlm_instruction": 90.9,
-          "benchlm_math": 71.3,
-          "benchlm_knowledge": 91.7,
-          "benchlm_multilingual": 34.9,
-          "livebench": 60.4,
-          "evalplus_humaneval": 96.2,
-          "evalplus_mbpp": 96.2
-        }
-      }
-    },
-    {
       "model_id": "mradermacher/GLM-4.5V-i1-GGUF",
       "name": "Glm 4.5V I1",
       "developer": "Mradermacher",
@@ -26982,6 +26940,48 @@
           "benchlm_instruction": 90.9,
           "benchlm_math": 71.3,
           "benchlm_knowledge": 83.3,
+          "benchlm_multilingual": 34.9,
+          "livebench": 60.4,
+          "evalplus_humaneval": 96.2,
+          "evalplus_mbpp": 96.2
+        }
+      }
+    },
+    {
+      "model_id": "miqudev/miqu-1-70b",
+      "name": "Miqu 1 70B",
+      "developer": "Miqudev",
+      "parameters": 70.0,
+      "active_parameters": 70.0,
+      "base_model_id": "miqudev/miqu-1-70b",
+      "quality_score": 54.9,
+      "license": "other",
+      "description": "HF GGUF repository. 13,755 active community downloads.",
+      "config": {
+        "num_layers": 80,
+        "hidden_size": 8192,
+        "num_kv_heads": 8,
+        "num_attn_heads": 64,
+        "vocab_size": 32000
+      },
+      "tags": [
+        "api-imported"
+      ],
+      "benchmarks": {
+        "status": "derived",
+        "derived_from": "miqudev/miqu-1-70b",
+        "metrics": {
+          "ifeval": 54.8,
+          "bbh": 30.2,
+          "math_lvl5": 11.5,
+          "gpqa": 7.0,
+          "musr": 11.1,
+          "mmlu_pro": 25.7,
+          "benchlm_coding": 61.8,
+          "benchlm_reasoning": 79.1,
+          "benchlm_instruction": 90.9,
+          "benchlm_math": 71.3,
+          "benchlm_knowledge": 91.7,
           "benchlm_multilingual": 34.9,
           "livebench": 60.4,
           "evalplus_humaneval": 96.2,
@@ -27713,7 +27713,7 @@
         "status": "derived",
         "derived_from": "unsloth/Qwen3-Coder-30B-A3B-Instruct-1M-GGUF",
         "metrics": {
-          "benchlm_coding": 40.5,
+          "benchlm_coding": 40.6,
           "benchlm_reasoning": 69.6,
           "benchlm_instruction": 76.4,
           "benchlm_math": 63.4,
@@ -28149,7 +28149,7 @@
           "gpqa": 7.0,
           "musr": 11.1,
           "mmlu_pro": 25.7,
-          "benchlm_coding": 40.5,
+          "benchlm_coding": 40.6,
           "benchlm_reasoning": 79.1,
           "benchlm_instruction": 76.4,
           "benchlm_math": 71.3,
@@ -28276,79 +28276,6 @@
           "benchlm_knowledge": 68.3,
           "benchlm_multilingual": 34.9,
           "livebench": 60.4,
-          "evalplus_humaneval": 96.2,
-          "evalplus_mbpp": 96.2
-        }
-      }
-    },
-    {
-      "model_id": "yabaimimi/edwixx__diffusiongemma-26B-A4B-it-HERETIC-Uncensored-GGUF",
-      "name": "Edwixx  Diffusiongemma 26B A4B It Heretic Uncensored",
-      "developer": "Yabaimimi",
-      "parameters": 26.0,
-      "active_parameters": 4.0,
-      "base_model_id": "edwixx/diffusiongemma-26B-A4B-it-HERETIC-Uncensored",
-      "quality_score": 39.3,
-      "license": "apache-2.0",
-      "description": "HF GGUF repository. 12,990 active community downloads.",
-      "config": {
-        "num_layers": 64,
-        "hidden_size": 6656,
-        "num_kv_heads": 8,
-        "num_attn_heads": 64,
-        "vocab_size": 32000
-      },
-      "tags": [
-        "api-imported",
-        "chat"
-      ],
-      "benchmarks": {
-        "status": "derived",
-        "derived_from": "yabaimimi/edwixx__diffusiongemma-26B-A4B-it-HERETIC-Uncensored-GGUF",
-        "metrics": {
-          "ifeval": 53.3,
-          "bbh": 16.8,
-          "math_lvl5": 3.0,
-          "gpqa": 3.2,
-          "musr": 7.1,
-          "mmlu_pro": 17.1,
-          "benchlm_coding": 43.2,
-          "benchlm_knowledge": 36.6,
-          "livebench": 59.4,
-          "evalplus_humaneval": 96.2,
-          "evalplus_mbpp": 96.2
-        }
-      }
-    },
-    {
-      "model_id": "Rednalreden/DeepSeek-V4-Flash-0731-dwarfstar-q2-gguf",
-      "name": "Deepseek V4 Flash 0731 Dwarfstar Q2",
-      "developer": "Rednalreden",
-      "parameters": 671,
-      "active_parameters": 37,
-      "base_model_id": "deepseek-ai/DeepSeek-V4-Flash-0731",
-      "quality_score": 59.8,
-      "license": "mit",
-      "description": "HF GGUF repository. 12,952 active community downloads.",
-      "config": {
-        "num_layers": 80,
-        "hidden_size": 8192,
-        "num_kv_heads": 8,
-        "num_attn_heads": 64,
-        "vocab_size": 32000
-      },
-      "tags": [
-        "api-imported"
-      ],
-      "benchmarks": {
-        "status": "derived",
-        "derived_from": "Rednalreden/DeepSeek-V4-Flash-0731-dwarfstar-q2-gguf",
-        "metrics": {
-          "benchlm_coding": 41.8,
-          "benchlm_reasoning": 63.2,
-          "benchlm_math": 18.1,
-          "benchlm_knowledge": 43.7,
-          "livebench": 59.2,
           "evalplus_humaneval": 96.2,
           "evalplus_mbpp": 96.2
         }
