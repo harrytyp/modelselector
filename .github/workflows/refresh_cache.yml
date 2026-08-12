@@ -7,8 +7,6 @@ on:
 
 permissions:
   contents: write
-  pages: write
-  id-token: write
 
 jobs:
   refresh:
@@ -63,31 +61,11 @@ jobs:
           git diff --staged --quiet || git commit -m "Nightly refresh: update model & GPU cache database"
           git pull --rebase origin main && git push
 
-  deploy:
-    name: Deploy to Pages
-    needs: refresh
-    runs-on: ubuntu-latest
-    if: success()
-    continue-on-error: true
-    environment:
-      name: github-pages
-      url: ${{ steps.deploy.outputs.page_url }}
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          ref: main
-
-      - name: Setup Pages
-        uses: actions/configure-pages@v5
-
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: '.'
-
-      - name: Deploy to GitHub Pages
-        id: deploy
-        uses: actions/deploy-pages@v4
-        with:
-          timeout: 1800000  # 30 min (default: 10 min) — CDN purge can be slow
+  # NOTE: No explicit deploy job here. This repo's Pages is configured as
+  # "Deploy from a branch" (legacy mode), so GitHub's built-in
+  # "pages build and deployment" workflow builds and deploys automatically on
+  # every push to main — including the cache.json push above. Adding our own
+  # actions/deploy-pages step here (as was done before) created a second,
+  # concurrent deployment that raced with the built-in one and intermittently
+  # failed with "Deployment request failed ... due to in progress deployment"
+  # (see run 31551404326, 2026-08-12).
