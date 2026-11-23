@@ -224,3 +224,7 @@ Following targeted refactoring to keep the simulator lightning-fast and highly f
 2. **Instant WebGL Hardware Scan:** Click the **Scan My GPU (Auto-Detect)** button next to target devices to automatically identify your active graphics card in 1-click using the browser's WebGL debug extensions.
 3. **Completely Transparent Options List:** Dynamic physics simulations are mapped in real-time across all available models, displayed directly inside a dense, sortable table. All complex advisor grid cards have been removed to prioritize raw table transparency.
 4. **Rich Model Cards:** Click any row to reveal detailed quantization specifications, memory scaling graphs, and direct links to Hugging Face (`https://huggingface.co/{model_id}`) and the Open LLM Leaderboard.
+
+## License
+
+MIT, see [LICENSE](LICENSE).
